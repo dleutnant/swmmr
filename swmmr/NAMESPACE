@@ -1,0 +1,3 @@
+useDynLib(swmmr)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
