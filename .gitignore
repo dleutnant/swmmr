@@ -16,5 +16,6 @@ vignettes/*.pdf
 # RData
 .RData
 
-# test
-testdata/
+# compiled code
+src-i386
+src-x64

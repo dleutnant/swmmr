@@ -2,19 +2,20 @@
 % Please edit documentation in R/read_inp.R
 \name{read_inp}
 \alias{read_inp}
-\title{read_inp}
+\title{Read SWMM's .inp file}
 \usage{
-read_inp(inp)
+read_inp(inp, rm.comment = TRUE)
 }
 \arguments{
-\item{inp}{Name and path to an input file.}
+\item{inp}{Name (incl. path) to an input file.}
+
+\item{rm.comment}{Should lines with comments starting with a ";" be discarded?}
+}
+\value{
+A list with SWMM inp sections.
 }
 \description{
-Read the SWMM .inp file
-}
-\details{
-Reads an SWMM .inp file and creates a list with corresponding SWMM-sections.
+Reads a SWMM .inp file and creates a list with corresponding SWMM sections.
 This function reads the .inp in a very simplified but reasonable manner.
-It's main purpose is to glance the model structure and options set.
+It's main purpose is to glance the model structure and simulation options set.
 }
-

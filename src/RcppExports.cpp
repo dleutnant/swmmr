@@ -49,3 +49,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+
+static const R_CallMethodDef CallEntries[] = {
+    {"swmmr_OpenSwmmOutFile", (DL_FUNC) &swmmr_OpenSwmmOutFile, 1},
+    {"swmmr_GetSwmmResult", (DL_FUNC) &swmmr_GetSwmmResult, 3},
+    {"swmmr_GetSwmmTimes", (DL_FUNC) &swmmr_GetSwmmTimes, 0},
+    {"swmmr_CloseSwmmOutFile", (DL_FUNC) &swmmr_CloseSwmmOutFile, 0},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_swmmr(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
+}

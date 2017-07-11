@@ -1,18 +1,16 @@
-#' Read the SWMM .inp file
+#' Read SWMM's .inp file
 #'
-#' Reads an SWMM .inp file and creates a list with corresponding SWMM-sections.
+#' Reads a SWMM .inp file and creates a list with corresponding SWMM sections.
 #' This function reads the .inp in a very simplified but reasonable manner.
-#' It's main purpose is to glance the model structure and options set. 
+#' It's main purpose is to glance the model structure and simulation options set. 
 #' 
-#' @title read_inp
-#' @param inp Name and path to an input file.
+#' @param inp Name (incl. path) to an input file.
+#' @param rm.comment Should lines with comments starting with a ";" be discarded?
+#' @return A list with SWMM inp sections.
 #' @rdname read_inp
-#' @export read_inp
-read_inp <- function(inp) {
+#' @export
+read_inp <- function(inp, rm.comment = TRUE) {
   
-  warning("This function reads the .inp in a very simplified manner! 
-          It's main purpose is to glance the model structure and options set.")
-
   # Import raw data:
   inp_raw <- base::readLines(inp)
   
@@ -23,7 +21,7 @@ read_inp <- function(inp) {
                      "Rain Gage",
                      "Stage Data",
                      "Curve Name/Params",
-                     "From Node", 
+                     "From Node",
                      "To Node",
                      "Pump Curve")
   
@@ -33,37 +31,80 @@ read_inp <- function(inp) {
                                                       x = inp_raw, 
                                                       fixed = TRUE)
   
-  # substitute comment char
-  inp_raw <- gsub(";;", "", inp_raw)
-  
   # remove divider lines
-  inp_divider_removed <- inp_raw[!grepl("-----", inp_raw)]
+  inp_raw <- inp_raw[!grepl("-----", inp_raw)]
   
   # find section lines
-  section_lines <- grep("\\[", inp_divider_removed, value = F)
+  section_lines <- grep("\\[", inp_raw, value = F)
   
-  # make it more readable
-  section_name <- gsub(pattern = "\\[|\\]", 
-                       replacement = "",
-                       x = inp_divider_removed[section_lines])
+  section_title <- gsub(pattern = "\\[|\\]", 
+                        replacement = "",
+                        x = inp_raw[section_lines])
   
-  # prepare list to store sections
-  list_inp <- as.vector(1:length(section_name), mode = "list")
+  header_lines <- data_blocks <- list_inp <- vector(length = length(section_lines), mode = "list")
+  
+  # get header lines
+  for (i in seq_len(length(header_lines))) {
+    
+    line <- inp_raw[section_lines[i] + 1]
+    
+    # section has columns
+    if (grepl(";;", substr(line, 1, 2), fixed = TRUE)) {
+      
+      line <- gsub(";;", "", line)
+      line <- gsub("\\s+", "_-_", line)
+      
+      header_lines[[i]] <- unlist(strsplit(line, "_-_"))
+      data_blocks[[i]]$start <- section_lines[i] + 2
+      
+    # sectios has no columns  
+    } else {
+      
+      header_lines[[i]] <- NA
+      data_blocks[[i]]$start <- section_lines[i] + 1
+      
+    }
+    
+    data_blocks[[i]]$end <- max(min(section_lines[i + 1] - 2, length(inp_raw), na.rm = TRUE),
+                                data_blocks[[i]]$start)
+                                
+    
+  }
   
   # create list of chunks 
-  inp_ranges <- sapply(1:length(section_lines), function(x) seq(from = section_lines[x] + 1,
-                                                                to = min(section_lines[x + 1] - 2,
-                                                                         length(inp_raw),
-                                                                         na.rm = TRUE)))
+  inp_ranges <- sapply(data_blocks, function(x) seq(from = x$start, to = x$end))
+  
   # read chunks
-  list_inp <- lapply(inp_ranges, function(x) utils::read.csv(text = inp_divider_removed[x], 
-                                                             sep = "",
-                                                             header = T,
-                                                             stringsAsFactors = F))
+  list_inp <- lapply(inp_ranges, function(x) {
+    
+    text <- inp_raw[x]
+    
+    # remove comments
+    if (rm.comment) text <- text[!grepl(";", text)]
+    
+    if (identical(text, "")) {
+      return(data.frame(NA, NA, NA, NA, NA, NA))
+    } else {
+      
+      utils::read.table(text = text,
+                        sep = "", 
+                        dec = ".", 
+                        numerals = "no.loss",
+                        stringsAsFactors = FALSE, 
+                        fill = TRUE)
+    }
+  })
+
+  # because we set previously header = FALSE to circumvent non harmonized headers, 
+  # we need to set the column names manually
+  for (i in seq_len(length(header_lines))) {
+    # get length of colnames
+    dummy <- colnames(list_inp[[i]])
+    colnames(list_inp[[i]]) <- c(header_lines[[i]], dummy)[seq_len(length(dummy))]
+  }
+  
   # rename chunks
-  names(list_inp) <- section_name
+  names(list_inp) <- section_title
   
   return(list_inp)
-  
-  
 }

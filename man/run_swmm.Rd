@@ -2,26 +2,36 @@
 % Please edit documentation in R/run_swmm.R
 \name{run_swmm}
 \alias{run_swmm}
-\title{run_swmm}
+\title{Initiate a simulation run}
 \usage{
-run_swmm(inp, rpt = NULL, out = NULL,
-  exe = "C:/Program Files (x86)/EPA SWMM 5.1/swmm5.exe", show.progress = T)
+run_swmm(inp, rpt = NULL, out = NULL, exec = NULL, stdout = "",
+  wait = TRUE)
 }
 \arguments{
 \item{inp}{Name and path to an input file.}
 
-\item{rpt}{Name and path to an report file.}
+\item{rpt}{Name and path to a report file.}
 
 \item{out}{Name and path to an out file.}
 
-\item{exe}{Name and path to swmm5.exe.}
+\item{exec}{Name and path to swmm5 executable. If not manually set, the following paths are looked up:
+linux: "/usr/bin/swmm5" 
+darwin: "/Applications/swmm5"
+windows: "C:/Program Files (x86)/EPA SWMM 5.1/swmm5.exe"}
 
-\item{show.progress}{logical. Defines whether simulation progress is printed.}
+\item{stdout}{where output to \file{stdout} or
+    \file{stderr} should be sent.  Possible values are \code{""}, to the \R
+    console (the default), \code{NULL} or \code{FALSE} (discard output),
+    \code{TRUE} (capture the output in a character vector) or a
+    character string naming a file.}
+
+\item{wait}{a logical (not \code{NA}) indicating whether the \R
+    interpreter should wait for the command to finish, or run it
+    asynchronously.  This will be ignored (and the interpreter will
+    always wait) if \code{stdout = TRUE}.}
 }
 \description{
-run_swmm
+This function runs a swmm inp file. If rpt and out files are not 
+specified files are automatically created in the same directory of
+the inp file.
 }
-\details{
-Run a SWMM inp file.
-}
-

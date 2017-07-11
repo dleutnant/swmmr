@@ -1,3 +1,5 @@
+#' Get the type of SWMM element
+#' @keywords internal
 .get_iType <- function(iType=NULL) {
   
   choices <- c("subcatchment","node","link", "system variable")
@@ -19,6 +21,8 @@
   
 }
 
+#' Get the names of SWMM elements
+#' @keywords internal
 .get_iIndex <- function(list_of_elements, iType=NULL, object_name=NULL) {
 
   # subcatchments
@@ -31,7 +35,7 @@
                                    multiple = TRUE)
       }
       
-      result <- list(iIndex = which(list_of_elements$subcatchments$names  %in% object_name) - 1,
+      result <- list(iIndex = which(list_of_elements$subcatchments$names %in% object_name) - 1,
                      names = object_name)
       
     } else {
@@ -86,7 +90,9 @@
   return(result)
 }
 
-.get_vIndex <- function(iType, vIndex=NULL) {
+#' Get the simulated values
+#' @keywords internal
+.get_vIndex <- function(iType, vIndex=NULL, PollNames = NULL) {
   
   # subcatchments
   if (iType == 0) {
@@ -98,8 +104,11 @@
                  "runoff flow (flow units)",
                  "groundwater flow into the drainage network (flow units)",
                  "groundwater elevation (ft or m)",
-                 "soil moisture in the unsaturated groundwater zone (volume fraction)",
-                 "washoff concentration of each pollutant (mass/liter)")
+                 "soil moisture in the unsaturated groundwater zone (volume fraction)")
+    
+    if (!is.null(PollNames)) choices <- c(choices, paste("washoff concentration of pollutant", 
+                                                         PollNames, 
+                                                         "(mass/liter)"))
     
     if (is.null(vIndex)) {
       vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
@@ -118,8 +127,11 @@
                    "stored water volume (including ponded water, ft3 or m3)",
                    "lateral inflow (runoff + all other external inflows, in flow units)",
                    "total inflow (lateral inflow + upstream inflows, in flow units)",
-                   "surface flooding (excess overflow when the node is at full depth, in flow units)",
-                   "concentration of each pollutant after any treatment (mass/liter)")
+                   "surface flooding (excess overflow when the node is at full depth, in flow units)")
+      
+      if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
+                                                           PollNames, 
+                                                           "after any treatment (mass/liter)"))
       
       if (is.null(vIndex)) {
         vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
@@ -136,8 +148,11 @@
                      "average water depth (ft or m)",
                      "flow velocity (ft/s or m/s)",
                      "volume of water (ft3 or m3)",
-                     "capacity (fraction of full area filled by flow for conduits; control setting for pumps and regulators)",
-                     "concentration of each pollutant (mass/liter)")
+                     "capacity (fraction of full area filled by flow for conduits; control setting for pumps and regulators)")
+        
+        if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
+                                                             PollNames, 
+                                                             "(mass/liter)"))
         
         if (is.null(vIndex)) {
           vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
@@ -183,7 +198,7 @@
     }
   }
   
-  # create list with numeric vector with base 0  and var names
+  # create list with numeric vector with base 0 and var names
   result <- list(vIndex = which(choices %in% vIndexStr) - 1,
                  names = sapply(strsplit(substr(vIndexStr,
                                                 1,

@@ -13,9 +13,9 @@ int    SWMM_ReportStep;                // reporting time step (seconds)
 
 //int    RunSwmmExe(char* cmdLine);
 //int    RunSwmmDll(char* inpFile, char* rptFile, char* outFile);
-int    OpenSwmmOutFile(char* outFile);
-int    GetSwmmResult(int iType, int iIndex, int vIndex, int period);
-int    CloseSwmmOutFile();
+//int    OpenSwmmOutFile(char* outFile);
+//int    GetSwmmResult(int iType, int iIndex, int vIndex, int period);
+//int    CloseSwmmOutFile();
 
 static const int SUBCATCH = 0;
 static const int NODE     = 1;
@@ -33,7 +33,7 @@ static int    StartPos;                // file position where results start
 static double BytesPerPeriod;          // bytes used for results in each period
 
 //-----------------------------------------------------------------------------
-// [[Rcpp::export(.OpenSwmmOutFile)]]
+// [[Rcpp::export]]
 List OpenSwmmOutFile(const char* outFile)
 //-----------------------------------------------------------------------------
 {
@@ -166,7 +166,7 @@ List OpenSwmmOutFile(const char* outFile)
 }
 
 //-----------------------------------------------------------------------------
-// [[Rcpp::export(.GetSwmmResult)]]
+// [[Rcpp::export]]
 Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex)
 //-----------------------------------------------------------------------------
 {
@@ -211,7 +211,7 @@ Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex)
 }
 
 //-----------------------------------------------------------------------------
-// [[Rcpp::export(.GetSwmmTimes)]]
+// [[Rcpp::export]]
 Rcpp::NumericVector GetSwmmTimes()
 //-----------------------------------------------------------------------------
 {
@@ -227,7 +227,7 @@ Rcpp::NumericVector GetSwmmTimes()
 }
 
 //-----------------------------------------------------------------------------
-// [[Rcpp::export(.CloseSwmmOutFile)]]
+// [[Rcpp::export]]
 int CloseSwmmOutFile()
 //-----------------------------------------------------------------------------
 {
