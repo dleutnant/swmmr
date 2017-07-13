@@ -7,8 +7,12 @@
 #' @param inp Name (incl. path) to an input file.
 #' @param rm.comment Should lines with comments starting with a ";" be discarded?
 #' @return A list with SWMM inp sections.
+#' @examples  
+#' \dontrun{
+#' inp_sections <- read_inp("model.inp")
+#' } 
 #' @rdname read_inp
-#' @export
+#' @export 
 read_inp <- function(inp, rm.comment = TRUE) {
   
   # Import raw data:

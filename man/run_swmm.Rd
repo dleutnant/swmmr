@@ -35,3 +35,9 @@ This function runs a swmm inp file. If rpt and out files are not
 specified files are automatically created in the same directory of
 the inp file.
 }
+\examples{
+ 
+\dontrun{
+result <- run_swmm("model.inp")
+}
+}

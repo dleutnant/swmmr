@@ -19,3 +19,9 @@ Reads a SWMM .inp file and creates a list with corresponding SWMM sections.
 This function reads the .inp in a very simplified but reasonable manner.
 It's main purpose is to glance the model structure and simulation options set.
 }
+\examples{
+ 
+\dontrun{
+inp_sections <- read_inp("model.inp")
+} 
+}

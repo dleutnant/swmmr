@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_out.R
 \name{read_out}
 \alias{read_out}
-\title{Read time series data from SWMM out file}
+\title{Read time series data from SWMM's .out file}
 \usage{
 read_out(file = "", iType = NULL, object_name = NULL, vIndex = NULL)
 }
@@ -81,6 +81,13 @@ for each \strong{system-wide} variable:
  \item 13 for potential evaporation (in/day or mm/day),
  \item 14 for actual evaporation (in/day or mm/day).
 }
+}
+\examples{
+ 
+\dontrun{
+sim_result <- read_out("model.out")
+} 
+
 }
 \seealso{
 \code{\link[xts]{xts}}.

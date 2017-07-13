@@ -10,6 +10,10 @@
 #' darwin: "/Applications/swmm5"
 #' windows: "C:/Program Files (x86)/EPA SWMM 5.1/swmm5.exe"
 #' @inheritParams base::system2
+#' @examples  
+#' \dontrun{
+#' result <- run_swmm("model.inp")
+#' }
 #' @rdname run_swmm
 #' @export
 run_swmm <- function(inp, 
