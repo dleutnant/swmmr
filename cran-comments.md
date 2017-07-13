@@ -1,3 +1,14 @@
+## Resubmission
+This is a resubmission. In this version I have:
+
+* Substituted 'Library' with 'Interface' in the title.
+
+* Included an URL to direct the user to further information of SWMM
+
+* Added examples (which, however, are in 'dontrun')
+
+* Changed the start of the description.
+
 ## Test environments
 * local OS X install, R 3.4.1
 * ubuntu 12.04 (on travis-ci), R 3.4.1

@@ -17,7 +17,7 @@ NULL
 #' 
 #' @examples  
 #' \dontrun{
-#' sim_result <- read_out("model.out")
+#' xts_list_of_results <- read_out("model.out")
 #' } 
 #' 
 #' @seealso \code{\link[xts]{xts}}.
