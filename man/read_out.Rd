@@ -85,7 +85,7 @@ for each \strong{system-wide} variable:
 \examples{
  
 \dontrun{
-sim_result <- read_out("model.out")
+xts_list_of_results <- read_out("model.out")
 } 
 
 }

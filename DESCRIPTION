@@ -1,10 +1,13 @@
 Package: swmmr
 Type: Package
-Title: R Library for US EPA's SWMM (>=5.1.010)
-Description: Functions to connect SWMM and R with currently two main goals: (1) Run a SWMM simulation from R 
-  and (2) provide fast access to simulation outputs, i.e. SWMM's binary output. 
-  High performance is achieved with help of Rcpp.
-  Additionally, reading SWMM's '.inp' files is supported to glance model structures.
+Title: R Interface for US EPA's SWMM
+Description: This package connects the widely used Storm Water Management Model (SWMM)
+  of the United States Environmental Protection Agency (US EPA) 
+  <https://www.epa.gov/water-research/storm-water-management-model-swmm> to R with
+  currently two main goals: (1) Run a SWMM simulation from R and (2) provide fast 
+  access to simulation results, i.e. SWMM's binary '.out'-files. High performance is achieved
+  with help of Rcpp. Additionally, reading SWMM's '.inp'-files is supported to 
+  glance model structures. 
 Version: 0.7.0
 Date: 2017-07-13
 Authors@R: person("Dominik", "Leutnant", email = "leutnant@fh-muenster.de", role = c("aut", "cre"))
