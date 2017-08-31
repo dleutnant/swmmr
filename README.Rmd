@@ -26,14 +26,14 @@ glance model structures.
 ## Installation
 
 Installation is easy thanks to CRAN:
-```{r cran}
-#install.packages("swmmr")
+```{r cran, eval = FALSE}
+install.packages("swmmr")
 ```
 
 You can install the dev version from github with:
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
-#devtools::install_github("dleutnant/swmmr@dev")
+devtools::install_github("dleutnant/swmmr@dev")
 ```
 
 ## Example

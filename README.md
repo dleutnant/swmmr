@@ -13,14 +13,14 @@ Installation
 Installation is easy thanks to CRAN:
 
 ``` r
-#install.packages("swmmr")
+install.packages("swmmr")
 ```
 
 You can install the dev version from github with:
 
 ``` r
 # install.packages("devtools")
-#devtools::install_github("dleutnant/swmmr@dev")
+devtools::install_github("dleutnant/swmmr@dev")
 ```
 
 Example
@@ -87,13 +87,6 @@ inp$TIMESERIES
 # to the inp, rpt and out-file, respectively.
 files <- run_swmm(inp = inp_path)
 #> arguments 'minimized' and 'invisible' are for Windows only
-
-... EPA-SWMM 5.1 (Build 5.1.012)
-
- o  Retrieving project data
- o  Simulation complete           
-
-... EPA-SWMM completed in 0.00 seconds.
 
 # we can now read model results from the binary output:
 # here, we focus on the system variable (iType = 3) from which we pull
