@@ -1,0 +1,89 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# swmmr
+
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/swmmr)](https://cran.r-project.org/package=swmmr) [![Build Status](https://travis-ci.org/dleutnant/swmmr.svg?branch=dev)](https://travis-ci.org/dleutnant/swmmr)
+
+Functions to connect the widely used [Storm Water Management Model (SWMM)](https://www.epa.gov/water-research/storm-water-management-model-swmm)
+of the United States Environmental Protection Agency (US EPA) to R with currently 
+two main goals: (1) Run a SWMM simulation from R and (2) provide fast 
+access to simulation results, i.e. SWMM's binary '.out'-files. High performance is 
+achieved with help of Rcpp. Additionally, reading SWMM's '.inp'-files is supported to 
+glance model structures. 
+
+## Installation
+
+Installation is easy thanks to CRAN:
+```{r cran}
+#install.packages("swmmr")
+```
+
+You can install the dev version from github with:
+```{r gh-installation, eval = FALSE}
+# install.packages("devtools")
+#devtools::install_github("dleutnant/swmmr@dev")
+```
+
+## Example
+
+This is a basic example which shows you how to work with the package. We use 
+the example shipped with the SWMM5 executable.
+
+```{r example}
+
+library(swmmr)
+library(purrr) # to conveniently work with list objects
+
+# set path to inp (avoid white spaces in file paths!)
+inp_path <- "~/EPA_SWMM_Projects/Examples/Example1.inp"
+
+# glance model structure, the result is a list of data.frames with SWMM sections
+inp <- read_inp(inp = inp_path)
+
+# available SWMM sections
+summary(inp)
+
+# for example, inspect section TIMESERIES
+inp$TIMESERIES
+
+# run a simulation
+# the result is a named list of paths, directing
+# to the inp, rpt and out-file, respectively.
+files <- run_swmm(inp = inp_path)
+
+# we can now read model results from the binary output:
+# here, we focus on the system variable (iType = 3) from which we pull
+# total rainfall (in/hr or mm/hr) and total runoff (flow units) (vIndex = c(1,4)).
+results <- read_out(files$out, iType = 3, vIndex = c(1, 4))
+
+# results is a list object containing two time series 
+str(results, max.level = 2)
+
+# basic summary
+results[[1]] %>% purrr::map(summary)
+
+# basic plotting
+results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
+
+```
+
+## Acknowledgments
+This package has been developed in the course of the project [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722), 
+carried out at the [Institute for Infrastructure, Water, Resources, Environment (IWARU)](https://en.fh-muenster.de/iwaru/index.php) of the
+[Muenster University of Applied Sciences](https://www.fh-muenster.de).
+The project was funded by the German Federal Ministry of Education and Research (BMBF, FKZ 03FH033PX2).
+
+The development of the R package was inspired by the work of [Peter Steinberg](https://github.com/PeterDSteinberg/RSWMM). Also, it benefits from SWMM
+Interface Guide. 

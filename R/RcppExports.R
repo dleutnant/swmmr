@@ -2,18 +2,18 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 OpenSwmmOutFile <- function(outFile) {
-    .Call('swmmr_OpenSwmmOutFile', PACKAGE = 'swmmr', outFile)
+    .Call('_swmmr_OpenSwmmOutFile', PACKAGE = 'swmmr', outFile)
 }
 
 GetSwmmResult <- function(iType, iIndex, vIndex) {
-    .Call('swmmr_GetSwmmResult', PACKAGE = 'swmmr', iType, iIndex, vIndex)
+    .Call('_swmmr_GetSwmmResult', PACKAGE = 'swmmr', iType, iIndex, vIndex)
 }
 
 GetSwmmTimes <- function() {
-    .Call('swmmr_GetSwmmTimes', PACKAGE = 'swmmr')
+    .Call('_swmmr_GetSwmmTimes', PACKAGE = 'swmmr')
 }
 
 CloseSwmmOutFile <- function() {
-    .Call('swmmr_CloseSwmmOutFile', PACKAGE = 'swmmr')
+    .Call('_swmmr_CloseSwmmOutFile', PACKAGE = 'swmmr')
 }
 

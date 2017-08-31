@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // OpenSwmmOutFile
 List OpenSwmmOutFile(const char* outFile);
-RcppExport SEXP swmmr_OpenSwmmOutFile(SEXP outFileSEXP) {
+RcppExport SEXP _swmmr_OpenSwmmOutFile(SEXP outFileSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -18,7 +18,7 @@ END_RCPP
 }
 // GetSwmmResult
 Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex);
-RcppExport SEXP swmmr_GetSwmmResult(SEXP iTypeSEXP, SEXP iIndexSEXP, SEXP vIndexSEXP) {
+RcppExport SEXP _swmmr_GetSwmmResult(SEXP iTypeSEXP, SEXP iIndexSEXP, SEXP vIndexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -31,7 +31,7 @@ END_RCPP
 }
 // GetSwmmTimes
 Rcpp::NumericVector GetSwmmTimes();
-RcppExport SEXP swmmr_GetSwmmTimes() {
+RcppExport SEXP _swmmr_GetSwmmTimes() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -41,7 +41,7 @@ END_RCPP
 }
 // CloseSwmmOutFile
 int CloseSwmmOutFile();
-RcppExport SEXP swmmr_CloseSwmmOutFile() {
+RcppExport SEXP _swmmr_CloseSwmmOutFile() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -51,10 +51,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"swmmr_OpenSwmmOutFile", (DL_FUNC) &swmmr_OpenSwmmOutFile, 1},
-    {"swmmr_GetSwmmResult", (DL_FUNC) &swmmr_GetSwmmResult, 3},
-    {"swmmr_GetSwmmTimes", (DL_FUNC) &swmmr_GetSwmmTimes, 0},
-    {"swmmr_CloseSwmmOutFile", (DL_FUNC) &swmmr_CloseSwmmOutFile, 0},
+    {"_swmmr_OpenSwmmOutFile", (DL_FUNC) &_swmmr_OpenSwmmOutFile, 1},
+    {"_swmmr_GetSwmmResult", (DL_FUNC) &_swmmr_GetSwmmResult, 3},
+    {"_swmmr_GetSwmmTimes", (DL_FUNC) &_swmmr_GetSwmmTimes, 0},
+    {"_swmmr_CloseSwmmOutFile", (DL_FUNC) &_swmmr_CloseSwmmOutFile, 0},
     {NULL, NULL, 0}
 };
 
