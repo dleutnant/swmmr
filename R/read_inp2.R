@@ -44,20 +44,53 @@ read_inp2 <- function(x) {
   list_of_sections <- purrr::map2(section_lines, section_length, ~ inp_lines[(.x + 1):.y]) %>% 
     purrr::set_names(base::tolower(section_types))
   
-  # sec has  divider line?
-  sec_has_div <- purrr::map(list_of_sections, ~ grepl(pattern = "-----", .)) %>% 
-    purrr::map_lgl(any)
-  
-  
-  ## TODO and handle  different types of sections
-  # tmp <- purrr::quietly(purrr::map(list_of_sections, ~ utils::read.table(text = .),
-  #                   sep = "", 
-  #                   dec = ".", 
-  #                   numerals = "no.loss",
-  #                   stringsAsFactors = FALSE, 
-  #                   fill = TRUE))
-  # 
+  # TODO and handle  different types of sections
+  tmp <- purrr::imap(list_of_sections, ~ parse_section(.x, .y))
   
   
     
+}
+
+parse_section <- function(x, section_type) {
+  
+  # no data.frame
+  if (section_type %in% c("title")) {
+    
+    return(x)
+      
+  } 
+  
+  # does the section contain a divider line
+  has_divider <- any(grepl(pattern = "-----", x = x))
+  
+  if (has_divider) {
+    
+    # create column names
+    idx <- seq(1, grep(pattern = "-----", x = x)-1)
+    
+    
+    gsub("{[:space:],}", replacement = "_", x = x[idx]) 
+    
+    
+    header_names <- utils::read.table(text = gsub(";;", "", x[idx]),
+                      sep = "  ", 
+                      dec = ".", 
+                      numerals = "no.loss",
+                      stringsAsFactors = FALSE,
+                      fill = TRUE, header = F)
+
+    # data.frame with header
+    coredata <- utils::read.table(text = x[-idx],
+                      sep = "", 
+                      dec = ".", 
+                      numerals = "no.loss",
+                      stringsAsFactors = FALSE, 
+                      fill = TRUE)
+      
+  } else {
+    
+  }
+  
+  
+  
 }
