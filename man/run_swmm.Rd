@@ -15,7 +15,7 @@ run_swmm(inp, rpt = NULL, out = NULL, exec = NULL, stdout = "",
 \item{out}{Name and path to an out file.}
 
 \item{exec}{Name and path to swmm5 executable. If not manually set, the following paths are looked up:
-linux: "/usr/bin/swmm5" 
+linux: "/usr/bin/swmm5"
 darwin: "/Applications/swmm5"
 windows: "C:/Program Files (x86)/EPA SWMM 5.1/swmm5.exe"}
 
@@ -31,7 +31,7 @@ windows: "C:/Program Files (x86)/EPA SWMM 5.1/swmm5.exe"}
     always wait) if \code{stdout = TRUE}.}
 }
 \description{
-This function runs a swmm inp file. If rpt and out files are not 
+This function runs a swmm inp file. If rpt and out files are not
 specified files are automatically created in the same directory of
 the inp file.
 }

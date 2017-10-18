@@ -8,8 +8,8 @@ Description: Functions to connect the widely used Storm Water Management Model (
   access to simulation results, i.e. SWMM's binary '.out'-files. High performance is achieved
   with help of Rcpp. Additionally, reading SWMM's '.inp'-files is supported to 
   glance model structures. 
-Version: 0.7.2
-Date: 2017-10-10
+Version: 0.7.0.9000
+Date: 2017-10-18
 Authors@R: person("Dominik", "Leutnant", email = "leutnant@fh-muenster.de", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3293-2315"))
 URL: https://github.com/dleutnant/swmmr
 License: GPL-3
@@ -17,9 +17,16 @@ LazyData: TRUE
 BugReports: https://github.com/dleutnant/swmmr/issues
 ByteCompile: TRUE
 Imports:
+    purrr,
     Rcpp,
     utils,
     xts
 LinkingTo: 
     Rcpp
+Suggests:
+    dplyr,
+    ggplot2 (>= 2.2.1.9000),
+    sf,
+    tidyr
 RoxygenNote: 6.0.1
+Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))

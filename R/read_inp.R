@@ -108,7 +108,10 @@ read_inp <- function(inp, rm.comment = TRUE) {
   }
   
   # rename chunks
-  names(list_inp) <- section_title
+  names(list_inp) <- tolower(section_title)
+  
+  # assign class "swmm_inp"
+  class(list_inp) <- "swmm_inp"
   
   return(list_inp)
 }
