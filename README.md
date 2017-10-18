@@ -42,45 +42,34 @@ inp <- read_inp(inp = inp_path)
 # available SWMM sections
 summary(inp)
 #>               Length Class      Mode
-#> TITLE         2      data.frame list
-#> OPTIONS       2      data.frame list
-#> RAINGAGES     6      data.frame list
-#> SUBCATCHMENTS 8      data.frame list
-#> SUBAREAS      7      data.frame list
-#> INFILTRATION  5      data.frame list
-#> JUNCTIONS     6      data.frame list
-#> OUTFALLS      4      data.frame list
-#> CONDUITS      8      data.frame list
-#> XSECTIONS     7      data.frame list
-#> POLLUTANTS    9      data.frame list
-#> LANDUSES      1      data.frame list
-#> COVERAGES     3      data.frame list
-#> LOADINGS      6      data.frame list
-#> BUILDUP       7      data.frame list
-#> WASHOFF       7      data.frame list
-#> TIMESERIES    3      data.frame list
-#> REPORT        2      data.frame list
-#> TAGS          6      data.frame list
-#> COORDINATES   3      data.frame list
-#> VERTICES      3      data.frame list
-#> Polygons      3      data.frame list
-#> SYMBOLS       3      data.frame list
-#> BACKDROP      5      data.frame list
+#> title         2      data.frame list
+#> options       2      data.frame list
+#> raingages     6      data.frame list
+#> subcatchments 8      data.frame list
+#> subareas      7      data.frame list
+#> infiltration  5      data.frame list
+#> junctions     6      data.frame list
+#> outfalls      4      data.frame list
+#> conduits      8      data.frame list
+#> xsections     7      data.frame list
+#> pollutants    9      data.frame list
+#> landuses      1      data.frame list
+#> coverages     3      data.frame list
+#> loadings      6      data.frame list
+#> buildup       7      data.frame list
+#> washoff       7      data.frame list
+#> timeseries    3      data.frame list
+#> report        2      data.frame list
+#> tags          6      data.frame list
+#> coordinates   3      data.frame list
+#> vertices      3      data.frame list
+#> polygons      3      data.frame list
+#> symbols       3      data.frame list
+#> backdrop      5      data.frame list
 
 # for example, inspect section TIMESERIES
 inp$TIMESERIES
-#>    Name  Date Time
-#> 1   TS1  0:00 0.00
-#> 2   TS1  1:00 0.25
-#> 3   TS1  2:00 0.50
-#> 4   TS1  3:00 0.80
-#> 5   TS1  4:00 0.40
-#> 6   TS1  5:00 0.10
-#> 7   TS1  6:00 0.00
-#> 8   TS1 27:00 0.00
-#> 9   TS1 28:00 0.40
-#> 10  TS1 29:00 0.20
-#> 11  TS1 30:00 0.00
+#> NULL
 
 # run a simulation
 # the result is a named list of paths, directing
@@ -92,6 +81,8 @@ files <- run_swmm(inp = inp_path)
 # here, we focus on the system variable (iType = 3) from which we pull
 # total rainfall (in/hr or mm/hr) and total runoff (flow units) (vIndex = c(1,4)).
 results <- read_out(files$out, iType = 3, vIndex = c(1, 4))
+#> Warning in strptime(xx, f <- "%Y-%m-%d %H:%M:%OS", tz = tz): unknown
+#> timezone 'default/Europe/Berlin'
 
 # results is a list object containing two time series 
 str(results, max.level = 2)
@@ -140,9 +131,21 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 
 ![](README-example-2.png)
 
+Contributions
+-------------
+
+This Git repository uses the [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model (the [`git flow`](https://github.com/petervanderdoes/gitflow-avh) extension is useful for this). The [`dev`](https://github.com/dleutnant/swmmr/tree/dev) branch contains the latest contributions and other code that will appear in the next release, and the [`master`](https://github.com/dleutnant/swmmr) branch contains the code of the latest release, which is exactly what is currently on [CRAN](https://cran.r-project.org/package=swmmr).
+
+Contributing to this package is easy. Just send a [pull request](https://help.github.com/articles/using-pull-requests/). When you send your PR, make sure `dev` is the destination branch on the [swmmr repository](https://github.com/dleutnant/swmmr). Your PR should pass `R CMD check --as-cran`, which will also be checked by <a href="https://travis-ci.org/dleutnant/swmmr">Travis CI</a> when the PR is submitted.
+
+Code of condcut
+---------------
+
+Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+
 Acknowledgments
 ---------------
 
 This package has been developed in the course of the project [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722), carried out at the [Institute for Infrastructure, Water, Resources, Environment (IWARU)](https://en.fh-muenster.de/iwaru/index.php) of the [Muenster University of Applied Sciences](https://www.fh-muenster.de). The project was funded by the German Federal Ministry of Education and Research (BMBF, FKZ 03FH033PX2).
 
-The development of the R package was inspired by the work of [Peter Steinberg](https://github.com/PeterDSteinberg/RSWMM). Also, it benefits from SWMM Interface Guide.
+The development of the R package was inspired by the work of [Peter Steinberg](https://github.com/PeterDSteinberg/RSWMM). Also, it benefits from Interface Guide of SWMM.
