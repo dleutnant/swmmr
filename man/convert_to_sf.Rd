@@ -6,7 +6,7 @@
 \alias{subcatchments_to_sf}
 \alias{links_to_sf}
 \alias{inp_to_sf}
-\title{Convert swmm objects to simple feauture geometries}
+\title{Convert swmm objects to simple feature geometries}
 \usage{
 junctions_to_sf(x)
 
@@ -17,10 +17,10 @@ links_to_sf(x)
 inp_to_sf(x)
 }
 \arguments{
-\item{x}{An object of class 'swmm_inp', created by 'read_inp'}
+\item{x}{An object of class 'swmm_inp', created by \code{\link{read_inp}}.}
 }
 \value{
-A simple feature
+A simple feature or a list of simple features
 }
 \description{
 \itemize{
@@ -28,6 +28,7 @@ A simple feature
 \item \code{links_to_sf()}: converts links to simple features
 \item \code{subcatchments_to_sf()}: converts subcatchments to simple features
 \item \code{inp_to_sf()}: converts junctions, links and subcatchments to simple features
+and returns a list
 }
 }
 \seealso{

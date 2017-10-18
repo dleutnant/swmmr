@@ -3,7 +3,7 @@
 #' R Interface for US EPA's SWMM
 #'
 #' @docType package
-#' @name influxdbr
+#' @name swmmr
 #' @importFrom purrr %>%
 #' @importFrom purrr %||%
 NULL

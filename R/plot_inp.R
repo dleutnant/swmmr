@@ -1,7 +1,7 @@
 #' @title Plot a swmm model structure
 #' @description This function reads an object of class 'swmm_inp' and extracts
 #' subcatchments, links and junctions. All objects are converted to simple feautures
-#' geometries and passed to ggplot2::geom_sf.
+#' geometries and passed to \code{\link[ggplot2]{geom_sf}}.
 #' @param x An swmm_inp object
 #' @param ... currently ignored
 #' @examples  
@@ -9,7 +9,7 @@
 #' swmm_inp <- read_inp("model.inp")
 #' plot(swmm_inp)
 #' }
-#' @rdname plot.swmm_inp
+#' @rdname plot
 #' @export
 plot.swmm_inp <- function(x,...) {
   

@@ -1,12 +1,13 @@
-#' Convert swmm objects to simple feauture geometries
+#' Convert swmm objects to simple feature geometries
 #'
 #' * `junctions_to_sf()`: converts junctions to simple features
 #' * `links_to_sf()`: converts links to simple features
 #' * `subcatchments_to_sf()`: converts subcatchments to simple features
-#' * `inp_to_sf()`: converts junctions, links and subcatchments to simple features
+#' * `inp_to_sf()`: converts junctions, links and subcatchments to simple features 
+#' and returns a list
 #'
-#' @param x An object of class 'swmm_inp', created by 'read_inp'
-#' @return A simple feature
+#' @param x An object of class 'swmm_inp', created by \code{\link{read_inp}}.
+#' @return A simple feature or a list of simple features
 #' @name convert_to_sf
 #' @seealso \code{\link[ggplot2]{geom_sf}}
 NULL
