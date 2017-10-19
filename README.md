@@ -67,9 +67,20 @@ summary(inp)
 #> symbols       3      data.frame list
 #> backdrop      5      data.frame list
 
-# for example, inspect section TIMESERIES
-inp$TIMESERIES
-#> NULL
+# for example, inspect section timeseries
+inp$timeseries
+#>    Name  Date Time
+#> 1   TS1  0:00 0.00
+#> 2   TS1  1:00 0.25
+#> 3   TS1  2:00 0.50
+#> 4   TS1  3:00 0.80
+#> 5   TS1  4:00 0.40
+#> 6   TS1  5:00 0.10
+#> 7   TS1  6:00 0.00
+#> 8   TS1 27:00 0.00
+#> 9   TS1 28:00 0.40
+#> 10  TS1 29:00 0.20
+#> 11  TS1 30:00 0.00
 
 # run a simulation
 # the result is a named list of paths, directing

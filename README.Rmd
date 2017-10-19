@@ -55,8 +55,8 @@ inp <- read_inp(inp = inp_path)
 # available SWMM sections
 summary(inp)
 
-# for example, inspect section TIMESERIES
-inp$TIMESERIES
+# for example, inspect section timeseries
+inp$timeseries
 
 # run a simulation
 # the result is a named list of paths, directing
