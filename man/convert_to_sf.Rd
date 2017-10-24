@@ -17,7 +17,7 @@ links_to_sf(x)
 inp_to_sf(x)
 }
 \arguments{
-\item{x}{An object of class 'swmm_inp', created by \code{\link{read_inp}}.}
+\item{x}{An object of class 'inp', created by \code{\link{read_inp}}.}
 }
 \value{
 A simple feature or a list of simple features

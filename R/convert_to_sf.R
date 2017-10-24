@@ -6,7 +6,7 @@
 #' * `inp_to_sf()`: converts junctions, links and subcatchments to simple features 
 #' and returns a list
 #'
-#' @param x An object of class 'swmm_inp', created by \code{\link{read_inp}}.
+#' @param x An object of class 'inp', created by \code{\link{read_inp}}.
 #' @return A simple feature or a list of simple features
 #' @name convert_to_sf
 #' @seealso \code{\link[ggplot2]{geom_sf}}
@@ -17,7 +17,7 @@ NULL
 junctions_to_sf <- function(x) {
   
   # check class
-  stopifnot(class(x) == "swmm_inp")
+  stopifnot(inherits(x, "inp"))
   
   # join junctions and coordinates
   junc_sf <- dplyr::left_join(x = x[["junctions"]],
@@ -44,7 +44,7 @@ junctions_to_sf <- function(x) {
 subcatchments_to_sf <- function(x) {
 
   # check class
-  stopifnot(class(x) == "swmm_inp")
+  stopifnot(inherits(x, "inp"))
   
   # join subcatchment, subareas, infiltration and polygons
   subc_sf <- dplyr::left_join(x = x[["subcatchments"]],
@@ -78,7 +78,7 @@ subcatchments_to_sf <- function(x) {
 links_to_sf <- function(x) {
   
   # check class
-  stopifnot(class(x) == "swmm_inp")
+  stopifnot(inherits(x, "inp"))
   
   # join junctions and coordinates
   links_sf <- dplyr::left_join(x = x[["conduits"]],
@@ -105,7 +105,7 @@ links_to_sf <- function(x) {
 inp_to_sf <- function(x) {
   
   # check class
-  stopifnot(class(x) == "swmm_inp")
+  stopifnot(inherits(x, "inp"))
   
   # return list with simple features of swmm objects
   sf <- list(subcatchments = subcatchments_to_sf(x), 
