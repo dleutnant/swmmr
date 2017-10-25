@@ -2,12 +2,15 @@
 % Please edit documentation in R/convert_to_sf.R
 \name{convert_to_sf}
 \alias{convert_to_sf}
+\alias{raingages_to_sf}
 \alias{junctions_to_sf}
 \alias{subcatchments_to_sf}
 \alias{links_to_sf}
 \alias{inp_to_sf}
 \title{Convert swmm objects to simple feature geometries}
 \usage{
+raingages_to_sf(x)
+
 junctions_to_sf(x)
 
 subcatchments_to_sf(x)
@@ -24,10 +27,15 @@ A simple feature or a list of simple features
 }
 \description{
 \itemize{
-\item \code{junctions_to_sf()}: converts junctions to simple features
-\item \code{links_to_sf()}: converts links to simple features
-\item \code{subcatchments_to_sf()}: converts subcatchments to simple features
-\item \code{inp_to_sf()}: converts junctions, links and subcatchments to simple features
+\item \code{junctions_to_sf()}: converts junctions to simple features (required
+sections: \code{junctions} and \code{coordinates})
+\item \code{links_to_sf()}: converts links to simple features (required sections:
+\code{conduits} and \code{coordinates})
+\item \code{subcatchments_to_sf()}: converts subcatchments to simple features (required
+sections: \code{subcatchments}, \code{subareas}, \code{infiltration} and \code{polygons})
+\item \code{raingages_to_sf()}: converts raingages to simple features (required
+sections: \code{raingages} and \code{symbols})
+\item \code{inp_to_sf()}: converts junctions, links, subcatchments and raingages to simple features
 and returns a list
 }
 }

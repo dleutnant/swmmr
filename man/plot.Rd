@@ -13,7 +13,7 @@
 }
 \description{
 This function reads an object of class 'inp' and extracts
-subcatchments, links and junctions. All objects are converted to simple feautures
+subcatchments, links, junctions and raingages. All objects are converted to simple feautures
 geometries and passed to \code{\link[ggplot2]{geom_sf}}.
 }
 \examples{

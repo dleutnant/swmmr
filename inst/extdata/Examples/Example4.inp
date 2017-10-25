@@ -1,10 +1,17 @@
 [TITLE]
+;;Project Title/Notes
 SWMM Example with LIDs
 
 [OPTIONS]
+;;Option             Value
 FLOW_UNITS           CFS
 INFILTRATION         GREEN_AMPT
 FLOW_ROUTING         KINWAVE
+LINK_OFFSETS         DEPTH
+MIN_SLOPE            0
+ALLOW_PONDING        NO
+SKIP_STEADY_STATE    NO
+
 START_DATE           01/01/2007
 START_TIME           00:00:00
 REPORT_START_DATE    01/01/2007
@@ -18,33 +25,34 @@ REPORT_STEP          00:01:00
 WET_STEP             00:01:00
 DRY_STEP             01:00:00
 ROUTING_STEP         0:01:00 
-ALLOW_PONDING        NO
+
 INERTIAL_DAMPING     PARTIAL
+NORMAL_FLOW_LIMITED  SLOPE
+FORCE_MAIN_EQUATION  H-W
 VARIABLE_STEP        0.75
 LENGTHENING_STEP     0
 MIN_SURFAREA         0
-NORMAL_FLOW_LIMITED  SLOPE
-SKIP_STEADY_STATE    NO
-FORCE_MAIN_EQUATION  H-W
-LINK_OFFSETS         DEPTH
-MIN_SLOPE            0
+MAX_TRIALS           0
+HEAD_TOLERANCE       0
+SYS_FLOW_TOL         5
+LAT_FLOW_TOL         5
+MINIMUM_STEP         0.5
+THREADS              1
 
 [EVAPORATION]
-;;Type       Parameters
-;;---------- ----------
-CONSTANT     0.2
-DRY_ONLY     NO
+;;Data Source    Parameters
+;;-------------- ----------------
+CONSTANT         0.2
+DRY_ONLY         NO
 
 [RAINGAGES]
-;;               Rain      Time   Snow   Data      
-;;Name           Type      Intrvl Catch  Source    
+;;Name           Format    Interval SCF      Source    
 ;;-------------- --------- ------ ------ ----------
-RainGage         INTENSITY 0:05   1.0    TIMESERIES 2-yr            
+RainGage         INTENSITY 0:05     1.0      TIMESERIES 2-yr            
 
 [SUBCATCHMENTS]
-;;                                                 Total    Pcnt.             Pcnt.    Curb     Snow    
-;;Name           Raingage         Outlet           Area     Imperv   Width    Slope    Length   Pack    
-;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- --------
+;;Name           Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  SnowPack        
+;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------
 S1               RainGage         Swale4           4.55     56.8     1587     2        0                        
 S2               RainGage         O1               4.74     63.0     1653     2        0                        
 S3               RainGage         Swale3           3.70     39.5     1456     3.1      0                        
@@ -69,7 +77,7 @@ Swale4           0.01       0.2        0.05       0.05       25         OUTLET
 Swale6           0.01       0.2        0.05       0.05       25         OUTLET    
 
 [INFILTRATION]
-;;Subcatchment   Suction    HydCon     IMDmax    
+;;Subcatchment   Suction    Ksat       IMD       
 ;;-------------- ---------- ---------- ----------
 S1               3.5        0.2        0.2       
 S2               3.5        0.2        0.2       
@@ -82,7 +90,7 @@ Swale4           3.5        0.2        0.2
 Swale6           3.5        0.2        0.2       
 
 [LID_CONTROLS]
-;;               Type/Layer Parameters
+;;Name           Type/Layer Parameters
 ;;-------------- ---------- ----------
 GreenRoof        BC
 GreenRoof        SURFACE    0.0        0.0        0.1        1.0        5         
@@ -115,8 +123,8 @@ Swale            VS
 Swale            SURFACE    36         0.0        0.24       1.0        5         
 
 [LID_USAGE]
-;;Subcatchment   LID Process      Number  Area       Width      InitSatur  FromImprv  ToPerv     Report File
-;;-------------- ---------------- ------- ---------- ---------- ---------- ---------- ---------- -----------
+;;Subcatchment   LID Process      Number  Area       Width      InitSat    FromImp    ToPerv     RptFile                  DrainTo         
+;;-------------- ---------------- ------- ---------- ---------- ---------- ---------- ---------- ------------------------ ----------------
 S1               InfilTrench      4       532        133        0          40         0         
 S1               RainBarrels      32      5          0          0          17         1         
 S4               Planters         30      500        0          0          80         0         
@@ -127,10 +135,9 @@ Swale4           Swale            1       21780.00   45         0          0    
 Swale6           Swale            1       17859.60   45         0          0          0         
 
 [OUTFALLS]
-;;               Invert     Outfall    Stage/Table      Tide
-;;Name           Elev.      Type       Time Series      Gate
-;;-------------- ---------- ---------- ---------------- ----
-O1               4962       FREE                        NO
+;;Name           Elevation  Type       Stage Data       Gated    Route To        
+;;-------------- ---------- ---------- ---------------- -------- ----------------
+O1               4962       FREE                        NO                       
 
 [TIMESERIES]
 ;;Name           Date       Time       Value     
@@ -159,7 +166,7 @@ O1               4962       FREE                        NO
 2-yr                        1:45       0.14      
 2-yr                        1:50       0.13      
 2-yr                        1:55       0.13      
-
+;
 10-yr                       0:00       0.49      
 10-yr                       0:05       0.56      
 10-yr                       0:10       0.65      
@@ -184,7 +191,7 @@ O1               4962       FREE                        NO
 10-yr                       1:45       0.27      
 10-yr                       1:50       0.26      
 10-yr                       1:55       0.25      
-
+;
 100-yr                      0:00       1         
 100-yr                      0:05       1.14      
 100-yr                      0:10       1.33      
@@ -211,6 +218,7 @@ O1               4962       FREE                        NO
 100-yr                      1:55       0.67      
 
 [REPORT]
+;;Reporting Options
 INPUT      YES
 CONTROLS   NO
 SUBCATCHMENTS ALL
