@@ -8,7 +8,7 @@
 
 * New functions to plot swmm objects from `*.inp` files.
 
-* `read_inp` returns now an object of class "inp".
+* `read_inp` returns now an object of class `inp`.
 
 ## Bug fixes
 

@@ -28,59 +28,55 @@ Example
 
 This is a basic example which shows you how to work with the package. We use the example shipped with the SWMM5 executable.
 
+### Initiate a SWMM run and retrieve simulation results
+
 ``` r
 
 library(swmmr)
+library(ggplot2)
 library(purrr) # to conveniently work with list objects
 
 # set path to inp (avoid white spaces in file paths!)
 inp_path <- "~/EPA_SWMM_Projects/Examples/Example1.inp"
 
 # glance model structure, the result is a list of data.frames with SWMM sections
-inp <- read_inp(inp = inp_path)
+inp <- read_inp(x = inp_path)
 
 # available SWMM sections
 summary(inp)
-#>               Length Class      Mode
-#> title         2      data.frame list
-#> options       2      data.frame list
-#> raingages     6      data.frame list
-#> subcatchments 8      data.frame list
-#> subareas      7      data.frame list
-#> infiltration  5      data.frame list
-#> junctions     6      data.frame list
-#> outfalls      4      data.frame list
-#> conduits      8      data.frame list
-#> xsections     7      data.frame list
-#> pollutants    9      data.frame list
-#> landuses      1      data.frame list
-#> coverages     3      data.frame list
-#> loadings      6      data.frame list
-#> buildup       7      data.frame list
-#> washoff       7      data.frame list
-#> timeseries    3      data.frame list
-#> report        2      data.frame list
-#> tags          6      data.frame list
-#> coordinates   3      data.frame list
-#> vertices      3      data.frame list
-#> polygons      3      data.frame list
-#> symbols       3      data.frame list
-#> backdrop      5      data.frame list
+#>               Length Class  Mode
+#> title          1     tbl_df list
+#> options        2     tbl_df list
+#> raingages      5     tbl_df list
+#> subcatchments  9     tbl_df list
+#> subareas       8     tbl_df list
+#> infiltration   6     tbl_df list
+#> junctions      6     tbl_df list
+#> conduits       9     tbl_df list
+#> xsections      8     tbl_df list
+#> pollutants    12     tbl_df list
+#> landuses       4     tbl_df list
+#> buildup        7     tbl_df list
+#> washoff        7     tbl_df list
+#> coordinates    3     tbl_df list
+#> vertices       3     tbl_df list
+#> polygons       3     tbl_df list
+#> symbols        3     tbl_df list
 
-# for example, inspect section timeseries
-inp$timeseries
-#>    Name  Date Time
-#> 1   TS1  0:00 0.00
-#> 2   TS1  1:00 0.25
-#> 3   TS1  2:00 0.50
-#> 4   TS1  3:00 0.80
-#> 5   TS1  4:00 0.40
-#> 6   TS1  5:00 0.10
-#> 7   TS1  6:00 0.00
-#> 8   TS1 27:00 0.00
-#> 9   TS1 28:00 0.40
-#> 10  TS1 29:00 0.20
-#> 11  TS1 30:00 0.00
+# for example, inspect section subcatchments
+inp$subcatchments
+#> # A tibble: 8 x 9
+#>    Name      `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen
+#>   <dbl>            <chr>  <dbl> <dbl>       <dbl> <dbl>      <dbl>   <dbl>
+#> 1     1 RG1                   9    10          50   500       0.01       0
+#> 2     2 RG1                  10    10          50   500       0.01       0
+#> 3     3 RG1                  13     5          50   500       0.01       0
+#> 4     4 RG1                  22     5          50   500       0.01       0
+#> 5     5 RG1                  15    15          50   500       0.01       0
+#> 6     6 RG1                  23    12          10   500       0.01       0
+#> 7     7 RG1                  19     4          10   500       0.01       0
+#> 8     8 RG1                  18    10          10   500       0.01       0
+#> # ... with 1 more variables: Snowpack <lgl>
 
 # run a simulation
 # the result is a named list of paths, directing
@@ -141,6 +137,57 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
     #> $total_runoff
 
 ![](README-example-2.png)
+
+### Visualize the model structure
+
+``` r
+# With help of packages 'ggplot2' and 'sf' we can easily plot swmm objects:
+# There is a default plot function which provides a fast way to visualize your 
+# model, i.e. it plots subcatchments, junctions and links.
+library(ggplot2) # (>= 2.2.1.9000)
+library(sf)
+#> Linking to GEOS 3.6.1, GDAL 2.1.3, proj.4 4.9.3
+
+plot(inp)
+```
+
+![](README-visualization-1.png)
+
+``` r
+
+# Because of the underlying ggplot structure, we can individually plot and highlight 
+# swmm objects
+sub_sf <- subcatchments_to_sf(inp)
+lin_sf <- links_to_sf(inp)
+jun_sf <- junctions_to_sf(inp)
+
+# calculate coordinates (centroid of subcatchment) for label position
+lab_coord <- sub_sf %>% 
+  sf::st_centroid() %>%
+  sf::st_coordinates() %>% 
+  tibble::as_tibble()
+
+# add coordinates to sf tbl
+sub_sf <- dplyr::bind_cols(sub_sf, lab_coord)
+
+ggplot() + 
+  # first plot the subcacthment and fill by Area
+  geom_sf(data = sub_sf, aes(fill = Area)) + 
+  # label by subcatchment name
+  geom_label(data = sub_sf, aes(X, Y, label = Name), alpha = 0.5, size = 3) +
+  # add links and highlight Geom1
+  geom_sf(data = lin_sf, aes(colour = Geom1), size = 2) +
+  # finally add junctions
+  geom_sf(data = jun_sf, aes(size = Elevation), colour = "darkgrey") + 
+  # change scales
+  scale_fill_viridis_c() +
+  scale_colour_viridis_c(direction = -1) +
+  # add labels
+  labs(title = "Visualization of a SWMM model", 
+       subtitle = "with help of swmmr, ggplot2 and sf")
+```
+
+![](README-visualization-2.png)
 
 Contributions
 -------------

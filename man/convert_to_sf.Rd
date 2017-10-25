@@ -24,9 +24,12 @@ A simple feature or a list of simple features
 }
 \description{
 \itemize{
-\item \code{junctions_to_sf()}: converts junctions to simple features
-\item \code{links_to_sf()}: converts links to simple features
-\item \code{subcatchments_to_sf()}: converts subcatchments to simple features
+\item \code{junctions_to_sf()}: converts junctions to simple features (required
+sections: \code{junctions} and \code{coordinates})
+\item \code{links_to_sf()}: converts links to simple features (required sections:
+\code{conduits} and \code{coordinates})
+\item \code{subcatchments_to_sf()}: converts subcatchments to simple features (required
+sections: \code{subcatchments}, \code{subareas} and \code{infiltration})
 \item \code{inp_to_sf()}: converts junctions, links and subcatchments to simple features
 and returns a list
 }

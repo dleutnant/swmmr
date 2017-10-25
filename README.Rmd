@@ -41,22 +41,25 @@ devtools::install_github("dleutnant/swmmr@dev")
 This is a basic example which shows you how to work with the package. We use 
 the example shipped with the SWMM5 executable.
 
+### Initiate a SWMM run and retrieve simulation results
+
 ```{r example}
 
 library(swmmr)
+library(ggplot2)
 library(purrr) # to conveniently work with list objects
 
 # set path to inp (avoid white spaces in file paths!)
 inp_path <- "~/EPA_SWMM_Projects/Examples/Example1.inp"
 
 # glance model structure, the result is a list of data.frames with SWMM sections
-inp <- read_inp(inp = inp_path)
+inp <- read_inp(x = inp_path)
 
 # available SWMM sections
 summary(inp)
 
-# for example, inspect section timeseries
-inp$timeseries
+# for example, inspect section subcatchments
+inp$subcatchments
 
 # run a simulation
 # the result is a named list of paths, directing
@@ -78,6 +81,51 @@ results[[1]] %>% purrr::map(summary)
 results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 
 ```
+
+### Visualize the model structure
+
+```{r visualization}
+# With help of packages 'ggplot2' and 'sf' we can easily plot swmm objects:
+# There is a default plot function which provides a fast way to visualize your 
+# model, i.e. it plots subcatchments, junctions and links.
+library(ggplot2) # (>= 2.2.1.9000)
+library(sf)
+
+plot(inp)
+
+# Because of the underlying ggplot structure, we can individually plot and highlight 
+# swmm objects
+sub_sf <- subcatchments_to_sf(inp)
+lin_sf <- links_to_sf(inp)
+jun_sf <- junctions_to_sf(inp)
+
+# calculate coordinates (centroid of subcatchment) for label position
+lab_coord <- sub_sf %>% 
+  sf::st_centroid() %>%
+  sf::st_coordinates() %>% 
+  tibble::as_tibble()
+
+# add coordinates to sf tbl
+sub_sf <- dplyr::bind_cols(sub_sf, lab_coord)
+
+ggplot() + 
+  # first plot the subcacthment and fill by Area
+  geom_sf(data = sub_sf, aes(fill = Area)) + 
+  # label by subcatchment name
+  geom_label(data = sub_sf, aes(X, Y, label = Name), alpha = 0.5, size = 3) +
+  # add links and highlight Geom1
+  geom_sf(data = lin_sf, aes(colour = Geom1), size = 2) +
+  # finally add junctions
+  geom_sf(data = jun_sf, aes(size = Elevation), colour = "darkgrey") + 
+  # change scales
+  scale_fill_viridis_c() +
+  scale_colour_viridis_c(direction = -1) +
+  # add labels
+  labs(title = "Visualization of a SWMM model", 
+       subtitle = "with help of swmmr, ggplot2 and sf")
+
+```
+
 
 ## Contributions
 This Git repository uses the [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model (the [`git flow`](https://github.com/petervanderdoes/gitflow-avh) extension is useful for this). The [`dev`](https://github.com/dleutnant/swmmr/tree/dev) branch contains the latest contributions and other code that will appear in the next release, and the [`master`](https://github.com/dleutnant/swmmr) branch contains the code of the latest release, which is exactly what is currently on [CRAN](https://cran.r-project.org/package=swmmr).

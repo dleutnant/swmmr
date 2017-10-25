@@ -1,6 +1,19 @@
 #' import helper
 #' @keywords internal
-import_options <- function(x){
+parse_section <- function(x) {
+  UseMethod("parse_section", x)
+} 
+
+#' import helper
+#' @keywords internal
+parse_section.default <- function(x) {
+  warning(paste("Unknown class:", tail(class(x), 1)))
+  return(NULL)
+}
+
+#' import helper
+#' @keywords internal
+parse_section.options <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -12,7 +25,7 @@ import_options <- function(x){
 
 #' import helper
 #' @keywords internal
-import_title <- function(x) {
+parse_section.title <- function(x) {
   
   x
   
@@ -20,7 +33,7 @@ import_title <- function(x) {
 
 #' import helper
 #' @keywords internal
-import_raingages <- function(x){
+parse_section.raingages <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -31,7 +44,7 @@ import_raingages <- function(x){
 
 }
 
-import_hydrographs <- function(x){
+parse_section.hydrographs <- function(x){
   # S.Add('[HYDROGRAPHS]');
   # Line := ';;Hydrograph    ' + Tab + 'Rain Gage/Month ' + Tab + 'Response';
   # Line := Line + Tab + 'R       ' + Tab + 'T       ' + Tab + 'K       ';
@@ -43,13 +56,13 @@ import_hydrographs <- function(x){
   # S.Add(Line);
 }
 
-import_temperature <- function(x) {
+parse_section.temperature <- function(x) {
   # S.Add('[TEMPERATURE]');
   # S.Add(';;Data Element    ' + Tab + 'Values     ');
   # multiple subsection
 }
 
-import_evaporation <- function(x) {
+parse_section.evaporation <- function(x) {
   # S.Add('');
   # S.Add('[EVAPORATION]');
   # Line := ';;Data Source   ' + Tab + 'Parameters';
@@ -59,7 +72,7 @@ import_evaporation <- function(x) {
   # multiple subsection
 }
 
-import_adjustments <- function(x){
+parse_section.adjustments <- function(x){
   # S.Add('');
   # S.Add('[ADJUSTMENTS]');
   # Line := ';;Parameter ' + Tab + 'Monthly Adjustments';
@@ -67,7 +80,7 @@ import_adjustments <- function(x){
   # multiple subsection
 }
 
-import_events <- function(x) {
+parse_section.events <- function(x) {
   # S.Add('');
   # S.Add('[EVENTS]');
   # S.Add(';;Start Date         End Date');
@@ -75,7 +88,7 @@ import_events <- function(x) {
 
 #' import helper
 #' @keywords internal
-import_subcatchments <- function(x){
+parse_section.subcatchments <- function(x){
   
   tidyr::separate(data = x,
                   col = "value", 
@@ -92,7 +105,7 @@ import_subcatchments <- function(x){
 
 #' import helper
 #' @keywords internal
-import_subareas <- function(x){
+parse_section.subareas <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -108,7 +121,7 @@ import_subareas <- function(x){
 
 #' import helper
 #' @keywords internal
-import_infiltration <- function(x){
+parse_section.infiltration <- function(x){
   
   # TODO
   # horton
@@ -122,7 +135,7 @@ import_infiltration <- function(x){
                   convert = TRUE)
 }
 
-import_aquifers <- function(x){
+parse_section.aquifers <- function(x){
   # S.Add('');
   # S.Add('[AQUIFERS]');
   # Line := ';;Name          ' + Tab + 'Por   ' + Tab + 'WP    ' + Tab + 'FC    ';
@@ -135,7 +148,7 @@ import_aquifers <- function(x){
   # S.Add(Line);
 }
 
-import_groundwater <- function(x){
+parse_section.groundwater <- function(x){
   # S.Add('');
   # S.Add('[GROUNDWATER]');
   # Line := ';;Subcatchment  ' + Tab + 'Aquifer         ' + Tab + 'Node            ';
@@ -151,7 +164,7 @@ import_groundwater <- function(x){
   # multiple sections
 }
 
-import_snowpacks <- function(x){
+parse_section.snowpacks <- function(x){
   # S.Add('');
   # S.Add('[SNOWPACKS]');
   # S.Add(';;Name          ' + Tab + 'Surface   ' + Tab + 'Parameters');
@@ -161,7 +174,7 @@ import_snowpacks <- function(x){
 
 #' import helper
 #' @keywords internal
-import_junctions <- function(x){
+parse_section.junctions <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -174,7 +187,7 @@ import_junctions <- function(x){
   
 }
 
-import_outfalls <- function(x) {
+parse_section.outfalls <- function(x) {
   # S.Add('');
   # S.Add('[OUTFALLS]');
   # Line := ';;Name          ' + Tab + 'Elevation ' + Tab + 'Type      ';
@@ -187,7 +200,7 @@ import_outfalls <- function(x) {
   # S.Add(Line);
 }
 
-import_dividers <- function(x){
+parse_section.dividers <- function(x){
   # S.Add('');
   # S.Add('[DIVIDERS]');
   # Line := ';;Name          ' + Tab + 'Elevation ' + Tab + 'Diverted Link   ';
@@ -198,7 +211,7 @@ import_dividers <- function(x){
   # S.Add(Line);
 }
 
-import_storage <- function(x){
+parse_section.storage <- function(x){
   # S.Add('');
   # S.Add('[STORAGE]');
   # Line := ';;Name          ' + Tab + 'Elev.   ' + Tab + 'MaxDepth  ';
@@ -217,7 +230,7 @@ import_storage <- function(x){
 
 #' import helper
 #' @keywords internal
-import_conduits <- function(x) {
+parse_section.conduits <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -232,7 +245,7 @@ import_conduits <- function(x) {
   
 }
 
-import_pumps <- function(x) {
+parse_section.pumps <- function(x) {
   # S.Add('');
   # S.Add('[PUMPS]');
   # Line := ';;Name          ' + Tab + 'From Node       ' + Tab + 'To Node         ';
@@ -245,7 +258,7 @@ import_pumps <- function(x) {
   # S.Add(Line);
 }
 
-import_orifices <- function(x) {
+parse_section.orifices <- function(x) {
   # S.Add('');
   # S.Add('[ORIFICES]');
   # Line := ';;Name          ' + Tab + 'From Node       ' + Tab + 'To Node         ';
@@ -258,7 +271,7 @@ import_orifices <- function(x) {
   # S.Add(Line);
 }
 
-import_weirs <- function(x) {
+parse_section.weirs <- function(x) {
   # S.Add('');
   # S.Add('[WEIRS]');
   # Line := ';;Name          ' + Tab + 'From Node       ' + Tab + 'To Node         ';
@@ -279,7 +292,7 @@ import_weirs <- function(x) {
   # S.Add(Line);
 }
 
-import_outlets <- function(x) {
+parse_section.outlets <- function(x) {
   # S.Add('');
   # S.Add('[OUTLETS]');
   # Line := ';;Name          ' + Tab + 'From Node       ' + Tab + 'To Node         ';
@@ -292,27 +305,28 @@ import_outlets <- function(x) {
   # S.Add(Line);
 }
 
-import_xsections <- function(x) {
-  # S.Add('');
-  # S.Add('[XSECTIONS]');
-  # Line := ';;Link          ' + Tab + 'Shape       ' + Tab + 'Geom1           ';
-  # Line := Line + Tab + 'Geom2     ' + Tab + 'Geom3     ' + Tab + 'Geom4     ';
-  # Line := Line + Tab + 'Barrels   ' + Tab + 'Culvert   ';
-  # S.Add(Line);
-  # Line := ';;--------------' + Tab + '------------' + Tab + '----------------';
-  # Line := Line + Tab + '----------' + Tab + '----------' + Tab + '----------';
-  # Line := Line + Tab + '----------' + Tab + '----------';
-  # S.Add(Line);
+parse_section.xsections <- function(x) {
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Link", "tab1", "Shape", "tab2", 
+                           "Geom1", "tab3", "Geom2", "tab4", 
+                           "Geom3", "tab5", "Geom4", "tab6",
+                           "Barrels", "tab7", "Culvert"),
+                  sep = base::cumsum(c(16, 1, 12, 1, 16, 1,
+                                       10, 1, 10, 1, 10, 1, 10, 1)), 
+                  convert = TRUE)
+  
 }
 
-import_transects <- function(x) {
+parse_section.transects <- function(x) {
   # S.Add('');
   # S.Add('[TRANSECTS]');
   # S.Add(';;Transect Data in HEC-2 format');                                    //5.1.008)
   # multiple options
 }
 
-import_losses <- function(x){
+parse_section.losses <- function(x){
   # S.Add('');
   # S.Add('[LOSSES]');
   # Line := ';;Link          ' + Tab + 'Kentry    ' + Tab + 'Kexit     ';
@@ -325,7 +339,7 @@ import_losses <- function(x){
 
 #' import helper
 #' @keywords internal
-import_pollutants <- function(x){
+parse_section.pollutants <- function(x){
   
   tidyr::separate(data = x,
                   col = "value", 
@@ -343,7 +357,7 @@ import_pollutants <- function(x){
 
 #' import helper
 #' @keywords internal
-import_landuses <- function(x){
+parse_section.landuses <- function(x){
   
   tidyr::separate(data = x,
                   col = "value", 
@@ -356,7 +370,7 @@ import_landuses <- function(x){
 
 #' import helper
 #' @keywords internal
-import_buildup <- function(x){
+parse_section.buildup <- function(x){
   
   tidyr::separate(data = x,
                   col = "value", 
@@ -372,7 +386,7 @@ import_buildup <- function(x){
 
 #' import helper
 #' @keywords internal
-import_washoff <- function(x){
+parse_section.washoff <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -386,7 +400,7 @@ import_washoff <- function(x){
   
 }
 
-import_coverage <- function(x) {
+parse_section.coverages <- function(x) {
   # S.Add('');
   # S.Add('[COVERAGES]');
   # Line := ';;Subcatchment  ' + Tab + 'Land Use        ' + Tab + 'Percent   ';
@@ -395,7 +409,7 @@ import_coverage <- function(x) {
   # S.Add(Line);
 }
 
-import_loadings <- function(x) {
+parse_section.loadings <- function(x) {
   # S.Add('');
   # S.Add('[LOADINGS]');
   # Line := ';;Subcatchment  ' + Tab + 'Pollutant       ' + Tab + 'Buildup   ';
@@ -404,7 +418,7 @@ import_loadings <- function(x) {
   # S.Add(Line);
 }
 
-import_treatment <- function(x) {
+parse_section.treatment <- function(x) {
   # S.Add('');
   # S.Add('[TREATMENT]');
   # Line := ';;Node          ' + Tab + 'Pollutant       ' + Tab + 'Function  ';
@@ -413,7 +427,7 @@ import_treatment <- function(x) {
   # S.Add(Line);
 }
 
-import_inflows <- function(x) {
+parse_section.inflows <- function(x) {
   # S.Add('');
   # S.Add('[INFLOWS]');
   # Line := ';;Node          ' + Tab + 'Constituent     ' + Tab + 'Time Series     ';
@@ -426,7 +440,7 @@ import_inflows <- function(x) {
   # S.Add(Line);
 }
 
-import_dwflows <- function(x) {
+parse_section.dwflows <- function(x) {
   # S.Add('');
   # S.Add('[DWF]');
   # Line := ';;Node          ' + Tab + 'Constituent     ' + Tab + 'Baseline  ';
@@ -437,7 +451,7 @@ import_dwflows <- function(x) {
   # S.Add(Line);
 }
 
-import_iiflows <- function(x) {
+parse_section.iiflows <- function(x) {
   # S.Add('');
   # S.Add('[RDII]');
   # Line := ';;Node          ' + Tab + 'Unit Hydrograph ' + Tab + 'Sewer Area';
@@ -446,7 +460,7 @@ import_iiflows <- function(x) {
   # S.Add(Line);
 }
 
-import_patterns <- function(x) {
+parse_section.patterns <- function(x) {
   # S.Add('');
   # S.Add('[PATTERNS]');
   # Line := ';;Name          ' + Tab + 'Type      ' + Tab + 'Multipliers';
@@ -455,7 +469,7 @@ import_patterns <- function(x) {
   # S.Add(Line);
 }
 
-import_timeseries <- function(x) {
+parse_section.timeseries <- function(x) {
   # S.Add('');
   # S.Add('[TIMESERIES]');
   # Line := ';;Name          ' + Tab + 'Date      ' + Tab + 'Time      ' + Tab + 'Value     ';
@@ -464,7 +478,7 @@ import_timeseries <- function(x) {
   # S.Add(Line);
 }
 
-import_curves <- function(x){
+parse_section.curves <- function(x){
   # S.Add('');
   # S.Add('[CURVES]');
   # Line := ';;Name          ' + Tab + 'Type      ' + Tab + 'X-Value   ' + Tab + 'Y-Value   ';
@@ -473,12 +487,12 @@ import_curves <- function(x){
   # S.Add(Line);
 }
 
-import_controls <- function(x) {
+parse_section.controls <- function(x) {
   # S.Add('');
   # S.Add('[CONTROLS]');
 }
 
-import_report <- function(x) {
+parse_section.report <- function(x) {
   # S.Add('');
   # S.Add('[REPORT]');
   # S.Add(';;Reporting Options');
@@ -486,14 +500,14 @@ import_report <- function(x) {
   # S.Add('CONTROLS  ' + Tab + Project.Options.Data[REPORT_CONTROLS_INDEX]);
 }
 
-import_files <- function(x) {
+parse_section.files <- function(x) {
   # S.Add('');
   # S.Add('[FILES]');
   # S.Add(';;Interfacing Files');
   # TokList := TStringList.Create;
 }
 
-import_profiles <- function(x) {
+parse_section.profiles <- function(x) {
   # S.Add('');
   # S.Add('[PROFILES]');
   # Line := ';;Name          ' + Tab + 'Links     ';
@@ -501,19 +515,19 @@ import_profiles <- function(x) {
   # Line := ';;--------------' + Tab + '----------';
 }
 
-import_tags <- function(x) {
+parse_section.tags <- function(x) {
   # S.Add('');
   # S.Add('[TAGS]');
 }
 
-import_map <- function(x) {
+parse_section.map <- function(x) {
   # S.Add('');
   # S.Add('[MAP]');
 }
 
 #' import helper
 #' @keywords internal
-import_coordinates <- function(x){
+parse_section.coordinates <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -525,7 +539,7 @@ import_coordinates <- function(x){
 
 #' import helper
 #' @keywords internal
-import_vertices <- function(x) {
+parse_section.vertices <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -537,7 +551,7 @@ import_vertices <- function(x) {
 
 #' import helper
 #' @keywords internal
-import_polygons <- function(x) {
+parse_section.polygons <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -549,7 +563,7 @@ import_polygons <- function(x) {
 
 #' import helper
 #' @keywords internal
-import_symbols <- function(x) {
+parse_section.symbols <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -561,7 +575,7 @@ import_symbols <- function(x) {
 
 #' import helper
 #' @keywords internal
-import_labels <- function(x) {
+parse_section.labels <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -571,7 +585,7 @@ import_labels <- function(x) {
   
 }
 
-import_backdrop <- function(x) {
+parse_section.backdrop <- function(x) {
   # S.Add('');
   # S.Add('[BACKDROP]');
   # S.Add('FILE      ' + Tab + '"' + Filename + '"');
