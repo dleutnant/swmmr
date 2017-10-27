@@ -13,8 +13,7 @@ Installation
 Installation is easy thanks to CRAN:
 
 ``` r
-# install.packages("devtools")
-#devtools::install_github("dleutnant/swmmr@dev")
+install.packages("swmmr")
 ```
 
 You can install the dev version from github with:
@@ -48,16 +47,12 @@ summary(inp)
 #>               Length Class  Mode
 #> title          1     tbl_df list
 #> options        2     tbl_df list
-<<<<<<< HEAD
 #> evaporation    2     tbl_df list
-=======
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 #> raingages      5     tbl_df list
 #> subcatchments  9     tbl_df list
 #> subareas       8     tbl_df list
 #> infiltration   6     tbl_df list
 #> junctions      6     tbl_df list
-<<<<<<< HEAD
 #> outfalls       6     tbl_df list
 #> conduits       9     tbl_df list
 #> xsections      8     tbl_df list
@@ -68,14 +63,6 @@ summary(inp)
 #> washoff        7     tbl_df list
 #> report         2     tbl_df list
 #> map            2     tbl_df list
-=======
-#> conduits       9     tbl_df list
-#> xsections      8     tbl_df list
-#> pollutants    12     tbl_df list
-#> landuses       4     tbl_df list
-#> buildup        7     tbl_df list
-#> washoff        7     tbl_df list
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 #> coordinates    3     tbl_df list
 #> vertices       3     tbl_df list
 #> polygons       3     tbl_df list
@@ -84,7 +71,6 @@ summary(inp)
 # for example, inspect section subcatchments
 inp$subcatchments
 #> # A tibble: 8 x 9
-<<<<<<< HEAD
 #>    Name `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen
 #>   <int>       <chr>  <dbl> <dbl>       <dbl> <dbl>      <dbl>   <dbl>
 #> 1     1         RG1      9    10          50   500       0.01       0
@@ -95,18 +81,6 @@ inp$subcatchments
 #> 6     6         RG1     23    12          10   500       0.01       0
 #> 7     7         RG1     19     4          10   500       0.01       0
 #> 8     8         RG1     18    10          10   500       0.01       0
-=======
-#>    Name      `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen
-#>   <dbl>            <chr>  <dbl> <dbl>       <dbl> <dbl>      <dbl>   <dbl>
-#> 1     1 RG1                   9    10          50   500       0.01       0
-#> 2     2 RG1                  10    10          50   500       0.01       0
-#> 3     3 RG1                  13     5          50   500       0.01       0
-#> 4     4 RG1                  22     5          50   500       0.01       0
-#> 5     5 RG1                  15    15          50   500       0.01       0
-#> 6     6 RG1                  23    12          10   500       0.01       0
-#> 7     7 RG1                  19     4          10   500       0.01       0
-#> 8     8 RG1                  18    10          10   500       0.01       0
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 #> # ... with 1 more variables: Snowpack <lgl>
 
 # run a simulation
@@ -174,7 +148,6 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 ``` r
 # With help of packages 'ggplot2' and 'sf' we can easily plot swmm objects:
 # There is a default plot function which provides a fast way to visualize your 
-<<<<<<< HEAD
 # model, i.e. it plots subcatchments, junctions, links and raingages
 library(ggplot2) # (>= 2.2.1.9000)
 library(tidyverse)
@@ -185,10 +158,6 @@ library(tidyverse)
 #> Conflicts with tidy packages ----------------------------------------------
 #> filter(): dplyr, stats
 #> lag():    dplyr, stats
-=======
-# model, i.e. it plots subcatchments, junctions and links.
-library(ggplot2) # (>= 2.2.1.9000)
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 library(sf)
 #> Linking to GEOS 3.6.1, GDAL 2.1.3, proj.4 4.9.3
 
@@ -200,7 +169,6 @@ plot(inp)
 ``` r
 
 # Because of the underlying ggplot structure, we can individually plot and highlight 
-<<<<<<< HEAD
 # swmm objects:
 # convert subcatchments to sf geometry
 sub_sf <- subcatchments_to_sf(inp)
@@ -210,12 +178,6 @@ lin_sf <- links_to_sf(inp)
 jun_sf <- junctions_to_sf(inp)
 # convert raingages
 rg_sf <- raingages_to_sf(inp)
-=======
-# swmm objects
-sub_sf <- subcatchments_to_sf(inp)
-lin_sf <- links_to_sf(inp)
-jun_sf <- junctions_to_sf(inp)
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 
 # calculate coordinates (centroid of subcatchment) for label position
 lab_coord <- sub_sf %>% 
@@ -223,7 +185,6 @@ lab_coord <- sub_sf %>%
   sf::st_coordinates() %>% 
   tibble::as_tibble()
 
-<<<<<<< HEAD
 # raingage label
 lab_rg_coord <- rg_sf %>% 
   {sf::st_coordinates(.) + 500} %>% # add offset
@@ -247,20 +208,6 @@ ggplot() +
   geom_sf(data = rg_sf, shape = 10) + 
   # label raingage
   geom_label(data = rg_sf, aes(X, Y, label = Name), alpha = 0.5, size = 3) +
-=======
-# add coordinates to sf tbl
-sub_sf <- dplyr::bind_cols(sub_sf, lab_coord)
-
-ggplot() + 
-  # first plot the subcacthment and fill by Area
-  geom_sf(data = sub_sf, aes(fill = Area)) + 
-  # label by subcatchment name
-  geom_label(data = sub_sf, aes(X, Y, label = Name), alpha = 0.5, size = 3) +
-  # add links and highlight Geom1
-  geom_sf(data = lin_sf, aes(colour = Geom1), size = 2) +
-  # finally add junctions
-  geom_sf(data = jun_sf, aes(size = Elevation), colour = "darkgrey") + 
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
   # change scales
   scale_fill_viridis_c() +
   scale_colour_viridis_c(direction = -1) +
@@ -271,7 +218,6 @@ ggplot() +
 
 ![](README-visualization-2.png)
 
-<<<<<<< HEAD
 SessionInfo
 -----------
 
@@ -294,7 +240,7 @@ sessionInfo()
 #> other attached packages:
 #>  [1] sf_0.5-4           dplyr_0.7.4        readr_1.1.1       
 #>  [4] tidyr_0.7.2        tibble_1.3.4       tidyverse_1.1.1   
-#>  [7] ggplot2_2.2.1.9000 bindrcpp_0.2       purrr_0.2.4       
+#>  [7] bindrcpp_0.2       purrr_0.2.4        ggplot2_2.2.1.9000
 #> [10] swmmr_0.7.0.9000  
 #> 
 #> loaded via a namespace (and not attached):
@@ -318,8 +264,6 @@ sessionInfo()
 #> [52] units_0.4-6       nlme_3.1-131      compiler_3.4.2
 ```
 
-=======
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 Contributions
 -------------
 
