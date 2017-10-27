@@ -13,7 +13,8 @@ Installation
 Installation is easy thanks to CRAN:
 
 ``` r
-install.packages("swmmr")
+# install.packages("devtools")
+#devtools::install_github("dleutnant/swmmr@dev")
 ```
 
 You can install the dev version from github with:
