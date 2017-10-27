@@ -41,16 +41,11 @@ read_inp <- function(x, rm.comment = TRUE) {
   
   # parse sections individually
   res <- purrr::imap(list_of_sections, ~ parse_inp(.x, .y, rm.comment = rm.comment)) %>% 
-<<<<<<< HEAD
     # discard nulls (nulls are returned if section is not parsed)
     purrr::discard(is.null) %>% 
     # discard empty tibbles (sections are parsed but emtpy)
     purrr::discard( ~ nrow(.) < 1)
-=======
-    # discard nulls to keep list of sections as simple as possible
-    purrr::discard(is.null)
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
-  
+
   # assign class attribute
   class(res) <- "inp"
   
@@ -60,12 +55,8 @@ read_inp <- function(x, rm.comment = TRUE) {
 
 #' import helper
 #' @keywords internal
-<<<<<<< HEAD
 parse_inp <- function(x, section_name, rm.comment) {
-=======
-parse_inp <- function(x, section_type, rm.comment) {
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
-  
+
   # remove header lines 
   x <- x[!startsWith(x, ";;")]
   
@@ -76,12 +67,8 @@ parse_inp <- function(x, section_type, rm.comment) {
   x <- tibble::as_tibble(x)
   
   # add section as class to prepare generic parser
-<<<<<<< HEAD
   class(x) <- c(class(x), section_name)
-=======
-  class(x) <- c(class(x), section_type)
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
-  
+
   # generic parser
   x <- parse_section(x)
   
@@ -94,17 +81,12 @@ parse_inp <- function(x, section_type, rm.comment) {
   # remove rows with NA's only
   x <- x[rowSums(is.na(x)) != ncol(x), ]
   
-<<<<<<< HEAD
   # trimws of character columns
   x <- dplyr::mutate_if(x, is.character, trimws)
   
   # section class got lost while formatting to tibble, so add it again
   class(x) <- c(class(x), section_name)
-=======
-  # section class got lost while formatting to tibble, so add it again
-  class(x) <- c(class(x), section_type)
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
-  
+
   # always return a tibble
   return(x)
 }

@@ -5,15 +5,10 @@
 #' * `links_to_sf()`: converts links to simple features (required sections:
 #' `conduits` and `coordinates`)
 #' * `subcatchments_to_sf()`: converts subcatchments to simple features (required 
-<<<<<<< HEAD
 #' sections: `subcatchments`, `subareas`, `infiltration` and `polygons`)
 #' * `raingages_to_sf() `: converts raingages to simple features (required 
 #' sections: `raingages` and `symbols`)
 #' * `inp_to_sf()`: converts junctions, links, subcatchments and raingages to simple features 
-=======
-#' sections: `subcatchments`, `subareas` and `infiltration`)
-#' * `inp_to_sf()`: converts junctions, links and subcatchments to simple features 
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 #' and returns a list
 #'
 #' @param x An object of class 'inp', created by \code{\link{read_inp}}.
@@ -61,14 +56,8 @@ raingages_to_sf <- function(x) {
 junctions_to_sf <- function(x) {
   
   # check class and required elements
-<<<<<<< HEAD
   stopifnot(inherits(x, "inp"))
-=======
-  stopifnot(inherits(x, "inp"), 
-            "junctions" %in% names(x),
-            "coordinates" %in% names(x))
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
-  
+
   # check sections
   if (!all(c("junctions", "coordinates") %in% names(x))) {
     warning("incomplete features: junctions")
@@ -101,15 +90,8 @@ junctions_to_sf <- function(x) {
 subcatchments_to_sf <- function(x) {
 
   # check class and required elements
-<<<<<<< HEAD
   stopifnot(inherits(x, "inp"))
-=======
-  stopifnot(inherits(x, "inp"), 
-            "subcatchments" %in% names(x), 
-            "subareas" %in% names(x),
-            "infiltration" %in% names(x))
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
-  
+
   # check sections
   if (!all(c("subcatchments", "subareas", "infiltration", "polygons") %in% names(x))) {
     warning("incomplete features: subcatchments")
@@ -166,7 +148,6 @@ subcatchments_to_sf <- function(x) {
 #' @rdname convert_to_sf
 links_to_sf <- function(x) {
   
-<<<<<<< HEAD
   # check class and required elements
   stopifnot(inherits(x, "inp"))
   
@@ -176,13 +157,6 @@ links_to_sf <- function(x) {
     return(NULL)
   } 
   
-=======
-  # check class
-  stopifnot(inherits(x, "inp"), 
-            "conduits" %in% names(x),
-            "coordinates" %in% names(x))
-  
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
   # extract start_nodes
   start_node <- dplyr::left_join(x = x[["conduits"]], 
                                  y = x[["coordinates"]], 
@@ -203,13 +177,8 @@ links_to_sf <- function(x) {
   # extract vertices if available
   if ("vertices" %in% names(x)) {
     vertices <- dplyr::inner_join(x = x[["conduits"]],
-<<<<<<< HEAD
                                   y = x[["vertices"]],
                                   by = c("Name" = "Link")) %>% 
-=======
-                                 y = x[["vertices"]],
-                                 by = c("Name" = "Link")) %>% 
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
       dplyr::mutate(pos = 2L) %>% 
       dplyr::group_by(Name) %>% 
       dplyr::mutate(id = seq_along(Name)) %>% 
@@ -221,7 +190,6 @@ links_to_sf <- function(x) {
   
   # extract xsections if available
   if ("xsections" %in% names(x)) {
-<<<<<<< HEAD
     links_df <- dplyr::left_join(x = links_df,
                                  y = x[["xsections"]],
                                  by = c("Name" = "Link"))
@@ -232,11 +200,6 @@ links_to_sf <- function(x) {
     links_df <- dplyr::left_join(x = links_df,
                                  y = x[["losses"]],
                                  by = c("Name" = "Link"))
-=======
-    links_df <- dplyr::inner_join(x = links_df,
-                                  y = x[["xsections"]],
-                                  by = c("Name" = "Link"))
->>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
   }
 
   links_df <- links_df %>% 
