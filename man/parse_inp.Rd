@@ -4,7 +4,11 @@
 \alias{parse_inp}
 \title{import helper}
 \usage{
+<<<<<<< HEAD:man/parse_inp.Rd
 parse_inp(x, section_name, rm.comment)
+=======
+parse_inp(x, section_type, rm.comment)
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28:man/parse_inp.Rd
 }
 \description{
 import helper

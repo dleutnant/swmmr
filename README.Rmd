@@ -46,6 +46,7 @@ the example shipped with the SWMM5 executable.
 ```{r example}
 
 library(swmmr)
+library(ggplot2)
 library(purrr) # to conveniently work with list objects
 
 # set path to inp (avoid white spaces in file paths!)
@@ -86,14 +87,20 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 ```{r visualization}
 # With help of packages 'ggplot2' and 'sf' we can easily plot swmm objects:
 # There is a default plot function which provides a fast way to visualize your 
+<<<<<<< HEAD
 # model, i.e. it plots subcatchments, junctions, links and raingages
 library(ggplot2) # (>= 2.2.1.9000)
 library(tidyverse)
+=======
+# model, i.e. it plots subcatchments, junctions and links.
+library(ggplot2) # (>= 2.2.1.9000)
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 library(sf)
 
 plot(inp)
 
 # Because of the underlying ggplot structure, we can individually plot and highlight 
+<<<<<<< HEAD
 # swmm objects:
 # convert subcatchments to sf geometry
 sub_sf <- subcatchments_to_sf(inp)
@@ -103,6 +110,12 @@ lin_sf <- links_to_sf(inp)
 jun_sf <- junctions_to_sf(inp)
 # convert raingages
 rg_sf <- raingages_to_sf(inp)
+=======
+# swmm objects
+sub_sf <- subcatchments_to_sf(inp)
+lin_sf <- links_to_sf(inp)
+jun_sf <- junctions_to_sf(inp)
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 
 # calculate coordinates (centroid of subcatchment) for label position
 lab_coord <- sub_sf %>% 
@@ -110,6 +123,7 @@ lab_coord <- sub_sf %>%
   sf::st_coordinates() %>% 
   tibble::as_tibble()
 
+<<<<<<< HEAD
 # raingage label
 lab_rg_coord <- rg_sf %>% 
   {sf::st_coordinates(.) + 500} %>% # add offset
@@ -133,6 +147,20 @@ ggplot() +
   geom_sf(data = rg_sf, shape = 10) + 
   # label raingage
   geom_label(data = rg_sf, aes(X, Y, label = Name), alpha = 0.5, size = 3) +
+=======
+# add coordinates to sf tbl
+sub_sf <- dplyr::bind_cols(sub_sf, lab_coord)
+
+ggplot() + 
+  # first plot the subcacthment and fill by Area
+  geom_sf(data = sub_sf, aes(fill = Area)) + 
+  # label by subcatchment name
+  geom_label(data = sub_sf, aes(X, Y, label = Name), alpha = 0.5, size = 3) +
+  # add links and highlight Geom1
+  geom_sf(data = lin_sf, aes(colour = Geom1), size = 2) +
+  # finally add junctions
+  geom_sf(data = jun_sf, aes(size = Elevation), colour = "darkgrey") + 
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
   # change scales
   scale_fill_viridis_c() +
   scale_colour_viridis_c(direction = -1) +
@@ -142,11 +170,14 @@ ggplot() +
 
 ```
 
+<<<<<<< HEAD
 ## SessionInfo
 ```{r sessioninfo}
 sessionInfo()
 ```
 
+=======
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 
 ## Contributions
 This Git repository uses the [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model (the [`git flow`](https://github.com/petervanderdoes/gitflow-avh) extension is useful for this). The [`dev`](https://github.com/dleutnant/swmmr/tree/dev) branch contains the latest contributions and other code that will appear in the next release, and the [`master`](https://github.com/dleutnant/swmmr) branch contains the code of the latest release, which is exactly what is currently on [CRAN](https://cran.r-project.org/package=swmmr).

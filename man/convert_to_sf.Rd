@@ -32,10 +32,15 @@ sections: \code{junctions} and \code{coordinates})
 \item \code{links_to_sf()}: converts links to simple features (required sections:
 \code{conduits} and \code{coordinates})
 \item \code{subcatchments_to_sf()}: converts subcatchments to simple features (required
+<<<<<<< HEAD
 sections: \code{subcatchments}, \code{subareas}, \code{infiltration} and \code{polygons})
 \item \code{raingages_to_sf()}: converts raingages to simple features (required
 sections: \code{raingages} and \code{symbols})
 \item \code{inp_to_sf()}: converts junctions, links, subcatchments and raingages to simple features
+=======
+sections: \code{subcatchments}, \code{subareas} and \code{infiltration})
+\item \code{inp_to_sf()}: converts junctions, links and subcatchments to simple features
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 and returns a list
 }
 }

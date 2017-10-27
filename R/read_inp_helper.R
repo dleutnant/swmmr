@@ -64,6 +64,7 @@ parse_section.temperature <- function(x) {
   # multiple subsection
 }
 
+<<<<<<< HEAD
 #' import helper
 #' @keywords internal
 parse_section.evaporation <- function(x) {
@@ -74,6 +75,24 @@ parse_section.evaporation <- function(x) {
                   sep = base::cumsum(c(16, 1)), 
                   convert = TRUE)
   
+=======
+parse_section.evaporation <- function(x) {
+  # S.Add('');
+  # S.Add('[EVAPORATION]');
+  # Line := ';;Data Source   ' + Tab + 'Parameters';
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------------';
+  # S.Add(Line);
+  # multiple subsection
+}
+
+parse_section.adjustments <- function(x){
+  # S.Add('');
+  # S.Add('[ADJUSTMENTS]');
+  # Line := ';;Parameter ' + Tab + 'Monthly Adjustments';
+  # S.Add(Line);
+  # multiple subsection
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 }
 
 parse_section.events <- function(x) {
@@ -149,6 +168,7 @@ parse_section.infiltration <- function(x){
                   convert = TRUE)
 }
 
+<<<<<<< HEAD
 #' import helper
 #' @keywords internal
 parse_section.aquifers <- function(x){
@@ -179,6 +199,43 @@ parse_section.snowpacks <- function(x){
                   sep = base::cumsum(c(16, 1, 10, 1)), 
                   convert = TRUE)
   
+=======
+parse_section.aquifers <- function(x){
+  # S.Add('');
+  # S.Add('[AQUIFERS]');
+  # Line := ';;Name          ' + Tab + 'Por   ' + Tab + 'WP    ' + Tab + 'FC    ';
+  # Line := Line + Tab + 'Ksat  ' + Tab + 'Kslope' + Tab + 'Tslope' + Tab + 'ETu   '; //(5.1.010)
+  # Line := Line + Tab + 'ETs   ' + Tab + 'Seep  ' + Tab + 'Ebot  ' + Tab + 'Egw   '; //(5.1.010)
+  # Line := Line + Tab + 'Umc   ' + Tab + 'ETupat ';                                  //(5.1.010)
+  # S.Add(Line);
+  # Line := ';;--------------';
+  # for I := 0 to MAXAQUIFERPROPS do Line := Line + Tab + '------';
+  # S.Add(Line);
+}
+
+parse_section.groundwater <- function(x){
+  # S.Add('');
+  # S.Add('[GROUNDWATER]');
+  # Line := ';;Subcatchment  ' + Tab + 'Aquifer         ' + Tab + 'Node            ';
+  # Line := Line + Tab + 'Esurf ' + Tab + 'A1    ' + Tab + 'B1    ' + Tab + 'A2    ';
+  # Line := Line + Tab + 'B2    ' + Tab + 'A3    ' + Tab + 'Dsw   ' + Tab + 'Egwt  '; //(5.1.010)
+  # Line := Line + Tab + 'Ebot  ' + Tab + 'Wgr   ' + Tab + 'Umc   ';                  //(5.1.010)
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------------';
+  # Line := Line + Tab + '------' + Tab + '------' + Tab + '------' + Tab + '------';
+  # Line := Line + Tab + '------' + Tab + '------' + Tab + '------' + Tab + '------';
+  # Line := Line + Tab + '------' + Tab + '------' + Tab + '------';
+  # S.Add(Line);
+  # multiple sections
+}
+
+parse_section.snowpacks <- function(x){
+  # S.Add('');
+  # S.Add('[SNOWPACKS]');
+  # S.Add(';;Name          ' + Tab + 'Surface   ' + Tab + 'Parameters');
+  # S.Add(';;--------------' + Tab + '----------' + Tab + '----------');
+  # multiple sections
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 }
 
 #' import helper
@@ -202,6 +259,7 @@ parse_section.junctions <- function(x){
   
 }
 
+<<<<<<< HEAD
 #' import helper
 #' @keywords internal
 parse_section.outfalls <- function(x) {
@@ -259,6 +317,47 @@ parse_section.storage <- function(x){
                                        8, 1, 8, 1, 8, 1)), 
                   convert = TRUE)
   
+=======
+parse_section.outfalls <- function(x) {
+  # S.Add('');
+  # S.Add('[OUTFALLS]');
+  # Line := ';;Name          ' + Tab + 'Elevation ' + Tab + 'Type      ';
+  # Line := Line + Tab + 'Stage Data      ' + Tab + 'Gated   ';
+  # Line := Line + Tab + 'Route To        ';                                     //(5.1.008)
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------' + Tab + '----------';
+  # Line := Line + Tab + '----------------' + Tab + '--------';
+  # Line := Line + Tab + '----------------';                                     //(5.1.008)
+  # S.Add(Line);
+}
+
+parse_section.dividers <- function(x){
+  # S.Add('');
+  # S.Add('[DIVIDERS]');
+  # Line := ';;Name          ' + Tab + 'Elevation ' + Tab + 'Diverted Link   ';
+  # Line := Line + Tab + 'Type      ' + Tab + 'Parameters';
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------' + Tab + '----------------';
+  # Line := Line + Tab + '----------' + Tab + '----------';
+  # S.Add(Line);
+}
+
+parse_section.storage <- function(x){
+  # S.Add('');
+  # S.Add('[STORAGE]');
+  # Line := ';;Name          ' + Tab + 'Elev.   ' + Tab + 'MaxDepth  ';
+  # Line := Line + Tab + 'InitDepth ' + Tab + 'Shape     ';
+  # Line := Line + Tab + 'Curve Name/Params           ';
+  # Line := Line + Tab + 'N/A     ' + Tab + 'Fevap   ' + Tab + 'Psi     ';
+  # Line := Line + Tab + 'Ksat    ' + Tab + 'IMD     ';
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '--------' + Tab + '----------';
+  # Line := Line + Tab + '-----------' + Tab + '----------';
+  # Line := Line + Tab + '----------------------------';
+  # Line := Line + Tab + '--------' + Tab + '--------' + Tab + '        ';
+  # Line := Line + Tab + '--------' + Tab + '--------';
+  # S.Add(Line);
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 }
 
 #' import helper
@@ -284,6 +383,7 @@ parse_section.conduits <- function(x) {
   
 }
 
+<<<<<<< HEAD
 #' import helper
 #' @keywords internal
 parse_section.pumps <- function(x) {
@@ -373,10 +473,83 @@ parse_section.outlets <- function(x) {
                            "Qexpon", "tab7", "Gated"),
                   sep = base::cumsum(c(16, 1, 16, 1,
                                        10, 1, 16, 1, 16, 1, 10, 1)), 
+=======
+parse_section.pumps <- function(x) {
+  # S.Add('');
+  # S.Add('[PUMPS]');
+  # Line := ';;Name          ' + Tab + 'From Node       ' + Tab + 'To Node         ';
+  # Line := Line + Tab + 'Pump Curve      ' + Tab + 'Status  ';                  //5.1.007
+  # Line := Line + Tab + 'Sartup' + Tab + 'Shutoff ';                            //5.1.007
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------------';
+  # Line := Line + Tab + '----------------' + Tab + '------';
+  # Line := Line + Tab + '--------' + Tab + '--------';
+  # S.Add(Line);
+}
+
+parse_section.orifices <- function(x) {
+  # S.Add('');
+  # S.Add('[ORIFICES]');
+  # Line := ';;Name          ' + Tab + 'From Node       ' + Tab + 'To Node         ';
+  # Line := Line + Tab + 'Type        ' + Tab + 'Offset    ' + Tab + 'Qcoeff    ';
+  # Line := Line + Tab + 'Gated   ' + Tab + 'CloseTime ';
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------------';
+  # Line := Line + Tab + '------------' + Tab + '----------' + Tab + '----------';
+  # Line := Line + Tab + '--------' + Tab + '----------';
+  # S.Add(Line);
+}
+
+parse_section.weirs <- function(x) {
+  # S.Add('');
+  # S.Add('[WEIRS]');
+  # Line := ';;Name          ' + Tab + 'From Node       ' + Tab + 'To Node         ';
+  # Line := Line + Tab + 'Type        ' + Tab + 'CrestHt   ' + Tab + 'Qcoeff    ';
+  # Line := Line + Tab + 'Gated   ' + Tab + 'EndCon  ' + Tab + 'EndCoeff  ';
+  # Line := Line + Tab + 'Surcharge ';                                           //(5.1.007)
+  # 
+  # Line := Line + Tab + 'RoadWidth ' + Tab + 'RoadSurf  ';                      //(5.1.010)
+  # 
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------------';
+  # Line := Line + Tab + '------------' + Tab + '----------' + Tab + '----------';
+  # Line := Line + Tab + '--------' + Tab + '--------' + Tab + '----------';
+  # Line := Line + Tab + '----------';                                           //(5.1.007)
+  # 
+  # Line := Line + Tab + '----------' + Tab + '----------';                      //(5.1.010)
+  # 
+  # S.Add(Line);
+}
+
+parse_section.outlets <- function(x) {
+  # S.Add('');
+  # S.Add('[OUTLETS]');
+  # Line := ';;Name          ' + Tab + 'From Node       ' + Tab + 'To Node         ';
+  # Line := Line + Tab + 'Offset    ' + Tab + 'Type           ';
+  # Line := Line + Tab + 'QTable/Qcoeff   ' + Tab + 'Qexpon    ' + Tab + 'Gated   ';
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------------';
+  # Line := Line + Tab + '----------' + Tab + '---------------';
+  # Line := Line + Tab + '----------------' + Tab + '----------' + Tab + '--------';
+  # S.Add(Line);
+}
+
+parse_section.xsections <- function(x) {
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Link", "tab1", "Shape", "tab2", 
+                           "Geom1", "tab3", "Geom2", "tab4", 
+                           "Geom3", "tab5", "Geom4", "tab6",
+                           "Barrels", "tab7", "Culvert"),
+                  sep = base::cumsum(c(16, 1, 12, 1, 16, 1,
+                                       10, 1, 10, 1, 10, 1, 10, 1)), 
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
                   convert = TRUE)
   
 }
 
+<<<<<<< HEAD
 #' import helper
 #' @keywords internal
 parse_section.xsections <- function(x) {
@@ -418,6 +591,24 @@ parse_section.losses <- function(x){
                                        10, 1, 10, 1)), 
                   convert = TRUE)
   
+=======
+parse_section.transects <- function(x) {
+  # S.Add('');
+  # S.Add('[TRANSECTS]');
+  # S.Add(';;Transect Data in HEC-2 format');                                    //5.1.008)
+  # multiple options
+}
+
+parse_section.losses <- function(x){
+  # S.Add('');
+  # S.Add('[LOSSES]');
+  # Line := ';;Link          ' + Tab + 'Kentry    ' + Tab + 'Kexit     ';
+  # Line := Line + Tab + 'Kavg      ' + Tab + 'Flap Gate ' + Tab + 'Seepage   ';
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------' + Tab + '----------';
+  # Line := Line + tab + '----------' + Tab + '----------' + Tab + '----------';
+  # S.Add(Line);
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 }
 
 #' import helper
@@ -483,6 +674,7 @@ parse_section.washoff <- function(x){
   
 }
 
+<<<<<<< HEAD
 #' import helper
 #' @keywords internal
 parse_section.coverages <- function(x) {
@@ -520,6 +712,33 @@ parse_section.treatment <- function(x) {
                   sep = base::cumsum(c(16, 1, 16, 1)), 
                   convert = TRUE)
   
+=======
+parse_section.coverages <- function(x) {
+  # S.Add('');
+  # S.Add('[COVERAGES]');
+  # Line := ';;Subcatchment  ' + Tab + 'Land Use        ' + Tab + 'Percent   ';
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------';
+  # S.Add(Line);
+}
+
+parse_section.loadings <- function(x) {
+  # S.Add('');
+  # S.Add('[LOADINGS]');
+  # Line := ';;Subcatchment  ' + Tab + 'Pollutant       ' + Tab + 'Buildup   ';
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------';
+  # S.Add(Line);
+}
+
+parse_section.treatment <- function(x) {
+  # S.Add('');
+  # S.Add('[TREATMENT]');
+  # Line := ';;Node          ' + Tab + 'Pollutant       ' + Tab + 'Function  ';
+  # S.Add(Line);
+  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------';
+  # S.Add(Line);
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 }
 
 parse_section.inflows <- function(x) {
@@ -587,6 +806,7 @@ parse_section.controls <- function(x) {
   # S.Add('[CONTROLS]');
 }
 
+<<<<<<< HEAD
 #' import helper
 #' @keywords internal
 parse_section.report <- function(x) {
@@ -599,6 +819,14 @@ parse_section.report <- function(x) {
                   fill = "left",
                   convert = TRUE)
   
+=======
+parse_section.report <- function(x) {
+  # S.Add('');
+  # S.Add('[REPORT]');
+  # S.Add(';;Reporting Options');
+  # S.Add('INPUT     ' + Tab + Project.Options.Data[REPORT_INPUT_INDEX]);
+  # S.Add('CONTROLS  ' + Tab + Project.Options.Data[REPORT_CONTROLS_INDEX]);
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 }
 
 parse_section.files <- function(x) {
@@ -616,6 +844,7 @@ parse_section.profiles <- function(x) {
   # Line := ';;--------------' + Tab + '----------';
 }
 
+<<<<<<< HEAD
 #' import helper
 #' @keywords internal
 parse_section.tags <- function(x) {
@@ -646,6 +875,16 @@ parse_section.map <- function(x) {
                   extra = "merge",
                   convert = TRUE)
   
+=======
+parse_section.tags <- function(x) {
+  # S.Add('');
+  # S.Add('[TAGS]');
+}
+
+parse_section.map <- function(x) {
+  # S.Add('');
+  # S.Add('[MAP]');
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 }
 
 #' import helper
@@ -726,6 +965,7 @@ parse_section.labels <- function(x) {
   
 }
 
+<<<<<<< HEAD
 #' import helper
 #' @keywords internal
 parse_section.lidcontrols <- function(x) {
@@ -754,4 +994,16 @@ parse_section.lidusage <- function(x) {
                                        24, 1)), 
                   convert = TRUE)
   
+=======
+parse_section.backdrop <- function(x) {
+  # S.Add('');
+  # S.Add('[BACKDROP]');
+  # S.Add('FILE      ' + Tab + '"' + Filename + '"');
+  # Line := 'DIMENSIONS' + Tab +
+  #   FloatToStrF(LowerLeft.X,ffFixed,18,D) + Tab +
+  #   FloatToStrF(LowerLeft.Y,ffFixed,18,D) + Tab +
+  #   FloatToStrF(UpperRight.X,ffFixed,18,D) + Tab +
+  #   FloatToStrF(UpperRight.Y,ffFixed,18,D);
+  # S.Add(Line);
+>>>>>>> b0c36eabe7f1c62ed760156302e3ddfd82e14a28
 }
