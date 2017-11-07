@@ -80,7 +80,7 @@ summary(inp)
 inp$subcatchments
 #> # A tibble: 8 x 9
 #>    Name `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen
-#>   <chr>       <chr>  <int> <int>       <int> <int>      <dbl>   <int>
+#>   <chr>       <chr>  <chr> <int>       <int> <int>      <dbl>   <int>
 #> 1     1         RG1      9    10          50   500       0.01       0
 #> 2     2         RG1     10    10          50   500       0.01       0
 #> 3     3         RG1     13     5          50   500       0.01       0
