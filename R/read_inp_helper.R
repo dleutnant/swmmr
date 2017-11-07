@@ -194,14 +194,18 @@ parse_section.outfalls <- function(x) {
   
   tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "Elevation", 
-                           "Type", "Stage Data", 
-                           "Gated", "Route To"),
+                  into = c("Name", "value"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE)
-  
+                  convert = TRUE) %>% 
+    tidyr::separate(col = "value", 
+                    into = c("Elevation", "tab2",
+                             "Type", "tab3", "Stage Data", "tab4",
+                             "Gated", "tab5", "Route To"),
+                    sep = base::cumsum(c(10, 1, 10, 1, 10, 1, 10, 1)), 
+                    convert = TRUE)
+
 }
 
 #' import helper
