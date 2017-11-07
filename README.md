@@ -226,52 +226,6 @@ ggplot() +
 
 ![](README-visualization-2.png)<!-- -->
 
-## SessionInfo
-
-``` r
-sessionInfo()
-#> R version 3.4.2 (2017-09-28)
-#> Platform: x86_64-apple-darwin15.6.0 (64-bit)
-#> Running under: macOS High Sierra 10.13.1
-#> 
-#> Matrix products: default
-#> BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
-#> LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
-#> 
-#> locale:
-#> [1] de_DE.UTF-8/de_DE.UTF-8/de_DE.UTF-8/C/de_DE.UTF-8/de_DE.UTF-8
-#> 
-#> attached base packages:
-#> [1] stats     graphics  grDevices utils     datasets  methods   base     
-#> 
-#> other attached packages:
-#>  [1] sf_0.5-5           dplyr_0.7.4        readr_1.1.1       
-#>  [4] tidyr_0.7.2        tibble_1.3.4       tidyverse_1.1.1   
-#>  [7] bindrcpp_0.2       purrr_0.2.4        ggplot2_2.2.1.9000
-#> [10] swmmr_0.7.0.9000  
-#> 
-#> loaded via a namespace (and not attached):
-#>  [1] zoo_1.8-0            tidyselect_0.2.3     reshape2_1.4.2      
-#>  [4] haven_1.1.0          lattice_0.20-35      colorspace_1.3-2    
-#>  [7] viridisLite_0.2.0    htmltools_0.3.6      yaml_2.1.14         
-#> [10] rlang_0.1.4          e1071_1.6-8          foreign_0.8-69      
-#> [13] glue_1.2.0           DBI_0.7              modelr_0.1.1        
-#> [16] readxl_1.0.0         bindr_0.1            plyr_1.8.4          
-#> [19] stringr_1.2.0        munsell_0.4.3        gtable_0.2.0        
-#> [22] cellranger_1.1.0     rvest_0.3.2          psych_1.7.8         
-#> [25] evaluate_0.10.1      labeling_0.3         knitr_1.17          
-#> [28] forcats_0.2.0        class_7.3-14         parallel_3.4.2      
-#> [31] broom_0.4.2          xts_0.10-0           Rcpp_0.12.13        
-#> [34] udunits2_0.13        classInt_0.1-24      scales_0.5.0.9000   
-#> [37] backports_1.1.1      jsonlite_1.5         mnormt_1.5-5        
-#> [40] hms_0.3              digest_0.6.12        stringi_1.1.5       
-#> [43] grid_3.4.2           rprojroot_1.2        tools_3.4.2         
-#> [46] magrittr_1.5         lazyeval_0.2.1       pkgconfig_2.0.1     
-#> [49] xml2_1.1.1           lubridate_1.7.1      assertthat_0.2.0    
-#> [52] rmarkdown_1.6.0.9009 httr_1.3.1           R6_2.2.2            
-#> [55] units_0.4-6          nlme_3.1-131         compiler_3.4.2
-```
-
 ## Contributions
 
 This Git repository uses the [Git
