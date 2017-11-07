@@ -1,14 +1,22 @@
+swmmr
+================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-swmmr
-=====
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/swmmr)](https://cran.r-project.org/package=swmmr) [![Build Status](https://travis-ci.org/dleutnant/swmmr.svg?branch=dev)](https://travis-ci.org/dleutnant/swmmr)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/swmmr)](https://cran.r-project.org/package=swmmr)
+[![Build
+Status](https://travis-ci.org/dleutnant/swmmr.svg?branch=dev)](https://travis-ci.org/dleutnant/swmmr)
 
-Functions to connect the widely used [Storm Water Management Model (SWMM)](https://www.epa.gov/water-research/storm-water-management-model-swmm) of the United States Environmental Protection Agency (US EPA) to R with currently two main goals: (1) Run a SWMM simulation from R and (2) provide fast access to simulation results, i.e. SWMM's binary '.out'-files. High performance is achieved with help of Rcpp. Additionally, reading SWMM's '.inp'-files is supported to glance model structures.
+Functions to connect the widely used [Storm Water Management Model
+(SWMM)](https://www.epa.gov/water-research/storm-water-management-model-swmm)
+of the United States Environmental Protection Agency (US EPA) to R with
+currently two main goals: (1) Run a SWMM simulation from R and (2)
+provide fast access to simulation results, i.e. SWMM’s binary
+‘.out’-files. High performance is achieved with help of Rcpp.
+Additionally, reading SWMM’s ‘.inp’-files is supported to glance model
+structures.
 
-Installation
-------------
+## Installation
 
 Installation is easy thanks to CRAN:
 
@@ -23,10 +31,10 @@ You can install the dev version from github with:
 devtools::install_github("dleutnant/swmmr@dev")
 ```
 
-Example
--------
+## Example
 
-This is a basic example which shows you how to work with the package. We use the example shipped with the SWMM5 executable.
+This is a basic example which shows you how to work with the package. We
+use the example shipped with the SWMM5 executable.
 
 ### Initiate a SWMM run and retrieve simulation results
 
@@ -72,7 +80,7 @@ summary(inp)
 inp$subcatchments
 #> # A tibble: 8 x 9
 #>    Name `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen
-#>   <int>       <chr>  <dbl> <dbl>       <dbl> <dbl>      <dbl>   <dbl>
+#>   <chr>       <chr>  <int> <int>       <int> <int>      <dbl>   <int>
 #> 1     1         RG1      9    10          50   500       0.01       0
 #> 2     2         RG1     10    10          50   500       0.01       0
 #> 3     3         RG1     13     5          50   500       0.01       0
@@ -94,7 +102,7 @@ files <- run_swmm(inp = inp_path)
 # total rainfall (in/hr or mm/hr) and total runoff (flow units) (vIndex = c(1,4)).
 results <- read_out(files$out, iType = 3, vIndex = c(1, 4))
 #> Warning in strptime(xx, f <- "%Y-%m-%d %H:%M:%OS", tz = tz): unknown
-#> timezone 'default/Europe/Berlin'
+#> timezone 'zone/tz/2017c.1.0/zoneinfo/Europe/Berlin'
 
 # results is a list object containing two time series 
 str(results, max.level = 2)
@@ -136,12 +144,12 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 #> $total_rainfall
 ```
 
-![](README-example-1.png)
+![](README-example-1.png)<!-- -->
 
     #> 
     #> $total_runoff
 
-![](README-example-2.png)
+![](README-example-2.png)<!-- -->
 
 ### Visualize the model structure
 
@@ -164,7 +172,7 @@ library(sf)
 plot(inp)
 ```
 
-![](README-visualization-1.png)
+![](README-visualization-1.png)<!-- -->
 
 ``` r
 
@@ -216,16 +224,15 @@ ggplot() +
        subtitle = "with help of swmmr, ggplot2 and sf")
 ```
 
-![](README-visualization-2.png)
+![](README-visualization-2.png)<!-- -->
 
-SessionInfo
------------
+## SessionInfo
 
 ``` r
 sessionInfo()
 #> R version 3.4.2 (2017-09-28)
 #> Platform: x86_64-apple-darwin15.6.0 (64-bit)
-#> Running under: macOS High Sierra 10.13
+#> Running under: macOS High Sierra 10.13.1
 #> 
 #> Matrix products: default
 #> BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
@@ -238,47 +245,70 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#>  [1] sf_0.5-4           dplyr_0.7.4        readr_1.1.1       
+#>  [1] sf_0.5-5           dplyr_0.7.4        readr_1.1.1       
 #>  [4] tidyr_0.7.2        tibble_1.3.4       tidyverse_1.1.1   
 #>  [7] bindrcpp_0.2       purrr_0.2.4        ggplot2_2.2.1.9000
 #> [10] swmmr_0.7.0.9000  
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] zoo_1.8-0         tidyselect_0.2.2  reshape2_1.4.2   
-#>  [4] haven_1.1.0       lattice_0.20-35   colorspace_1.3-2 
-#>  [7] viridisLite_0.2.0 htmltools_0.3.6   yaml_2.1.14      
-#> [10] rlang_0.1.2       foreign_0.8-69    glue_1.1.1       
-#> [13] DBI_0.7           modelr_0.1.1      readxl_1.0.0     
-#> [16] bindr_0.1         plyr_1.8.4        stringr_1.2.0    
-#> [19] munsell_0.4.3     gtable_0.2.0      cellranger_1.1.0 
-#> [22] rvest_0.3.2       psych_1.7.8       evaluate_0.10.1  
-#> [25] labeling_0.3      knitr_1.17        forcats_0.2.0    
-#> [28] parallel_3.4.2    broom_0.4.2       xts_0.10-0       
-#> [31] Rcpp_0.12.13      udunits2_0.13     scales_0.5.0.9000
-#> [34] backports_1.1.1   jsonlite_1.5      mnormt_1.5-5     
-#> [37] hms_0.3           digest_0.6.12     stringi_1.1.5    
-#> [40] grid_3.4.2        rprojroot_1.2     tools_3.4.2      
-#> [43] magrittr_1.5      lazyeval_0.2.0    pkgconfig_2.0.1  
-#> [46] xml2_1.1.1        lubridate_1.6.0   assertthat_0.2.0 
-#> [49] rmarkdown_1.6     httr_1.3.1        R6_2.2.2         
-#> [52] units_0.4-6       nlme_3.1-131      compiler_3.4.2
+#>  [1] zoo_1.8-0            tidyselect_0.2.3     reshape2_1.4.2      
+#>  [4] haven_1.1.0          lattice_0.20-35      colorspace_1.3-2    
+#>  [7] viridisLite_0.2.0    htmltools_0.3.6      yaml_2.1.14         
+#> [10] rlang_0.1.4          e1071_1.6-8          foreign_0.8-69      
+#> [13] glue_1.2.0           DBI_0.7              modelr_0.1.1        
+#> [16] readxl_1.0.0         bindr_0.1            plyr_1.8.4          
+#> [19] stringr_1.2.0        munsell_0.4.3        gtable_0.2.0        
+#> [22] cellranger_1.1.0     rvest_0.3.2          psych_1.7.8         
+#> [25] evaluate_0.10.1      labeling_0.3         knitr_1.17          
+#> [28] forcats_0.2.0        class_7.3-14         parallel_3.4.2      
+#> [31] broom_0.4.2          xts_0.10-0           Rcpp_0.12.13        
+#> [34] udunits2_0.13        classInt_0.1-24      scales_0.5.0.9000   
+#> [37] backports_1.1.1      jsonlite_1.5         mnormt_1.5-5        
+#> [40] hms_0.3              digest_0.6.12        stringi_1.1.5       
+#> [43] grid_3.4.2           rprojroot_1.2        tools_3.4.2         
+#> [46] magrittr_1.5         lazyeval_0.2.1       pkgconfig_2.0.1     
+#> [49] xml2_1.1.1           lubridate_1.7.1      assertthat_0.2.0    
+#> [52] rmarkdown_1.6.0.9009 httr_1.3.1           R6_2.2.2            
+#> [55] units_0.4-6          nlme_3.1-131         compiler_3.4.2
 ```
 
-Contributions
--------------
+## Contributions
 
-This Git repository uses the [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model (the [`git flow`](https://github.com/petervanderdoes/gitflow-avh) extension is useful for this). The [`dev`](https://github.com/dleutnant/swmmr/tree/dev) branch contains the latest contributions and other code that will appear in the next release, and the [`master`](https://github.com/dleutnant/swmmr) branch contains the code of the latest release, which is exactly what is currently on [CRAN](https://cran.r-project.org/package=swmmr).
+This Git repository uses the [Git
+Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching
+model (the [`git flow`](https://github.com/petervanderdoes/gitflow-avh)
+extension is useful for this). The
+[`dev`](https://github.com/dleutnant/swmmr/tree/dev) branch contains the
+latest contributions and other code that will appear in the next
+release, and the [`master`](https://github.com/dleutnant/swmmr) branch
+contains the code of the latest release, which is exactly what is
+currently on [CRAN](https://cran.r-project.org/package=swmmr).
 
-Contributing to this package is easy. Just send a [pull request](https://help.github.com/articles/using-pull-requests/). When you send your PR, make sure `dev` is the destination branch on the [swmmr repository](https://github.com/dleutnant/swmmr). Your PR should pass `R CMD check --as-cran`, which will also be checked by <a href="https://travis-ci.org/dleutnant/swmmr">Travis CI</a> when the PR is submitted.
+Contributing to this package is easy. Just send a [pull
+request](https://help.github.com/articles/using-pull-requests/). When
+you send your PR, make sure `dev` is the destination branch on the
+[swmmr repository](https://github.com/dleutnant/swmmr). Your PR should
+pass `R CMD check --as-cran`, which will also be checked by
+<a href="https://travis-ci.org/dleutnant/swmmr">Travis CI</a> when the
+PR is submitted.
 
-Code of condcut
----------------
+## Code of condcut
 
-Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+Please note that this project is released with a [Contributor Code of
+Conduct](CONDUCT.md). By participating in this project you agree to
+abide by its terms.
 
-Acknowledgments
----------------
+## Acknowledgments
 
-This package has been developed in the course of the project [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722), carried out at the [Institute for Infrastructure, Water, Resources, Environment (IWARU)](https://en.fh-muenster.de/iwaru/index.php) of the [Muenster University of Applied Sciences](https://www.fh-muenster.de). The project was funded by the German Federal Ministry of Education and Research (BMBF, FKZ 03FH033PX2).
+This package has been developed in the course of the project
+[STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722),
+carried out at the [Institute for Infrastructure, Water, Resources,
+Environment (IWARU)](https://en.fh-muenster.de/iwaru/index.php) of the
+[Muenster University of Applied Sciences](https://www.fh-muenster.de).
+The project was funded by the German Federal Ministry of Education and
+Research (BMBF, FKZ 03FH033PX2).
 
-The development of the R package was inspired by the work of [Peter Steinberg](https://github.com/PeterDSteinberg/RSWMM). Also, it benefits from the Interface Guide of [SWMM](https://www.epa.gov/water-research/storm-water-management-model-swmm).
+The development of the R package was inspired by the work of [Peter
+Steinberg](https://github.com/PeterDSteinberg/RSWMM). Also, it benefits
+from the Interface Guide of
+[SWMM](https://www.epa.gov/water-research/storm-water-management-model-swmm).

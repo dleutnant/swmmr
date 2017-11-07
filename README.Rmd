@@ -1,4 +1,5 @@
 ---
+title: "swmmr"
 output: github_document
 ---
 
@@ -11,8 +12,6 @@ knitr::opts_chunk$set(
   fig.path = "README-"
 )
 ```
-
-# swmmr
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/swmmr)](https://cran.r-project.org/package=swmmr) [![Build Status](https://travis-ci.org/dleutnant/swmmr.svg?branch=dev)](https://travis-ci.org/dleutnant/swmmr)
 
