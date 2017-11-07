@@ -79,7 +79,7 @@ parse_inp <- function(x, section_name, rm.comment) {
   x <- x[rowSums(is.na(x)) != ncol(x), ]
   
   # make sure ID columns are of type character
-  chr_cols <- c("Name", "Link", "Subcatchment", 
+  chr_cols <- c("Name", "Link", "Subcatchment", "Outlet",
                 "Node", "From Node", "To Node")
   
   for (chr_col in chr_cols) {
