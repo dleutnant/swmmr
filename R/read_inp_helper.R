@@ -199,7 +199,7 @@ parse_section.outfalls <- function(x) {
                            "Gated", "Route To"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
