@@ -75,12 +75,19 @@ parse_inp <- function(x, section_name, rm.comment) {
   # if a section is not parsed, we return NULL
   if (is.null(x)) return (NULL)
   
-  # remove dummy columns which names starts with *tab 
-  x <- x[, !grepl("^tab", colnames(x))]
-  
   # remove rows with NA's only
   x <- x[rowSums(is.na(x)) != ncol(x), ]
   
+  # make sure ID columns are of type character
+  chr_cols <- c("Name", "Link", "Subcatchment", 
+                "Node", "From Node", "To Node")
+  
+  for (chr_col in chr_cols) {
+    if (chr_col %in% colnames(x)){
+      x <- dplyr::mutate_at(x, chr_col, as.character)
+    }
+  }
+
   # trimws of character columns
   x <- dplyr::mutate_if(x, is.character, trimws)
   

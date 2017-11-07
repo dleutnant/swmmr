@@ -39,9 +39,11 @@ parse_section.raingages <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Name", "tab1", "Format", "tab2", "Interval",
-                           "tab3", "SCF", "tab4", "Source"),
-                  sep = base::cumsum(c(16, 1, 9, 1, 8, 1, 8, 1)), 
+                  into = c("Name", "Format", "Interval",
+                           "SCF", "Source"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
 
 }
@@ -70,8 +72,10 @@ parse_section.evaporation <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Data Source", "tab1", "Parameters"),
-                  sep = base::cumsum(c(16, 1)), 
+                  into = c("Data Source", "Parameters"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -86,21 +90,15 @@ parse_section.events <- function(x) {
 #' @keywords internal
 parse_section.subcatchments <- function(x){
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "value"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("Rain Gage", "tab2",
-                           "Outlet", "tab3", "Area", "tab4", 
-                           "Perc_Imperv", "tab5", "Width", "tab6",
-                           "Perc_Slope", "tab7", "CurbLen", "tab8",
+                  into = c("Name",
+                           "Rain Gage", 
+                           "Outlet", "Area",
+                           "Perc_Imperv", "Width",
+                           "Perc_Slope", "CurbLen", 
                            "Snowpack"),
-                  sep = base::cumsum(c(16, 1, 16, 1,
-                                       8, 1, 8, 1, 8, 1, 8, 1, 8, 1)), 
+                  sep = "\\s+", 
                   convert = TRUE)
 
 }
@@ -109,20 +107,16 @@ parse_section.subcatchments <- function(x){
 #' @keywords internal
 parse_section.subareas <- function(x){
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Subcatchment", "value"),
+                  into = c("Subcatchment",
+                           "N-Imperv", 
+                           "N-Perv", "S-Imperv",
+                           "S-Perv", "PctZero", "RouteTo", 
+                           "PctRouted"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>%
-  tidyr::separate(col = "value", 
-                  into = c("N-Imperv", "tab2",
-                           "N-Perv", "tab3", "S-Imperv", "tab4",
-                           "S-Perv", "tab5", "PctZero", "tab6", "RouteTo", 
-                           "tab7", "PctRouted"),
-                  sep = base::cumsum(c(10, 1, 10, 1, 10,
-                                       1, 10, 1, 10, 1, 10, 1)), 
                   convert = TRUE)
   
 }
@@ -135,18 +129,14 @@ parse_section.infiltration <- function(x){
   # horton
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Subcatchment", "value"),
+                  into = c("Subcatchment","MaxRate", 
+                           "MinRate", "Decay",
+                           "DryTime", "MaxInfil"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>%
-  tidyr::separate(col = "value", 
-                  into = c("MaxRate", "tab2",
-                           "MinRate", "tab3", "Decay", "tab4",
-                           "DryTime", "tab5", "MaxInfil"),
-                  sep = base::cumsum(c(10, 1, 10, 1, 10,
-                                       1, 10, 1)), 
                   convert = TRUE)
+
 }
 
 #' import helper
@@ -155,16 +145,16 @@ parse_section.aquifers <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Name", "tab1", "Por", "tab2", 
-                           "WP", "tab3", "FC", "tab4",
-                           "Ksat", "tab5", "Kslope", "tab6",
-                           "Tslope", "tab7", "ETu", "tab8",
-                           "ETs", "tab9", "Seep", "tab10",
-                           "Ebot", "tab11", "Egw", "tab12",
-                           "Umc", "tab13", "ETupat"),
-                  sep = base::cumsum(c(16, 1, 6, 1, 6, 1, 6, 1, 
-                                       6, 1, 6, 1, 6, 1, 6, 1, 6, 1,
-                                       6, 1, 6, 1, 6, 1, 6, 1)), 
+                  into = c("Name", "Por", 
+                           "WP", "FC",
+                           "Ksat", "Kslope",
+                           "Tslope", "ETu", 
+                           "ETs", "Seep", 
+                           "Ebot", "Egw",
+                           "Umc", "ETupat"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
 }
 
@@ -174,9 +164,10 @@ parse_section.snowpacks <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Name", "tab1", "Surface", "tab2", 
-                           "Parameters"),
-                  sep = base::cumsum(c(16, 1, 10, 1)), 
+                  into = c("Name", "Surface", "Parameters"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -185,19 +176,14 @@ parse_section.snowpacks <- function(x){
 #' @keywords internal
 parse_section.junctions <- function(x){
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "value"),
+                  into = c("Name", "Elevation", 
+                           "MaxDepth", "InitDepth", 
+                           "SurDepth", "Aponded"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("Elevation", "tab2", 
-                           "MaxDepth", "tab3", "InitDepth", "tab4",
-                           "SurDepth", "tab5", "Aponded"),
-                  sep = base::cumsum(c(10, 1, 10, 1,  10, 1, 
-                                       10, 1)), 
                   convert = TRUE)
   
 }
@@ -206,19 +192,14 @@ parse_section.junctions <- function(x){
 #' @keywords internal
 parse_section.outfalls <- function(x) {
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "value"),
+                  into = c("Name", "Elevation", 
+                           "Type", "Stage Data", 
+                           "Gated", "Route To"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("Elevation", "tab2", 
-                           "Type", "tab3", "Stage Data", "tab4",
-                           "Gated", "tab5", "Route To"),
-                  sep = base::cumsum(c(10, 1, 10, 1,  10, 1, 
-                                       10, 1)), 
                   convert = TRUE)
   
 }
@@ -229,10 +210,12 @@ parse_section.dividers <- function(x){
  
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Name", "tab1", "Elevation", "tab2", 
-                           "Diverted Link", "tab3", "Type", "tab4",
+                  into = c("Name", "Elevation", 
+                           "Diverted Link", "Type", 
                            "Parameters"),
-                  sep = base::cumsum(c(16, 1, 10, 1, 16, 1,  10, 1)), 
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE) 
   
 }
@@ -241,22 +224,16 @@ parse_section.dividers <- function(x){
 #' @keywords internal
 parse_section.storage <- function(x){
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "value"),
+                  into = c("Name","Elev.", 
+                           "MaxDepth", "InitDepth", 
+                           "Shape", "Curve Name/Params", 
+                           "N/A", "Fevap", 
+                           "Psi", "Ksat", "IMD"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("Elev.", "tab2", 
-                           "MaxDepth", "tab3", "InitDepth", "tab4", 
-                           "Shape", "tab5", "Curve Name/Params", "tab6",
-                           "N/A", "tab7", "Fevap", "tab8",
-                           "Psi", "tab9", "Ksat", "tab10", "IMD"),
-                  sep = base::cumsum(c(8, 1, 10, 1, 10, 1, 10, 1, 
-                                       28, 1, 8, 1,
-                                       8, 1, 8, 1, 8, 1)), 
                   convert = TRUE)
   
 }
@@ -267,19 +244,14 @@ parse_section.conduits <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Name", "value"),
+                  into = c("Name", "From Node", 
+                           "To Node", "Length", 
+                           "Roughness", "InOffset", 
+                           "OutOffset", "InitFlow", 
+                           "MaxFlow"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("From Node", "tab2", 
-                           "To Node", "tab3", "Length", "tab4", 
-                           "Roughness", "tab5", "InOffset", "tab6",
-                           "OutOffset", "tab7", "InitFlow", "tab8",
-                           "MaxFlow"),
-                  sep = base::cumsum(c(16, 1, 16, 1,
-                                       10, 1, 10, 1, 10, 1, 10, 1, 10, 1)), 
                   convert = TRUE)
   
 }
@@ -288,21 +260,15 @@ parse_section.conduits <- function(x) {
 #' @keywords internal
 parse_section.pumps <- function(x) {
   
-  
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "value"),
+                  into = c("Name", "From Node", 
+                           "To Node", "Pump Curve", 
+                           "Status", "Sartup", 
+                           "Shutoff"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("From Node", "tab2", 
-                           "To Node", "tab3", "Pump Curve", "tab4", 
-                           "Status", "tab5", "Sartup", "tab6",
-                           "Shutoff"),
-                  sep = base::cumsum(c(16, 1, 16, 1, 16, 1,
-                                       8, 1, 8, 1)), 
                   convert = TRUE)
   
 }
@@ -311,20 +277,15 @@ parse_section.pumps <- function(x) {
 #' @keywords internal
 parse_section.orifices <- function(x) {
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "value"),
+                  into = c("Name", "From Node", 
+                           "To Node", "Type", 
+                           "Offset", "Qcoeff", 
+                           "Gated", "CloseTime"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("From Node", "tab2", 
-                           "To Node", "tab3", "Type", "tab4", 
-                           "Offset", "tab5", "Qcoeff", "tab6",
-                           "Gated", "tab7", "CloseTime"),
-                  sep = base::cumsum(c(16, 1, 16, 1, 12, 1,
-                                       10, 1, 10, 1, 8, 1)), 
+                  fill = "left", 
                   convert = TRUE)
 }
 
@@ -334,22 +295,15 @@ parse_section.weirs <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Name", "value"),
+                  into = c("Name", "From Node", 
+                           "To Node", "Type", 
+                           "CrestHt", "Qcoeff", 
+                           "Gated", "EndCon", 
+                           "EndCoeff", "Surcharge",
+                           "RoadWidth", "RoadSurf"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("From Node", "tab2", 
-                           "To Node", "tab3", "Type", "tab4", 
-                           "CrestHt", "tab5", "Qcoeff", "tab6",
-                           "Gated", "tab7", "EndCon", "tab8",
-                           "EndCoeff", "tab9", "Surcharge", "tab10",
-                           "RoadWidth", "tab11", "RoadSurf"),
-                  sep = base::cumsum(c(16, 1, 16, 1,
-                                       12, 1, 10, 1, 10, 1,
-                                       8, 1, 8, 1, 10, 1,
-                                      10, 1, 10, 1)), 
                   convert = TRUE)
   
 }
@@ -358,21 +312,15 @@ parse_section.weirs <- function(x) {
 #' @keywords internal
 parse_section.outlets <- function(x) {
   
-  
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Name", "value"),
+                  into = c("Name", "From Node", 
+                           "To Node", "Offset", 
+                           "Type", "QTable/Qcoeff", 
+                           "Qexpon", "Gated"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("From Node", "tab2", 
-                           "To Node", "tab3", "Offset", "tab4", 
-                           "Type", "tab5", "QTable/Qcoeff", "tab6",
-                           "Qexpon", "tab7", "Gated"),
-                  sep = base::cumsum(c(16, 1, 16, 1,
-                                       10, 1, 16, 1, 16, 1, 10, 1)), 
                   convert = TRUE)
   
 }
@@ -383,18 +331,13 @@ parse_section.xsections <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Link", "value"),
+                  into = c("Link", "Shape", 
+                           "Geom1", "Geom2", 
+                           "Geom3", "Geom4", 
+                           "Barrels", "Culvert"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("Shape", "tab2", 
-                           "Geom1", "tab3", "Geom2", "tab4", 
-                           "Geom3", "tab5", "Geom4", "tab6",
-                           "Barrels", "tab7", "Culvert"),
-                  sep = base::cumsum(c(12, 1, 16, 1,
-                                       10, 1, 10, 1, 10, 1, 10, 1)), 
                   convert = TRUE)
   
 }
@@ -405,17 +348,12 @@ parse_section.losses <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Link", "value"),
+                  into = c("Link", "Kentry", 
+                           "Kexit", "Kavg", 
+                           "Flap Gate", "Seepage"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("Kentry", "tab2", 
-                           "Kexit", "tab3", "Kavg", "tab4", 
-                           "Flap Gate", "tab5", "Seepage"),
-                  sep = base::cumsum(c(10, 1, 10, 1,
-                                       10, 1, 10, 1)), 
                   convert = TRUE)
   
 }
@@ -426,14 +364,14 @@ parse_section.pollutants <- function(x){
   
   tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "tab1", "Units", "tab2",
-                           "Crain", "tab3", "Cgw", "tab4",
-                           "Crdii", "tab5", "Kdecay", "tab6",
-                           "SnowOnly", "tab7", "Co-Pollutant", "tab8", 
-                           "Co-Frac", "tab9", "Cdwf", "tab10", "Cinit"),
-                  sep = base::cumsum(c(16, 1, 6, 1, 10, 1, 10, 1,
-                                       10, 1, 10, 1, 10, 1, 16, 1,
-                                       10, 1, 10, 1)), 
+                  into = c("Name", "Units", 
+                           "Crain", "Cgw", 
+                           "Crdii", "Kdecay", 
+                           "SnowOnly", "Co-Pollutant", 
+                           "Co-Frac", "Cdwf", "Cinit"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -444,9 +382,11 @@ parse_section.landuses <- function(x){
   
   tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "tab1", "Sweeping_Interval", "tab2",
-                           "Fraction_Available", "tab3", "Last_Swept"),
-                  sep = base::cumsum(c(16, 1, 10, 1, 10, 1)), 
+                  into = c("Name", "Sweeping_Interval", 
+                           "Fraction_Available", "Last_Swept"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -457,12 +397,13 @@ parse_section.buildup <- function(x){
   
   tidyr::separate(data = x,
                   col = "value", 
-                  into = c("LandUse", "tab1", "Pollutant", "tab2",
-                           "Function", "tab3", "Coeff1", "tab4",
-                           "Coeff2", "tab5", "Coeff3", "tab6", 
+                  into = c("LandUse", "Pollutant", 
+                           "Function", "Coeff1", 
+                           "Coeff2", "Coeff3", 
                            "Per_Unit"),
-                  sep = base::cumsum(c(16, 1, 16, 1, 
-                                       10, 1, 10, 1, 10, 1, 10, 1)), 
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -473,12 +414,13 @@ parse_section.washoff <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("LandUse", "tab1", "Pollutant", "tab2",
-                           "Function", "tab3", "Coeff1", "tab4",
-                           "Coeff2", "tab5", "SweepRmvl", "tab6", 
+                  into = c("LandUse", "Pollutant", 
+                           "Function", "Coeff1", 
+                           "Coeff2", "SweepRmvl", 
                            "BmpRmvl"),
-                  sep = base::cumsum(c(16, 1, 16, 1, 
-                                       10, 1, 10, 1, 10, 1, 10, 1)), 
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -489,9 +431,11 @@ parse_section.coverages <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Subcatchment", "tab1", "Land Use", "tab2",
+                  into = c("Subcatchment", "Land Use", 
                            "Percent"),
-                  sep = base::cumsum(c(16, 1, 16, 1)), 
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -502,9 +446,11 @@ parse_section.loadings <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Subcatchment", "tab1", "Pollutant", "tab2",
+                  into = c("Subcatchment", "Pollutant", 
                            "Buildup"),
-                  sep = base::cumsum(c(16, 1, 10, 1)), 
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -515,9 +461,11 @@ parse_section.treatment <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Node", "tab1", "Pollutant", "tab2",
+                  into = c("Node", "Pollutant", 
                            "Function"),
-                  sep = base::cumsum(c(16, 1, 16, 1)), 
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
 
 }
@@ -624,15 +572,11 @@ parse_section.tags <- function(x) {
   # thus, we need a two step procedure
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("object", "value"),
+                  into = c("object", "id", "text"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-    tidyr::separate(col = "value", 
-                    into = c("id", "tab1", "text"),
-                    sep = base::cumsum(c(16, 1)), 
-                    convert = TRUE)
+                  convert = TRUE)
     
 }
 
@@ -654,14 +598,10 @@ parse_section.coordinates <- function(x){
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Node", "value"),
+                  into = c("Node", "X-Coord", "Y-Coord"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("X-Coord", "tab1", "Y-Coord"),
-                  sep = base::cumsum(c(18, 1)), 
                   convert = TRUE)
   
 }
@@ -670,16 +610,12 @@ parse_section.coordinates <- function(x){
 #' @keywords internal
 parse_section.vertices <- function(x) {
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Link", "value"),
+                  into = c("Link", "X-Coord", "Y-Coord"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("X-Coord", "tab1", "Y-Coord"),
-                  sep = base::cumsum(c(18, 1)), 
                   convert = TRUE)
   
 }
@@ -690,14 +626,10 @@ parse_section.polygons <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Subcatchment", "value"),
+                  into = c("Subcatchment", "X-Coord", "Y-Coord"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("X-Coord", "tab1", "Y-Coord"),
-                  sep = base::cumsum(c(18, 1)), 
                   convert = TRUE)
   
 }
@@ -708,8 +640,10 @@ parse_section.symbols <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Gage", "tab1", "X-Coord", "tab2", "Y-Coord"),
-                  sep = base::cumsum(c(16, 1, 18, 1)), 
+                  into = c("Gage", "X-Coord", "Y-Coord"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -720,8 +654,10 @@ parse_section.labels <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("X-Coord", "tab1", "Y-Coord", "tab2", "Label"),
-                  sep = base::cumsum(c(18, 1, 18, 1)), 
+                  into = c("X-Coord", "Y-Coord", "Label"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -732,8 +668,10 @@ parse_section.lidcontrols <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Name", "tab1", "Type/Layer", "tab2", "Parameters"),
-                  sep = base::cumsum(c(16, 1, 10, 1)), 
+                  into = c("Name", "Type/Layer", "Parameters"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
   
 }
@@ -744,14 +682,14 @@ parse_section.lidusage <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Subcatchment", "tab1", "LID Process", "tab2",
-                           "Number", "tab3", "Area", "tab4",
-                           "Width", "tab5", "InitSat", "tab6",
-                           "FromImp", "tab7", "ToPerv", "tab8",
-                           "RptFile", "tab9", "DrainTo"),
-                  sep = base::cumsum(c(16, 1, 16, 1, 7, 1,
-                                       10, 1, 10, 1, 10, 1, 10, 1, 10, 1, 
-                                       24, 1)), 
+                  into = c("Subcatchment", "LID Process", 
+                           "Number", "Area", 
+                           "Width", "InitSat", 
+                           "FromImp", "ToPerv", 
+                           "RptFile", "DrainTo"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
                   convert = TRUE)
 
 }
