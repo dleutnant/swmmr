@@ -205,7 +205,7 @@ parse_section.outfalls <- function(x) {
                              "Gated", "tab5", "Route To"),
                     sep = base::cumsum(c(10, 1, 10, 1, 10, 1, 10, 1)), 
                     convert = TRUE)
-
+  
 }
 
 #' import helper
