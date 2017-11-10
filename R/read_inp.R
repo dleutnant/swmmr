@@ -20,7 +20,7 @@ read_inp <- function(x, rm.comment = TRUE) {
   section_start <- grep("\\[", inp_lines, value = F)
   
   # get section names
-  section_names <- gsub(pattern = "[[:punct:]]", 
+  section_names <- gsub(pattern = "\\[|\\]", 
                         replacement = "",  
                         x = inp_lines[section_start])
   

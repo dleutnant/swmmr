@@ -516,27 +516,38 @@ parse_section.patterns <- function(x) {
   # S.Add(Line);
 }
 
+#' import helper
+#' @keywords internal
 parse_section.timeseries <- function(x) {
-  # S.Add('');
-  # S.Add('[TIMESERIES]');
-  # Line := ';;Name          ' + Tab + 'Date      ' + Tab + 'Time      ' + Tab + 'Value     ';
-  # S.Add(Line);
-  # Line := ';;--------------' + Tab + '----------' + Tab + '----------' + Tab + '----------';
-  # S.Add(Line);
+  
+  tidyr::separate(data = x,
+                  col = "value", 
+                  into = c("Name", "value"),
+                  sep = "\\s",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE) %>% 
+    tidyr::separate(col = "value", 
+                    into = c("Date", "Time", "Value"),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "left",
+                    convert = TRUE)
+  
 }
 
+#' import helper
+#' @keywords internal
 parse_section.curves <- function(x){
-  # S.Add('');
-  # S.Add('[CURVES]');
-  # Line := ';;Name          ' + Tab + 'Type      ' + Tab + 'X-Value   ' + Tab + 'Y-Value   ';
-  # S.Add(Line);
-  # Line := ';;--------------' + Tab + '----------' + Tab + '----------' + Tab + '----------';
-  # S.Add(Line);
-}
-
-parse_section.controls <- function(x) {
-  # S.Add('');
-  # S.Add('[CONTROLS]');
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Name", "Type", "X-Value", "Y-Value"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
 #' import helper
@@ -553,19 +564,31 @@ parse_section.report <- function(x) {
 
 }
 
+#' import helper
+#' @keywords internal
 parse_section.files <- function(x) {
-  # S.Add('');
-  # S.Add('[FILES]');
-  # S.Add(';;Interfacing Files');
-  # TokList := TStringList.Create;
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Verb", "Parameter", "Path"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
 }
 
+#' import helper
+#' @keywords internal
 parse_section.profiles <- function(x) {
-  # S.Add('');
-  # S.Add('[PROFILES]');
-  # Line := ';;Name          ' + Tab + 'Links     ';
-  # S.Add(Line);
-  # Line := ';;--------------' + Tab + '----------';
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Name", "Links"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
 #' import helper
@@ -668,7 +691,7 @@ parse_section.labels <- function(x) {
 
 #' import helper
 #' @keywords internal
-parse_section.lidcontrols <- function(x) {
+parse_section.lid_controls <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -682,7 +705,7 @@ parse_section.lidcontrols <- function(x) {
 
 #' import helper
 #' @keywords internal
-parse_section.lidusage <- function(x) {
+parse_section.lid_usage <- function(x) {
   
   tidyr::separate(data = x, 
                   col = "value", 
