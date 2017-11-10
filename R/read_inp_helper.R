@@ -198,8 +198,6 @@ parse_section.junctions <- function(x){
                            "MaxDepth", "InitDepth", 
                            "SurDepth", "Aponded"),
                   sep = "\\s+",
-                  extra = "merge",
-                  fill = "left",
                   convert = TRUE)
   
 }
@@ -270,8 +268,6 @@ parse_section.conduits <- function(x) {
                            "OutOffset", "InitFlow", 
                            "MaxFlow"),
                   sep = "\\s+",
-                  extra = "merge",
-                  fill = "left",
                   convert = TRUE)
   
 }
