@@ -48,22 +48,32 @@ parse_section.raingages <- function(x){
 
 }
 
+#' import helper
+#' @keywords internal
 parse_section.hydrographs <- function(x){
-  # S.Add('[HYDROGRAPHS]');
-  # Line := ';;Hydrograph    ' + Tab + 'Rain Gage/Month ' + Tab + 'Response';
-  # Line := Line + Tab + 'R       ' + Tab + 'T       ' + Tab + 'K       ';
-  # Line := Line + Tab + 'Dmax    ' + Tab + 'Drecov  ' + Tab + 'Dinit   ';       //(5.1.007)
-  # S.Add(Line);
-  # Line := ';;--------------' + Tab + '----------------' + Tab + '--------';
-  # Line := Line + Tab + '--------' + Tab + '--------' + Tab + '--------';
-  # Line := Line + Tab + '--------' + Tab + '--------' + Tab + '--------';
-  # S.Add(Line);
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Hydrograph", "Rain Gage/Month", "Response",
+                           "R", "T", "K",
+                           "Dmax", "Drecov", "Dinit"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
+#' import helper
+#' @keywords internal
 parse_section.temperature <- function(x) {
-  # S.Add('[TEMPERATURE]');
-  # S.Add(';;Data Element    ' + Tab + 'Values     ');
-  # multiple subsection
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Data Element", "tab1", "Values"),
+                  sep = base::cumsum(c(18, 1)), 
+                  convert = TRUE)
+  
 }
 
 #' import helper
@@ -80,10 +90,16 @@ parse_section.evaporation <- function(x) {
   
 }
 
+#' import helper
+#' @keywords internal
 parse_section.events <- function(x) {
-  # S.Add('');
-  # S.Add('[EVENTS]');
-  # S.Add(';;Start Date         End Date');
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Start Date", "End Date"),
+                  sep = 19, 
+                  convert = TRUE)
+  
 }
 
 #' import helper
@@ -474,46 +490,61 @@ parse_section.treatment <- function(x) {
 
 }
 
+#' import helper
+#' @keywords internal
 parse_section.inflows <- function(x) {
-  # S.Add('');
-  # S.Add('[INFLOWS]');
-  # Line := ';;Node          ' + Tab + 'Constituent     ' + Tab + 'Time Series     ';
-  # Line := Line + Tab + 'Type    ' + Tab + 'Mfactor ' + Tab + 'Sfactor ';
-  # Line := Line + Tab + 'Baseline' + Tab + 'Pattern';
-  # S.Add(Line);
-  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------------';
-  # Line := Line + Tab + '--------' + Tab + '--------' + Tab + '--------';
-  # Line := Line + Tab + '--------' + Tab + '--------';
-  # S.Add(Line);
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Node", "Constituent", "Time Series", "Type",
+                           "Mfactor", "Sfactor", "BaseLine", "Pattern"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
-parse_section.dwflows <- function(x) {
-  # S.Add('');
-  # S.Add('[DWF]');
-  # Line := ';;Node          ' + Tab + 'Constituent     ' + Tab + 'Baseline  ';
-  # Line := Line + Tab + 'Patterns  ';
-  # S.Add(Line);
-  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------';
-  # Line := Line + Tab + '----------';
-  # S.Add(Line);
+#' import helper
+#' @keywords internal
+parse_section.dwf <- function(x) {
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Node", "Constituent", "Baseline", "Patterns"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
+#' import helper
+#' @keywords internal
 parse_section.iiflows <- function(x) {
-  # S.Add('');
-  # S.Add('[RDII]');
-  # Line := ';;Node          ' + Tab + 'Unit Hydrograph ' + Tab + 'Sewer Area';
-  # S.Add(Line);
-  # Line := ';;--------------' + Tab + '----------------' + Tab + '----------';
-  # S.Add(Line);
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Node", "Unit Hydrograph", "Sewer Area"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
+#' import helper
+#' @keywords internal
 parse_section.patterns <- function(x) {
-  # S.Add('');
-  # S.Add('[PATTERNS]');
-  # Line := ';;Name          ' + Tab + 'Type      ' + Tab + 'Multipliers';
-  # S.Add(Line);
-  # Line := ';;--------------' + Tab + '----------' + Tab + '-----------';
-  # S.Add(Line);
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Name", "Type", "Multipliers"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
 #' import helper
@@ -584,10 +615,11 @@ parse_section.profiles <- function(x) {
   tidyr::separate(data = x, 
                   col = "value", 
                   into = c("Name", "Links"),
-                  sep = "\\s+",
+                  sep = "\" ",
                   extra = "merge",
                   fill = "left",
-                  convert = TRUE)
+                  convert = TRUE) %>% 
+    dplyr::mutate(Name = paste0(Name, "\""))
   
 }
 
@@ -716,7 +748,38 @@ parse_section.lid_usage <- function(x) {
                            "RptFile", "DrainTo"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
 
+}
+
+#' import helper
+#' @keywords internal
+parse_section.groundwater <- function(x) {
+
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Subcatchment", "Aquifer", "Node", 
+                           "Esurf", "A1", "B1", "A2", 
+                           "B2", "A3", "Dsw", "Egwt",
+                           "Ebot", "Wgr", "Umc"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
+}
+
+#' import helper
+#' @keywords internal
+parse_section.backdrop <- function(x) {
+  
+  tidyr::separate(data = x, 
+                  col = "value", 
+                  into = c("Type", "Value"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
