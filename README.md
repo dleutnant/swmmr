@@ -165,11 +165,11 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 # model, i.e. it plots subcatchments, junctions, links and raingages
 library(ggplot2) # (>= 2.2.1.9000)
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ tibble  1.3.4     ✔ dplyr   0.7.4
 #> ✔ tidyr   0.7.2     ✔ stringr 1.2.0
 #> ✔ readr   1.1.1     ✔ forcats 0.2.0
-#> ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 library(sf)
