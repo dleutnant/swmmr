@@ -11,6 +11,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "README-"
 )
+Sys.setenv(LANG = "en")
 ```
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/swmmr)](https://cran.r-project.org/package=swmmr) [![Build Status](https://travis-ci.org/dleutnant/swmmr.svg?branch=dev)](https://travis-ci.org/dleutnant/swmmr)
@@ -31,8 +32,8 @@ install.packages("swmmr")
 
 You can install the dev version from github with:
 ```{r gh-installation, eval = FALSE}
-# install.packages("devtools")
-devtools::install_github("dleutnant/swmmr@dev")
+# install.packages("remotes")
+remotes::install_github("dleutnant/swmmr@dev")
 ```
 
 ## Example
@@ -151,9 +152,15 @@ Contributing to this package is easy. Just send a [pull request](https://help.gi
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
 
 ## Acknowledgments
-This package has been developed in the course of the project [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722), 
+This package has been mainly developed in the course of the project [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722), 
 carried out at the [Institute for Infrastructure, Water, Resources, Environment (IWARU)](https://en.fh-muenster.de/iwaru/index.php) of the
 [Muenster University of Applied Sciences](https://www.fh-muenster.de).
 The project was funded by the German Federal Ministry of Education and Research (BMBF, FKZ 03FH033PX2).
 
 The development of the R package was inspired by the work of [Peter Steinberg](https://github.com/PeterDSteinberg/RSWMM). Also, it benefits from the Interface Guide of [SWMM](https://www.epa.gov/water-research/storm-water-management-model-swmm).
+
+## Citation
+
+```{r citation, echo=FALSE, results='asis'}
+citation("swmmr")
+```
