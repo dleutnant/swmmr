@@ -27,8 +27,8 @@ install.packages("swmmr")
 You can install the dev version from github with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("dleutnant/swmmr@dev")
+# install.packages("remotes")
+remotes::install_github("dleutnant/swmmr@dev")
 ```
 
 ## Example
@@ -49,6 +49,11 @@ inp_path <- "~/EPA_SWMM_Projects/Examples/Example1.inp"
 
 # glance model structure, the result is a list of data.frames with SWMM sections
 inp <- read_inp(x = inp_path)
+#> Warning: Too many values at 13 locations: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+#> 11, 12, 13
+
+#> Warning: Too many values at 13 locations: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+#> 11, 12, 13
 
 # available SWMM sections
 summary(inp)
@@ -69,6 +74,7 @@ summary(inp)
 #> coverages      3     tbl_df list
 #> buildup        7     tbl_df list
 #> washoff        7     tbl_df list
+#> timeseries     4     tbl_df list
 #> report         2     tbl_df list
 #> map            2     tbl_df list
 #> coordinates    3     tbl_df list
@@ -159,13 +165,13 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 # model, i.e. it plots subcatchments, junctions, links and raingages
 library(ggplot2) # (>= 2.2.1.9000)
 library(tidyverse)
-#> Loading tidyverse: tibble
-#> Loading tidyverse: tidyr
-#> Loading tidyverse: readr
-#> Loading tidyverse: dplyr
-#> Conflicts with tidy packages ----------------------------------------------
-#> filter(): dplyr, stats
-#> lag():    dplyr, stats
+#> ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ✔ tibble  1.3.4     ✔ dplyr   0.7.4
+#> ✔ tidyr   0.7.2     ✔ stringr 1.2.0
+#> ✔ readr   1.1.1     ✔ forcats 0.2.0
+#> ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ✖ dplyr::filter() masks stats::filter()
+#> ✖ dplyr::lag()    masks stats::lag()
 library(sf)
 #> Linking to GEOS 3.6.1, GDAL 2.1.3, proj.4 4.9.3
 
@@ -254,7 +260,7 @@ abide by its terms.
 
 ## Acknowledgments
 
-This package has been developed in the course of the project
+This package has been mainly developed in the course of the project
 [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722),
 carried out at the [Institute for Infrastructure, Water, Resources,
 Environment (IWARU)](https://en.fh-muenster.de/iwaru/index.php) of the
@@ -266,3 +272,16 @@ The development of the R package was inspired by the work of [Peter
 Steinberg](https://github.com/PeterDSteinberg/RSWMM). Also, it benefits
 from the Interface Guide of
 [SWMM](https://www.epa.gov/water-research/storm-water-management-model-swmm).
+
+## Citation
+
+To cite package ‘swmmr’ in publications use:
+
+Dominik Leutnant (2017). swmmr: R Interface for US EPA’s SWMM. R package
+version 0.7.1.9000. <https://github.com/dleutnant/swmmr>
+
+A BibTeX entry for LaTeX users is
+
+@Manual{, title = {swmmr: R Interface for US EPA’s SWMM}, author =
+{Dominik Leutnant}, year = {2017}, note = {R package version
+0.7.1.9000}, url = {<https://github.com/dleutnant/swmmr>}, }
