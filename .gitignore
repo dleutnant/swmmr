@@ -4,21 +4,17 @@
 
 # Example code in package build process
 *-Ex.R
-
 # RStudio files
 .Rproj.user/
-
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
 .Rproj.user
-
 # RData
 .RData
-
 # compiled code
 src-i386
 src-x64
-
 # out files in examples
 inst/extdata/Examples/*.out
+inst/doc

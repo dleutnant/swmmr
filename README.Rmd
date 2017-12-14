@@ -122,7 +122,7 @@ rg_sf <- dplyr::bind_cols(rg_sf, lab_rg_coord)
 
 # create the plot
 ggplot() + 
-  # first plot the subcathcment and colour continously by Area
+  # first plot the subcatchment and colour continously by Area
   geom_sf(data = sub_sf, aes(fill = Area)) + 
   # label by subcatchments by name
   geom_label(data = sub_sf, aes(X, Y, label = Name), alpha = 0.5, size = 3) +
