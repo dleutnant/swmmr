@@ -58,15 +58,9 @@ read_rpt <- function(x) {
   
   # if no sections can be found, we got errors
   if (!any(section_available)) {
-    message("SWMM model contains errors.")
-    # paste(tmp[-c(1:4, (length(tmp)-4):(length(tmp)))], collapse = "") %>% 
-    #   strsplit(split = "ERROR ", x = .) %>% 
-    #   unlist() %>%
-    #   tibble::as_tibble() %>%
-    #   tidyr::separate(col = "value",
-    #                   into = c("Error", "Message"), 
-    #                   sep = 4) %>% View
-    return(rpt_lines)
+    message("There are errors.")
+    res <- section_to_tbl(x = rpt_lines, section_name = "rpt_error")
+    return(res)
   }
   
   # subset to available sections only

@@ -13,8 +13,9 @@ of the United States Environmental Protection Agency (US EPA) to R with
 currently two main goals: (1) Run a SWMM simulation from R and (2)
 provide fast access to simulation results, i.e. SWMM’s binary
 ‘.out’-files. High performance is achieved with help of Rcpp.
-Additionally, reading SWMM’s ‘.inp’-files is supported to glance model
-structures.
+Additionally, reading SWMM’s ‘.inp’ and ‘.rpt’ files is supported to
+glance model structures and to directly access simulation result
+summaries.
 
 ## Installation
 
@@ -107,8 +108,6 @@ files <- run_swmm(inp = inp_path)
 # here, we focus on the system variable (iType = 3) from which we pull
 # total rainfall (in/hr or mm/hr) and total runoff (flow units) (vIndex = c(1,4)).
 results <- read_out(files$out, iType = 3, vIndex = c(1, 4))
-#> Warning in strptime(xx, f <- "%Y-%m-%d %H:%M:%OS", tz = tz): unknown
-#> timezone 'zone/tz/2017c.1.0/zoneinfo/Europe/Berlin'
 
 # results is a list object containing two time series 
 str(results, max.level = 2)
@@ -157,6 +156,50 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 
 ![](README-example-2.png)<!-- -->
 
+``` r
+
+# We also might be interested in the report file:
+# use read_rpt to get is a list of data.frames with SWMM summary sections
+report <- read_rpt(files$rpt)
+#> Warning in readLines(x): incomplete final line found on '/Users/dominik/
+#> EPA_SWMM_Projects/Examples/Example1.rpt'
+
+# glance available summaries
+summary(report)
+#>                                  Length Class  Mode
+#> analysis_options                 2      tbl_df list
+#> runoff_quantity_continuity       3      tbl_df list
+#> runoff_quality_continuity        3      tbl_df list
+#> flow_routing_continuity          3      tbl_df list
+#> quality_routing_continuity       3      tbl_df list
+#> highest_flow_instability_indexes 2      tbl_df list
+#> routing_time_step_summary        2      tbl_df list
+#> subcatchment_runoff_summary      9      tbl_df list
+#> subcatchment_washoff_summary     3      tbl_df list
+#> node_depth_summary               8      tbl_df list
+#> node_inflow_summary              9      tbl_df list
+#> node_flooding_summary            7      tbl_df list
+#> outfall_loading_summary          7      tbl_df list
+#> link_flow_summary                8      tbl_df list
+#> conduit_surcharge_summary        6      tbl_df list
+#> link_pollutant_load_summary      3      tbl_df list
+
+# convenient access to summaries through list structure
+report$subcatchment_runoff_summary
+#> # A tibble: 6 x 9
+#>   Subcatchment Total_Precip Total_Runon Total_Evap Total_Infil
+#>          <chr>        <dbl>       <dbl>      <dbl>       <dbl>
+#> 1            3         2.65           0          0        1.16
+#> 2            4         2.65           0          0        1.16
+#> 3            5         2.65           0          0        1.24
+#> 4            6         2.65           0          0        2.27
+#> 5            7         2.65           0          0        2.14
+#> 6            8         2.65           0          0        2.25
+#> # ... with 4 more variables: Total_Runoff_Depth <dbl>,
+#> #   Total_Runoff_Volume <dbl>, Total_Peak_Runoff <dbl>,
+#> #   Total_Runoff_Coeff <dbl>
+```
+
 ### Visualize the model structure
 
 ``` r
@@ -165,11 +208,11 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 # model, i.e. it plots subcatchments, junctions, links and raingages
 library(ggplot2) # (>= 2.2.1.9000)
 library(tidyverse)
-#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ tibble  1.3.4     ✔ dplyr   0.7.4
 #> ✔ tidyr   0.7.2     ✔ stringr 1.2.0
 #> ✔ readr   1.1.1     ✔ forcats 0.2.0
-#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 library(sf)
@@ -278,10 +321,10 @@ from the Interface Guide of
 To cite package ‘swmmr’ in publications use:
 
 Dominik Leutnant (2017). swmmr: R Interface for US EPA’s SWMM. R package
-version 0.7.1.9000. <https://github.com/dleutnant/swmmr>
+version 0.7.2.9000. <https://github.com/dleutnant/swmmr>
 
 A BibTeX entry for LaTeX users is
 
 @Manual{, title = {swmmr: R Interface for US EPA’s SWMM}, author =
 {Dominik Leutnant}, year = {2017}, note = {R package version
-0.7.1.9000}, url = {<https://github.com/dleutnant/swmmr>}, }
+0.7.2.9000}, url = {<https://github.com/dleutnant/swmmr>}, }

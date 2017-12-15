@@ -1,10 +1,12 @@
-# swmmr 0.7.0.9000
+# swmmr 0.7.2.9000
 
 ## Breaking changes
 
 * `read_inp` sections are now all in lower letters.
 
 ## New features
+
+* Read rpt files with `read_rpt` and get direct access to simulation summaries.
 
 * New functions to plot swmm objects from `*.inp` files.
 

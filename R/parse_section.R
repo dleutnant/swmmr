@@ -1270,4 +1270,16 @@ parse_section.link_pollutant_load_summary <- function(x){
   
 }
 
-
+#' import helper
+#' @keywords internal
+parse_section.rpt_error <- function(x){
+  
+  # ignore the first and last 4 lines (Version and timings)
+  tbl <- x[-c(1:4, (nrow(x)-4):(nrow(x))), ] %>%
+    dplyr::filter(. != "") %>% 
+    unlist(use.names = FALSE)
+  
+  tibble::tibble(Error = paste(tbl[seq(1, length(tbl), 2)], 
+                               tbl[seq(2, length(tbl), 2)]))
+  
+}
