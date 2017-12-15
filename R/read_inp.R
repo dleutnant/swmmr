@@ -1,3 +1,23 @@
+# result section
+#' @keywords internal
+input_sections <- c("aquifers","backdrop","buildup",
+                    "conduits","coordinates","coverages","curves",
+                    "dividers","dwf",
+                    "evaporation","events",
+                    "files","groundwater","hydrographs",
+                    "iiflows","infiltration","inflows",
+                    "junctions",
+                    "labels","landuses","lid_controls","lid_usage","loadings","losses",
+                    "map",
+                    "options", "orifices","outfalls","outlets",
+                    "patterns","pollutants","polygons","profiles","pumps",
+                    "raingages","report",
+                    "snowpacks","storage","subareas","subcatchments","symbols",
+                    "tags","temperature","timeseries","title","treatment",
+                    "vertices",
+                    "washoff","weirs",
+                    "xsections")
+
 #' Read SWMM's .inp file
 #'
 #' Reads a SWMM .inp file and creates a list with corresponding SWMM sections.
@@ -18,10 +38,10 @@ read_inp <- function(x, rm.comment = TRUE) {
   
   # find section start
   section_start <- grep("\\[", inp_lines, value = F)
-  
+
   # get section names
-  section_names <- gsub(pattern = "\\[|\\]", 
-                        replacement = "",  
+  section_names <- gsub(pattern = "\\[|\\]",
+                        replacement = "",
                         x = inp_lines[section_start])
   
   # get end per section
@@ -45,7 +65,7 @@ read_inp <- function(x, rm.comment = TRUE) {
     purrr::discard(is.null) %>% 
     # discard empty tibbles (sections were parsed but empty)
     purrr::discard( ~ nrow(.) < 1)
-
+  
   # assign class attribute
   class(res) <- "inp"
   

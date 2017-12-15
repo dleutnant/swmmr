@@ -14,9 +14,6 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
   # add section as class to prepare generic parser
   class(x) <- c(class(x), section_name)
   
-  stop()
-  return(x)
-  
   # generic parser
   x <- parse_section(x)
   
@@ -989,7 +986,7 @@ parse_section.runoff_quantity_continuity <- function(x){
                   extra = "merge",
                   fill = "left",
                   convert = TRUE) %>% 
-    mutate_all(trimws) %>% 
+    dplyr::mutate_all(trimws) %>% 
     tidyr::separate(col = "value",
                     into = c("Volume", "Depth"),
                     sep = "\\s+",
@@ -1016,7 +1013,7 @@ parse_section.runoff_quality_continuity <- function(x){
                   extra = "merge",
                   fill = "left",
                   convert = TRUE) %>% 
-    mutate_all(trimws) %>% 
+    dplyr::mutate_all(trimws) %>% 
     tidyr::separate(col = "value",
                     into = pollutants,
                     sep = "\\s+",
@@ -1036,7 +1033,7 @@ parse_section.flow_routing_continuity <- function(x){
                   extra = "merge",
                   fill = "left",
                   convert = TRUE) %>% 
-    mutate_all(trimws) %>% 
+    dplyr::mutate_all(trimws) %>% 
     tidyr::separate(col = "value",
                     into = c("Volume_a", "Volume_b"),
                     sep = "\\s+",
@@ -1062,7 +1059,7 @@ parse_section.quality_routing_continuity <- function(x){
                   extra = "merge",
                   fill = "left",
                   convert = TRUE) %>% 
-    mutate_all(trimws) %>% 
+    dplyr::mutate_all(trimws) %>% 
     tidyr::separate(col = "value",
                     into = pollutants,
                     sep = "\\s+",
