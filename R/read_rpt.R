@@ -9,18 +9,27 @@ result_sections <- c("Element Count",
                      "Link Summary",
                      "Cross Section Summary",
                      "Analysis Options",
+                     #"Rainfall File Summary",
+                     #"Rainfall Dependent I/I",
+                     #"Control Actions Taken",
                      "Runoff Quantity Continuity", 
                      "Runoff Quality Continuity",
+                     #"roundwater Continuity",
                      "Flow Routing Continuity",
                      "Quality Routing Continuity",
+                     #"Highest Continuity Errors",
+                     #"Time-Step Critical Elements",
                      "Highest Flow Instability Indexes", 
                      "Routing Time Step Summary", 
+                     #"Subcatchment Results",
                      "Subcatchment Runoff Summary",
                      "Subcatchment Washoff Summary",
+                     #"Node Results",
                      "Node Depth Summary", 
                      "Node Inflow Summary", 
                      "Node Flooding Summary", 
                      "Outfall Loading Summary", 
+                     #"Link Results",
                      "Link Flow Summary", 
                      "Conduit Surcharge Summary",
                      "Link Pollutant Load Summary")
@@ -46,6 +55,19 @@ read_rpt <- function(x) {
   
   # which sections are available?
   section_available <- purrr::map_lgl(result_sections, ~ any(grepl(., x = rpt_lines)))
+  
+  # if no sections can be found, we got errors
+  if (!any(section_available)) {
+    message("SWMM model contains errors.")
+    # paste(tmp[-c(1:4, (length(tmp)-4):(length(tmp)))], collapse = "") %>% 
+    #   strsplit(split = "ERROR ", x = .) %>% 
+    #   unlist() %>%
+    #   tibble::as_tibble() %>%
+    #   tidyr::separate(col = "value",
+    #                   into = c("Error", "Message"), 
+    #                   sep = 4) %>% View
+    return(rpt_lines)
+  }
   
   # subset to available sections only
   result_sections <- result_sections[section_available]
