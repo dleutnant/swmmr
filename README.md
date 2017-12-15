@@ -14,7 +14,7 @@ currently two main goals: (1) Run a SWMM simulation from R and (2)
 provide fast access to simulation results, i.e. SWMM’s binary
 ‘.out’-files. High performance is achieved with help of Rcpp.
 Additionally, reading SWMM’s ‘.inp’ and ‘.rpt’ files is supported to
-glance model structures and to directly access simulation result
+glance model structures and to get direct access to simulation
 summaries.
 
 ## Installation
