@@ -25,15 +25,15 @@ write_inp <- function(x, file) {
     cat(paste0("[", toupper(section), "]"), "\n")  
     
     # write the data without names 
-    write.table(x = x[section],
-                quote = FALSE,
-                na = "",
-                row.names = FALSE, 
-                col.names = FALSE)
+    utils::write.table(x = x[section],
+                       quote = FALSE,
+                       na = "",
+                       row.names = FALSE, 
+                       col.names = FALSE)
     
     # write newline to separate sections
     cat("\n")
-      
+    
   }
   
   # close sink

@@ -4,6 +4,7 @@
 \alias{convert_to_sf}
 \alias{raingages_to_sf}
 \alias{junctions_to_sf}
+\alias{outfalls_to_sf}
 \alias{subcatchments_to_sf}
 \alias{links_to_sf}
 \alias{inp_to_sf}
@@ -12,6 +13,8 @@
 raingages_to_sf(x)
 
 junctions_to_sf(x)
+
+outfalls_to_sf(x)
 
 subcatchments_to_sf(x)
 
@@ -29,6 +32,8 @@ A simple feature or a list of simple features
 \itemize{
 \item \code{junctions_to_sf()}: converts junctions to simple features (required
 sections: \code{junctions} and \code{coordinates})
+\item \code{outfalls_to_sf()}: converts junctions to simple features (required
+sections: \code{outfalls} and \code{coordinates})
 \item \code{links_to_sf()}: converts links to simple features (required sections:
 \code{conduits} and \code{coordinates})
 \item \code{subcatchments_to_sf()}: converts subcatchments to simple features (required

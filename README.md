@@ -86,17 +86,16 @@ summary(inp)
 # for example, inspect section subcatchments
 inp$subcatchments
 #> # A tibble: 8 x 9
-#>    Name `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen
-#>   <chr>       <chr>  <chr> <int>       <int> <int>      <dbl>   <int>
-#> 1     1         RG1      9    10          50   500       0.01       0
-#> 2     2         RG1     10    10          50   500       0.01       0
-#> 3     3         RG1     13     5          50   500       0.01       0
-#> 4     4         RG1     22     5          50   500       0.01       0
-#> 5     5         RG1     15    15          50   500       0.01       0
-#> 6     6         RG1     23    12          10   500       0.01       0
-#> 7     7         RG1     19     4          10   500       0.01       0
-#> 8     8         RG1     18    10          10   500       0.01       0
-#> # ... with 1 more variables: Snowpack <lgl>
+#>   Name  `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbL… Snow…
+#>   <chr> <chr>       <chr>  <int>       <int> <int>      <dbl>  <int> <lgl>
+#> 1 1     RG1         9         10          50   500     0.0100      0 NA   
+#> 2 2     RG1         10        10          50   500     0.0100      0 NA   
+#> 3 3     RG1         13         5          50   500     0.0100      0 NA   
+#> 4 4     RG1         22         5          50   500     0.0100      0 NA   
+#> 5 5     RG1         15        15          50   500     0.0100      0 NA   
+#> 6 6     RG1         23        12          10   500     0.0100      0 NA   
+#> 7 7     RG1         19         4          10   500     0.0100      0 NA   
+#> 8 8     RG1         18        10          10   500     0.0100      0 NA
 
 # run a simulation
 # the result is a named list of paths, directing
@@ -187,17 +186,14 @@ summary(report)
 # convenient access to summaries through list structure
 report$subcatchment_runoff_summary
 #> # A tibble: 6 x 9
-#>   Subcatchment Total_Precip Total_Runon Total_Evap Total_Infil
-#>          <chr>        <dbl>       <dbl>      <dbl>       <dbl>
-#> 1            3         2.65           0          0        1.16
-#> 2            4         2.65           0          0        1.16
-#> 3            5         2.65           0          0        1.24
-#> 4            6         2.65           0          0        2.27
-#> 5            7         2.65           0          0        2.14
-#> 6            8         2.65           0          0        2.25
-#> # ... with 4 more variables: Total_Runoff_Depth <dbl>,
-#> #   Total_Runoff_Volume <dbl>, Total_Peak_Runoff <dbl>,
-#> #   Total_Runoff_Coeff <dbl>
+#>   Subcatchment Total_Precip Total… Total… Total… Total… Total… Tota… Tota…
+#>   <chr>               <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl> <dbl> <dbl>
+#> 1 3                    2.65      0      0   1.16  1.49  0.200  2.45  0.561
+#> 2 4                    2.65      0      0   1.16  1.49  0.200  2.45  0.561
+#> 3 5                    2.65      0      0   1.24  1.40  0.570  6.56  0.528
+#> 4 6                    2.65      0      0   2.27  0.380 0.120  1.50  0.143
+#> 5 7                    2.65      0      0   2.14  0.510 0.0600 0.790 0.194
+#> 6 8                    2.65      0      0   2.25  0.400 0.110  1.33  0.150
 ```
 
 ### Visualize the model structure
@@ -208,11 +204,11 @@ report$subcatchment_runoff_summary
 # model, i.e. it plots subcatchments, junctions, links and raingages
 library(ggplot2) # (>= 2.2.1.9000)
 library(tidyverse)
-#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
-#> ✔ tibble  1.3.4     ✔ dplyr   0.7.4
+#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ✔ tibble  1.4.1     ✔ dplyr   0.7.4
 #> ✔ tidyr   0.7.2     ✔ stringr 1.2.0
 #> ✔ readr   1.1.1     ✔ forcats 0.2.0
-#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 library(sf)
@@ -320,11 +316,12 @@ from the Interface Guide of
 
 To cite package ‘swmmr’ in publications use:
 
-Dominik Leutnant (2017). swmmr: R Interface for US EPA’s SWMM. R package
-version 0.7.2.9000. <https://github.com/dleutnant/swmmr>
+Dominik Leutnant and Anneke Doering (2018). swmmr: R Interface for US
+EPA’s SWMM. R package version 0.7.2.9000.
+<https://github.com/dleutnant/swmmr>
 
 A BibTeX entry for LaTeX users is
 
 @Manual{, title = {swmmr: R Interface for US EPA’s SWMM}, author =
-{Dominik Leutnant}, year = {2017}, note = {R package version
-0.7.2.9000}, url = {<https://github.com/dleutnant/swmmr>}, }
+{Dominik Leutnant and Anneke Doering}, year = {2018}, note = {R package
+version 0.7.2.9000}, url = {<https://github.com/dleutnant/swmmr>}, }

@@ -2,6 +2,8 @@
 #'
 #' * `junctions_to_sf()`: converts junctions to simple features (required 
 #' sections: `junctions` and `coordinates`)
+#' * `outfalls_to_sf()`: converts junctions to simple features (required 
+#' sections: `outfalls` and `coordinates`)
 #' * `links_to_sf()`: converts links to simple features (required sections:
 #' `conduits` and `coordinates`)
 #' * `subcatchments_to_sf()`: converts subcatchments to simple features (required 
@@ -82,6 +84,40 @@ junctions_to_sf <- function(x) {
   
   # return simple feature objects of subcatchments
   return(junc_sf)
+  
+}
+
+#' @export
+#' @rdname convert_to_sf
+outfalls_to_sf <- function(x) {
+  
+  # check class and required elements
+  stopifnot(inherits(x, "inp"))
+  
+  # check sections
+  if (!all(c("outfalls", "coordinates") %in% names(x))) {
+    warning("incomplete features: outfalls")
+    return(NULL)
+  } 
+  
+  # join junctions and coordinates
+  outf_sf <- dplyr::left_join(x = x[["outfalls"]],
+                              y = x[["coordinates"]],
+                              by = c("Name" = "Node")) %>% 
+    
+    # nest by coordinates
+    tidyr::nest(`X-Coord`,`Y-Coord`, .key = "geometry") %>% 
+    # create multi per subcatchment
+    dplyr::mutate(geometry = purrr::map(geometry,
+                                        ~ data.matrix(.) %>% 
+                                          sf::st_point(.))) %>% 
+    # create geometry column
+    dplyr::mutate(geometry = sf::st_sfc(geometry)) %>% 
+    # create simple feature objects
+    sf::st_sf()
+  
+  # return simple feature objects of outfalls
+  return(outf_sf)
   
 }
 
@@ -241,6 +277,7 @@ inp_to_sf <- function(x) {
   # return list with simple features of swmm objects
   sf <- list(subcatchments = subcatchments_to_sf(x), 
              junctions = junctions_to_sf(x),
+             outfalls = outfalls_to_sf(x),
              links = links_to_sf(x), 
              raingages = raingages_to_sf(x))
   

@@ -10,6 +10,8 @@
 
 * New functions to plot swmm objects from `*.inp` files.
 
+* Convert swmm objects to simple features (sf).
+
 * `read_inp` returns now an object of class `inp`.
 
 ## Bug fixes
