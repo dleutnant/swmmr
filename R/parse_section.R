@@ -373,7 +373,7 @@ parse_section.weirs <- function(x) {
                            "RoadWidth", "RoadSurf"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
