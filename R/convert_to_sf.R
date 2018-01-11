@@ -10,7 +10,7 @@
 #' sections: `subcatchments`, `subareas`, `infiltration` and `polygons`)
 #' * `raingages_to_sf() `: converts raingages to simple features (required 
 #' sections: `raingages` and `symbols`)
-#' * `inp_to_sf()`: converts junctions, links, subcatchments and raingages to simple features 
+#' * `inp_to_sf()`: converts junctions, outfalls, links, subcatchments and raingages to simple features 
 #' and returns a list
 #'
 #' @param x An object of class 'inp', created by \code{\link{read_inp}}.
