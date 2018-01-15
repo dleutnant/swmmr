@@ -40,7 +40,7 @@ sections: \code{outfalls} and \code{coordinates})
 sections: \code{subcatchments}, \code{subareas}, \code{infiltration} and \code{polygons})
 \item \code{raingages_to_sf()}: converts raingages to simple features (required
 sections: \code{raingages} and \code{symbols})
-\item \code{inp_to_sf()}: converts junctions, links, subcatchments and raingages to simple features
+\item \code{inp_to_sf()}: converts junctions, outfalls, links, subcatchments and raingages to simple features
 and returns a list
 }
 }
