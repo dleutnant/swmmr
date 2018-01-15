@@ -374,9 +374,15 @@ parse_section.orifices <- function(x) {
 #' @keywords internal
 parse_section.weirs <- function(x) {
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "From Node", 
+                  into = c("Name", "value"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "right",
+                  convert = TRUE) %>% 
+  tidyr::separate(col = "value", 
+                  into = c("From Node", 
                            "To Node", "Type", 
                            "CrestHt", "Qcoeff", 
                            "Gated", "EndCon", 
@@ -384,7 +390,7 @@ parse_section.weirs <- function(x) {
                            "RoadWidth", "RoadSurf"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
