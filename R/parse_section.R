@@ -303,15 +303,21 @@ parse_section.storage <- function(x){
   
   tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name","Elev.", 
-                           "MaxDepth", "InitDepth", 
-                           "Shape", "Curve Name/Params", 
-                           "N/A", "Fevap", 
-                           "Psi", "Ksat", "IMD"),
+                  into = c("Name", "value"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
-                  convert = TRUE)
+                  fill = "right",
+                  convert = TRUE) %>% 
+    tidyr::separate(col = "value",
+                    into = c("Elev.", 
+                             "MaxDepth", "InitDepth", 
+                             "Shape", "Curve Name/Params", 
+                             "N/A", "Fevap", 
+                             "Psi", "Ksat", "IMD"),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "right",
+                    convert = TRUE)
   
 }
 
