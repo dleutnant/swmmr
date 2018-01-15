@@ -416,16 +416,22 @@ parse_section.outlets <- function(x) {
 #' @keywords internal
 parse_section.xsections <- function(x) {
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Link", "Shape", 
-                           "Geom1", "Geom2", 
-                           "Geom3", "Geom4", 
-                           "Barrels", "Culvert"),
+                  into = c("Link", "value"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
-                  convert = TRUE)
+                  fill = "right",
+                  convert = TRUE) %>% 
+    tidyr::separate(col = "value",
+                    into = c("Shape", 
+                             "Geom1", "Geom2", 
+                             "Geom3", "Geom4", 
+                             "Barrels", "Culvert"),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "right",
+                    convert = TRUE)
   
 }
 
@@ -561,14 +567,20 @@ parse_section.treatment <- function(x) {
 #' @keywords internal
 parse_section.inflows <- function(x) {
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Node", "Constituent", "Time Series", "Type",
-                           "Mfactor", "Sfactor", "BaseLine", "Pattern"),
+                  into = c("Node", "value"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
-                  convert = TRUE)
+                  fill = "right",
+                  convert = TRUE) %>% 
+    tidyr::separate(col = "value", 
+                    into = c("Constituent", "Time Series", "Type",
+                             "Mfactor", "Sfactor", "BaseLine", "Pattern"),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "right",
+                    convert = TRUE)
   
 }
 
