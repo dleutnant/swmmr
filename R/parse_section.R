@@ -655,7 +655,7 @@ parse_section.curves <- function(x){
                   into = c("Name", "Type", "X-Value", "Y-Value"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
