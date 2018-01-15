@@ -650,13 +650,19 @@ parse_section.timeseries <- function(x) {
 #' @keywords internal
 parse_section.curves <- function(x){
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "Type", "X-Value", "Y-Value"),
+                  into = c("Name", "value"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "right",
-                  convert = TRUE)
+                  convert = TRUE) %>% 
+    tidyr::separate(col = "value", 
+                    into = c("Type", "X-Value", "Y-Value"),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "left",
+                    convert = TRUE)
   
 }
 
