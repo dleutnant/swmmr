@@ -40,16 +40,17 @@ result_sections <- c("Element Count",
 #' 
 #' @param x Name (incl. path) to an report file.
 #' @return An object of class `rpt`
+#' @param ... optional arguments passed to \code{\link[readr]{read_lines}}
 #' @examples  
 #' \dontrun{
 #' list_of_rpt_results <- read_rpt("model.rpt")
 #' } 
 #' @rdname read_rpt
 #' @export
-read_rpt <- function(x) {
+read_rpt <- function(x, ...) {
   
   # read lines and trimws
-  rpt_lines <- readLines(x) %>% 
+  rpt_lines <- readr::read_lines(x, ...) %>% 
     trimws(.) %>% 
     .[!grepl("---------", .)]
   
