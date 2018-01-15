@@ -1,0 +1,66 @@
+---
+title: "How swmmr reads and writes SWMM files"
+author: "Dominik Leutnant"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How swmmr reads and writes inp files}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## What is a inp file?
+
+US EPA's Stormwater Management Model (SWMM) stores all relevant data in the so called
+*.inp file. This plain ASCII coded file contains information about model structure 
+(e.g., subcatchments) and model options (e.g. flow units, flow routing, simulation
+period). The file itself is structured into sections which starts and ends with opening 
+and closing squared brackets (`[`, `]`).
+
+## Which inp sections are allowed?
+Currently, `r length(swmmr:::input_sections)` sections are recognized. These are:
+```{r inp_sec, echo = FALSE}
+swmmr:::input_sections
+```
+
+## What happens on `read_inp`?
+
+`swmmr`'s inp parser walks through the file and separates the file into section
+blocks. A section is recognized if its name is enclosed by squared brackets. 
+Each section has an own parsing scheme, which especially holds header information
+(i.e. colnames). The result of a parsed section is always a `tibble`, which 
+subsequently leads to a list of `tibbles` for the entire `inp` file.
+
+## What happens on `write_inp`?
+
+The benefit of parsing the `inp` file into a list of `tibbles` becomes clearly 
+if a new `inp` file has to be written to disk: `swmmr`'s inp writer just walks 
+through the `inp` object and writes each tibble (whitespace separated) into one
+file. However, column names of sections are not written to clearly indicate the 
+origin of file (i.e. `swmmr`). If column names are really required, the new 
+generated inp file can still be opened with SWMM and saved back with the GUI.
+
+## What is a rpt file?
+
+After each SWMM simulation run, a report file (`*.rpt`) is generated containing
+status reports and result summaries.
+
+## Which rpt sections are parsed?
+Currently, `r length(swmmr:::report_sections)` report sections are recognized. 
+These are:
+```{r rpt_sec, echo = FALSE}
+swmmr:::report_sections
+```
+
+## What happens on `read_rpt`?
+
+Report files are read in the same manner like `inp` files. The output will be 
+a `tibble` for each summary, which results as a list of `tibbles` for a single 
+`rpt` file.
