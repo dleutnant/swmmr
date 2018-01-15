@@ -179,14 +179,19 @@ parse_section.subareas <- function(x){
   
   tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Subcatchment",
-                           "N-Imperv", 
+                  into = c("Subcatchment", "value"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE) %>% 
+  tidyr::separate(col = "value", 
+                  into = c("N-Imperv", 
                            "N-Perv", "S-Imperv",
                            "S-Perv", "PctZero", "RouteTo", 
                            "PctRouted"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
