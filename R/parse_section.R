@@ -68,6 +68,9 @@ parse_section.default <- function(x) {
 #' import helper
 #' @keywords internal
 parse_section.options <- function(x){
+
+  # preprocessing find empty entries and delete them
+  x <- tibble(value = x$value[-which(x$value == "")])
   
   tidyr::separate(data = x, 
                   col = "value", 
@@ -305,7 +308,7 @@ parse_section.storage <- function(x){
                            "Psi", "Ksat", "IMD"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
@@ -456,7 +459,7 @@ parse_section.landuses <- function(x){
                            "Fraction_Available", "Last_Swept"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
@@ -621,13 +624,25 @@ parse_section.timeseries <- function(x) {
 #' @keywords internal
 parse_section.curves <- function(x){
   
-  tidyr::separate(data = x, 
+  x <- tidyr::separate(data = x, 
                   col = "value", 
                   into = c("Name", "Type", "X-Value", "Y-Value"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
                   convert = TRUE)
+				  
+  # postprocessing...
+  # ...shift entries
+  rows <- grep("[a-z]", x$Type)
+  x[-rows,"Y-Value"] <- x[-rows, "X-Value"]
+  x[-rows,"X-Value"] <- x[-rows, "Type"]
+  x[-rows,"Type"] <- NA
+
+  # ...replace NA with the most recent non-NA prior it
+  x <- zoo::na.locf(x)
+
+  return(x)
   
 }
 
