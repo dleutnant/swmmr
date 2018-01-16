@@ -218,19 +218,25 @@ parse_section.infiltration <- function(x){
 #' @keywords internal
 parse_section.aquifers <- function(x){
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Name", "Por", 
-                           "WP", "FC",
-                           "Ksat", "Kslope",
-                           "Tslope", "ETu", 
-                           "ETs", "Seep", 
-                           "Ebot", "Egw",
-                           "Umc", "ETupat"),
+                  into = c("Name", "value"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
-                  convert = TRUE)
+                  fill = "right",
+                  convert = TRUE) %>% 
+    tidyr::separate(col = "value", 
+                    into = c("Por", 
+                             "WP", "FC",
+                             "Ksat", "Kslope",
+                             "Tslope", "ETu", 
+                             "ETs", "Seep", 
+                             "Ebot", "Egw",
+                             "Umc", "ETupat"),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "left",
+                    convert = TRUE)
 }
 
 #' import helper
@@ -473,14 +479,20 @@ parse_section.pollutants <- function(x){
 #' @keywords internal
 parse_section.landuses <- function(x){
   
-  tidyr::separate(data = x,
+  tidyr::separate(data = x, 
                   col = "value", 
-                  into = c("Name", "Sweeping_Interval", 
-                           "Fraction_Available", "Last_Swept"),
+                  into = c("Name", "value"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
-                  convert = TRUE)
+                  fill = "right",
+                  convert = TRUE) %>% 
+    tidyr::separate(col = "value", 
+                    into = c("Sweeping_Interval", 
+                             "Fraction_Available", "Last_Swept"),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "right",
+                    convert = TRUE)
   
 }
 
@@ -650,13 +662,14 @@ parse_section.timeseries <- function(x) {
 #' @keywords internal
 parse_section.curves <- function(x){
   
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Name", "value"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE) %>% 
+  x %>% 
+    dplyr::mutate(value = trimws(value, which = "right")) %>% 
+    tidyr::separate(col = "value", 
+                    into = c("Name", "value"),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "right",
+                    convert = TRUE) %>% 
     tidyr::separate(col = "value", 
                     into = c("Type", "X-Value", "Y-Value"),
                     sep = "\\s+",
@@ -842,15 +855,21 @@ parse_section.lid_usage <- function(x) {
 #' @keywords internal
 parse_section.groundwater <- function(x) {
   
-  tidyr::separate(data = x, 
+  tidyr::separate(data = x,
                   col = "value", 
-                  into = c("Subcatchment", "Aquifer", "Node", 
+                  into = c("Subcatchment", "value"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "right",
+                  convert = TRUE) %>% 
+  tidyr::separate(col = "value", 
+                  into = c("Aquifer", "Node", 
                            "Esurf", "A1", "B1", "A2", 
                            "B2", "A3", "Dsw", "Egwt",
                            "Ebot", "Wgr", "Umc"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
