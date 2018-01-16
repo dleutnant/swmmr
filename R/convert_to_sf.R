@@ -10,13 +10,21 @@
 #' sections: `subcatchments`, `subareas`, `infiltration` and `polygons`)
 #' * `raingages_to_sf() `: converts raingages to simple features (required 
 #' sections: `raingages` and `symbols`)
-#' * `inp_to_sf()`: converts junctions, outfalls, links, subcatchments and raingages to simple features 
-#' and returns a list
+#' * `storages_to_sf()`: converts storages to simple features (required sections:
+#' `storages` and `coordinates`)
+#' * `weirs_to_sf()`: converts weirs to simple features (required sections:
+#' `weirs` and `coordinates`)
+#' * `orifices_to_sf()`: converts orifices to simple features (required sections:
+#' `orifices` and `coordinates`)
+#' * `pumps_to_sf()`: converts pumps to simple features (required sections:
+#' `pumps` and `coordinates`)
+#' * `inp_to_sf()`: converts junctions, outfalls, links, storages, weirs, 
+#' orifices, pumps, subcatchments and raingages to a list of simple features
 #'
 #' @param x An object of class 'inp', created by \code{\link{read_inp}}.
 #' @return A simple feature or a list of simple features
 #' @name convert_to_sf
-#' @seealso \code{\link[ggplot2]{geom_sf}}
+#' @seealso \code{\link[sf]{sf}} or \code{\link[ggplot2]{geom_sf}}
 NULL
 
 #' @export
@@ -32,25 +40,11 @@ raingages_to_sf <- function(x) {
     return(NULL)
   } 
   
-  # join junctions and coordinates
+  # return simple feature objects of raingages
   rg_sf <- dplyr::left_join(x = x[["raingages"]],
                               y = x[["symbols"]],
                               by = c("Name" = "Gage")) %>% 
-    
-    # nest by coordinates
-    tidyr::nest(`X-Coord`,`Y-Coord`, .key = "geometry") %>% 
-    # create point per rg
-    dplyr::mutate(geometry = purrr::map(geometry,
-                                        ~ data.matrix(.) %>% 
-                                          sf::st_point(.))) %>% 
-    # create geometry column
-    dplyr::mutate(geometry = sf::st_sfc(geometry)) %>% 
-    # create simple feature objects
-    sf::st_sf()
-  
-  # return simple feature objects of subcatchments
-  return(rg_sf)
-  
+    create_sf_of_pt()
 }
 
 #' @export
@@ -66,24 +60,11 @@ junctions_to_sf <- function(x) {
     return(NULL)
   } 
   
-  # join junctions and coordinates
-  junc_sf <- dplyr::left_join(x = x[["junctions"]],
-                              y = x[["coordinates"]],
-                              by = c("Name" = "Node")) %>% 
-    
-    # nest by coordinates
-    tidyr::nest(`X-Coord`,`Y-Coord`, .key = "geometry") %>% 
-    # create multi per subcatchment
-    dplyr::mutate(geometry = purrr::map(geometry,
-                                        ~ data.matrix(.) %>% 
-                                          sf::st_point(.))) %>% 
-    # create geometry column
-    dplyr::mutate(geometry = sf::st_sfc(geometry)) %>% 
-    # create simple feature objects
-    sf::st_sf()
-  
-  # return simple feature objects of subcatchments
-  return(junc_sf)
+  # return simple feature objects of junctions
+  dplyr::left_join(x = x[["junctions"]],
+                   y = x[["coordinates"]],
+                   by = c("Name" = "Node")) %>% 
+    create_sf_of_pt()
   
 }
 
@@ -100,24 +81,32 @@ outfalls_to_sf <- function(x) {
     return(NULL)
   } 
   
-  # join junctions and coordinates
+  # return simple feature objects of outfalls
   outf_sf <- dplyr::left_join(x = x[["outfalls"]],
                               y = x[["coordinates"]],
                               by = c("Name" = "Node")) %>% 
-    
-    # nest by coordinates
-    tidyr::nest(`X-Coord`,`Y-Coord`, .key = "geometry") %>% 
-    # create multi per subcatchment
-    dplyr::mutate(geometry = purrr::map(geometry,
-                                        ~ data.matrix(.) %>% 
-                                          sf::st_point(.))) %>% 
-    # create geometry column
-    dplyr::mutate(geometry = sf::st_sfc(geometry)) %>% 
-    # create simple feature objects
-    sf::st_sf()
+    create_sf_of_pt()
+
+}
+
+#' @export
+#' @rdname convert_to_sf
+storages_to_sf <- function(x) {
   
-  # return simple feature objects of outfalls
-  return(outf_sf)
+  # check class and required elements
+  stopifnot(inherits(x, "inp"))
+  
+  # check sections
+  if (!all(c("storages", "coordinates") %in% names(x))) {
+    warning("incomplete features: storages")
+    return(NULL)
+  } 
+  
+  # return simple feature objects of storages
+  storages_sf <- dplyr::left_join(x = x[["storages"]],
+                                  y = x[["coordinates"]],
+                                  by = c("Name" = "Node"))  %>% 
+    create_sf_of_pt()
   
 }
 
@@ -237,34 +226,157 @@ links_to_sf <- function(x) {
                                  y = x[["losses"]],
                                  by = c("Name" = "Link"))
   }
+  
+  # return simple feature objects of links
+  create_sf_of_linestring(links_df)
+  
+}
 
-  links_df <- links_df %>% 
-    # sort by pos and id to maintain structure
-    dplyr::arrange(pos, id)
+#' @export
+#' @rdname convert_to_sf
+weirs_to_sf <- function(x) {
   
-  # create df with data only
-  data <- links_df %>% 
-    dplyr::select(-`X-Coord`, -`Y-Coord`, -pos, -id ) %>%
-    dplyr::distinct(.keep_all = TRUE)
+  # check class and required elements
+  stopifnot(inherits(x, "inp"))
   
-  # create df with sf column
-  sf <- links_df %>% 
-    dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
-    dplyr::mutate(geometry = purrr::map(geometry,
-                                        ~ data.matrix(.) %>%
-                                          sf::st_linestring(.))) %>% 
-    # create geometry column
-    dplyr::mutate(geometry = sf::st_sfc(geometry))
+  # check sections
+  if (!all(c("weirs", "coordinates") %in% names(x))) {
+    warning("incomplete features: weirs")
+    return(NULL)
+  } 
   
-  # join data and sf column
-  links_sf <- dplyr::left_join(data, sf, by = "Name") %>% 
-    # create simple feature objects
-    sf::st_sf()
+  # extract start_nodes
+  start_node <- dplyr::left_join(x = x[["weirs"]], 
+                                 y = x[["coordinates"]], 
+                                 by = c("From Node" = "Node")) %>% 
+    dplyr::mutate(pos = 1L, 
+                  id = 1L)
+  
+  # extract end_nodes
+  end_node <- dplyr::left_join(x = x[["weirs"]], 
+                               y = x[["coordinates"]], 
+                               by = c("To Node" = "Node")) %>% 
+    dplyr::mutate(pos = 3L, 
+                  id = 1L)
+  
+  # bind dfs
+  weirs_df <- dplyr::bind_rows(start_node, end_node)
+  
+  # extract vertices if available
+  if ("vertices" %in% names(x)) {
+    vertices <- dplyr::inner_join(x = x[["weirs"]],
+                                  y = x[["vertices"]],
+                                  by = c("Name" = "Link")) %>% 
+      dplyr::mutate(pos = 2L) %>% 
+      dplyr::group_by(Name) %>% 
+      dplyr::mutate(id = seq_along(Name)) %>% 
+      dplyr::ungroup()
+    
+    # add vertices
+    weirs_df <- dplyr::bind_rows(weirs_df, vertices)
+  }
+  
+  # return simple feature objects of links
+  create_sf_of_linestring(weirs_df)
 
-  # return simple feature objects of subcatchments
-  return(links_sf)
+}
+
+#' @export
+#' @rdname convert_to_sf
+orifices_to_sf <- function(x) {
   
+  # check class and required elements
+  stopifnot(inherits(x, "inp"))
+  
+  # check sections
+  if (!all(c("orifices", "coordinates") %in% names(x))) {
+    warning("incomplete features: orifices")
+    return(NULL)
+  } 
+  
+  # extract start_nodes
+  start_node <- dplyr::left_join(x = x[["orifices"]], 
+                                 y = x[["coordinates"]], 
+                                 by = c("From Node" = "Node")) %>% 
+    dplyr::mutate(pos = 1L, 
+                  id = 1L)
+  
+  # extract end_nodes
+  end_node <- dplyr::left_join(x = x[["orifices"]], 
+                               y = x[["coordinates"]], 
+                               by = c("To Node" = "Node")) %>% 
+    dplyr::mutate(pos = 3L, 
+                  id = 1L)
+  
+  # bind dfs
+  orifices_df <- dplyr::bind_rows(start_node, end_node)
+  
+  # extract vertices if available
+  if ("vertices" %in% names(x)) {
+    vertices <- dplyr::inner_join(x = x[["orifices"]],
+                                  y = x[["vertices"]],
+                                  by = c("Name" = "Link")) %>% 
+      dplyr::mutate(pos = 2L) %>% 
+      dplyr::group_by(Name) %>% 
+      dplyr::mutate(id = seq_along(Name)) %>% 
+      dplyr::ungroup()
+    
+    # add vertices
+    orifices_df <- dplyr::bind_rows(orifices_df, vertices)
+  }
+  
+  # return simple feature objects of orifices
+  create_sf_of_linestring(orifices_df)
+  
+}
+
+#' @export
+#' @rdname convert_to_sf
+pumps_to_sf <- function(x) {
+  
+  # check class and required elements
+  stopifnot(inherits(x, "inp"))
+  
+  # check sections
+  if (!all(c("pumps", "coordinates") %in% names(x))) {
+    warning("incomplete features: pumps")
+    return(NULL)
+  } 
+  
+  # extract start_nodes
+  start_node <- dplyr::left_join(x = x[["pumps"]], 
+                                 y = x[["coordinates"]], 
+                                 by = c("From Node" = "Node")) %>% 
+    dplyr::mutate(pos = 1L, 
+                  id = 1L)
+  
+  # extract end_nodes
+  end_node <- dplyr::left_join(x = x[["pumps"]], 
+                               y = x[["coordinates"]], 
+                               by = c("To Node" = "Node")) %>% 
+    dplyr::mutate(pos = 3L, 
+                  id = 1L)
+  
+  # bind dfs
+  pumps_df <- dplyr::bind_rows(start_node, end_node)
+  
+  # extract vertices if available
+  if ("vertices" %in% names(x)) {
+    vertices <- dplyr::inner_join(x = x[["pumps"]],
+                                  y = x[["vertices"]],
+                                  by = c("Name" = "Link")) %>% 
+      dplyr::mutate(pos = 2L) %>% 
+      dplyr::group_by(Name) %>% 
+      dplyr::mutate(id = seq_along(Name)) %>% 
+      dplyr::ungroup()
+    
+    # add vertices
+    pumps_df <- dplyr::bind_rows(pumps_df, vertices)
+  }
+  
+  # return simple feature objects of pumps
+  create_sf_of_linestring(pumps_df)
+
 }
 
 #' @export
@@ -278,11 +390,65 @@ inp_to_sf <- function(x) {
   sf <- list(subcatchments = subcatchments_to_sf(x), 
              junctions = junctions_to_sf(x),
              outfalls = outfalls_to_sf(x),
+             storages = storages_to_sf(x),
              links = links_to_sf(x), 
+             weirs = weirs_to_sf(x),
+             orifices = orifices_to_sf(x),
+             pumps = pumps_to_sf(x),
              raingages = raingages_to_sf(x))
   
   # discard NULLs
   sf <- purrr::discard(sf, is.null)
     
   return(sf)
+}
+
+# helper function to create a simple feature object from point geometry
+# function is not exported
+#' @param x a tibble to be converted
+#' @keywords internal
+create_sf_of_pt <- function(x) {
+  
+  # nest by coordinates
+  tidyr::nest(x, `X-Coord`,`Y-Coord`, .key = "geometry") %>% 
+    # create points
+    dplyr::mutate(geometry = purrr::map(geometry,
+                                        ~ data.matrix(.) %>% 
+                                          sf::st_point(.))) %>% 
+    # create geometry column
+    dplyr::mutate(geometry = sf::st_sfc(geometry)) %>% 
+    # create simple feature objects
+    sf::st_sf()
+  
+}
+
+# helper function to create a simple feature object from linestring geometry
+# function is not exported
+#' @param x a tibble to be converted
+#' @keywords internal
+create_sf_of_linestring <- function(x) {
+  
+  # sort by pos and id to maintain structure
+  x <- dplyr::arrange(x, pos, id)
+  
+  # create df with data only
+  data <- x %>% 
+    dplyr::select(-`X-Coord`, -`Y-Coord`, -pos, -id ) %>%
+    dplyr::distinct(.keep_all = TRUE)
+  
+  # create df with sf column
+  sf <- x %>% 
+    dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
+    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
+    dplyr::mutate(geometry = purrr::map(geometry,
+                                        ~ data.matrix(.) %>%
+                                          sf::st_linestring(.))) %>% 
+    # create geometry column
+    dplyr::mutate(geometry = sf::st_sfc(geometry))
+  
+  # join data and sf column
+  links_sf <- dplyr::left_join(data, sf, by = "Name") %>% 
+    # create simple feature objects
+    sf::st_sf()
+  
 }

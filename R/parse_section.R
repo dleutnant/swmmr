@@ -28,7 +28,7 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
   
   # make sure ID columns are of type character
   chr_cols <- c("Name", "Link", "Links", "Subcatchment", "Outlet",
-                "Node", "From Node", "To Node")
+                "Node", "From Node", "To Node", "Gage")
   
   for (chr_col in chr_cols) {
     if (chr_col %in% colnames(x)){
