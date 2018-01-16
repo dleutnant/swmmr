@@ -398,8 +398,14 @@ inp_to_sf <- function(x) {
              raingages = raingages_to_sf(x))
   
   # discard NULLs
-  sf <- purrr::discard(sf, is.null)
-    
+  sf <- purrr::discard(sf, is.null) %>% 
+    # remove invalid geometries
+    purrr::iwalk( ~ {
+    if (anyNA(sf::st_is_valid(.x))) {
+      warning(paste("removing invalid geometries of", .y))
+    }}) %>% 
+    purrr::map( ~ .[!is.na(sf::st_is_valid(.)), ])
+  
   return(sf)
 }
 
