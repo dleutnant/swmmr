@@ -1,4 +1,4 @@
-# result section
+# report section
 #' @keywords internal
 report_sections <- c("Element Count",
                      "Pollutant Summary",

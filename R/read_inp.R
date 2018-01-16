@@ -1,4 +1,4 @@
-# result section
+# input section
 #' @keywords internal
 input_sections <- c("aquifers","backdrop","buildup",
                     "conduits","coordinates","coverages","curves",
