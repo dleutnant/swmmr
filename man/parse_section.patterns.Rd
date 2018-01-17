@@ -4,7 +4,7 @@
 \alias{parse_section.patterns}
 \title{import helper}
 \usage{
-\method{parse_section}{patterns}(x)
+\method{parse_section}{patterns}(x, ...)
 }
 \description{
 import helper

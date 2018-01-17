@@ -4,7 +4,7 @@
 \alias{parse_section.iiflows}
 \title{import helper}
 \usage{
-\method{parse_section}{iiflows}(x)
+\method{parse_section}{iiflows}(x, ...)
 }
 \description{
 import helper

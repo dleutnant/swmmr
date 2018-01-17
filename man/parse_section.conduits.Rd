@@ -4,7 +4,7 @@
 \alias{parse_section.conduits}
 \title{import helper}
 \usage{
-\method{parse_section}{conduits}(x)
+\method{parse_section}{conduits}(x, ...)
 }
 \description{
 import helper

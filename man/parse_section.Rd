@@ -4,7 +4,7 @@
 \alias{parse_section}
 \title{import helper}
 \usage{
-parse_section(x)
+parse_section(x, ...)
 }
 \description{
 import helper

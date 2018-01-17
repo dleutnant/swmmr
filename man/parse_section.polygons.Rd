@@ -4,7 +4,7 @@
 \alias{parse_section.polygons}
 \title{import helper}
 \usage{
-\method{parse_section}{polygons}(x)
+\method{parse_section}{polygons}(x, ...)
 }
 \description{
 import helper

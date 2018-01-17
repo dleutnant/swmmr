@@ -4,7 +4,7 @@
 \alias{parse_section.subareas}
 \title{import helper}
 \usage{
-\method{parse_section}{subareas}(x)
+\method{parse_section}{subareas}(x, ...)
 }
 \description{
 import helper

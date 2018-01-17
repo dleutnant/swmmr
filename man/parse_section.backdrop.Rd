@@ -4,7 +4,7 @@
 \alias{parse_section.backdrop}
 \title{import helper}
 \usage{
-\method{parse_section}{backdrop}(x)
+\method{parse_section}{backdrop}(x, ...)
 }
 \description{
 import helper

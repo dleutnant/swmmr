@@ -4,7 +4,7 @@
 \alias{parse_section.pumps}
 \title{import helper}
 \usage{
-\method{parse_section}{pumps}(x)
+\method{parse_section}{pumps}(x, ...)
 }
 \description{
 import helper

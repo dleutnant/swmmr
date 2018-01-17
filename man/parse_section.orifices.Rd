@@ -4,7 +4,7 @@
 \alias{parse_section.orifices}
 \title{import helper}
 \usage{
-\method{parse_section}{orifices}(x)
+\method{parse_section}{orifices}(x, ...)
 }
 \description{
 import helper

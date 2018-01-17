@@ -4,7 +4,7 @@
 \alias{parse_section.dividers}
 \title{import helper}
 \usage{
-\method{parse_section}{dividers}(x)
+\method{parse_section}{dividers}(x, ...)
 }
 \description{
 import helper

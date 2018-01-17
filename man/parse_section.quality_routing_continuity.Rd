@@ -4,7 +4,7 @@
 \alias{parse_section.quality_routing_continuity}
 \title{import helper}
 \usage{
-\method{parse_section}{quality_routing_continuity}(x)
+\method{parse_section}{quality_routing_continuity}(x, ...)
 }
 \description{
 import helper

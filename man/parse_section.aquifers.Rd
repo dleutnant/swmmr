@@ -4,7 +4,7 @@
 \alias{parse_section.aquifers}
 \title{import helper}
 \usage{
-\method{parse_section}{aquifers}(x)
+\method{parse_section}{aquifers}(x, ...)
 }
 \description{
 import helper

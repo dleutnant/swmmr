@@ -4,7 +4,7 @@
 \alias{parse_section.loadings}
 \title{import helper}
 \usage{
-\method{parse_section}{loadings}(x)
+\method{parse_section}{loadings}(x, ...)
 }
 \description{
 import helper

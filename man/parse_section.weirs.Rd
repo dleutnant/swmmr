@@ -4,7 +4,7 @@
 \alias{parse_section.weirs}
 \title{import helper}
 \usage{
-\method{parse_section}{weirs}(x)
+\method{parse_section}{weirs}(x, ...)
 }
 \description{
 import helper

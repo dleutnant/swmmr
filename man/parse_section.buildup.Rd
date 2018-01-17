@@ -4,7 +4,7 @@
 \alias{parse_section.buildup}
 \title{import helper}
 \usage{
-\method{parse_section}{buildup}(x)
+\method{parse_section}{buildup}(x, ...)
 }
 \description{
 import helper

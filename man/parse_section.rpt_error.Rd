@@ -4,7 +4,7 @@
 \alias{parse_section.rpt_error}
 \title{import helper}
 \usage{
-\method{parse_section}{rpt_error}(x)
+\method{parse_section}{rpt_error}(x, ...)
 }
 \description{
 import helper

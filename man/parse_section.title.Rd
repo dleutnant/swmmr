@@ -4,7 +4,7 @@
 \alias{parse_section.title}
 \title{import helper}
 \usage{
-\method{parse_section}{title}(x)
+\method{parse_section}{title}(x, ...)
 }
 \description{
 import helper

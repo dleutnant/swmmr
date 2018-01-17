@@ -4,7 +4,7 @@
 \alias{parse_section.cross_section_summary}
 \title{import helper}
 \usage{
-\method{parse_section}{cross_section_summary}(x)
+\method{parse_section}{cross_section_summary}(x, ...)
 }
 \description{
 import helper

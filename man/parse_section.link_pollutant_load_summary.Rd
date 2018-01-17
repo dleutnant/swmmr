@@ -4,7 +4,7 @@
 \alias{parse_section.link_pollutant_load_summary}
 \title{import helper}
 \usage{
-\method{parse_section}{link_pollutant_load_summary}(x)
+\method{parse_section}{link_pollutant_load_summary}(x, ...)
 }
 \description{
 import helper

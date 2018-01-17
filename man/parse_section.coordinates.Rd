@@ -4,7 +4,7 @@
 \alias{parse_section.coordinates}
 \title{import helper}
 \usage{
-\method{parse_section}{coordinates}(x)
+\method{parse_section}{coordinates}(x, ...)
 }
 \description{
 import helper

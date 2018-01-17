@@ -4,7 +4,7 @@
 \alias{parse_section.labels}
 \title{import helper}
 \usage{
-\method{parse_section}{labels}(x)
+\method{parse_section}{labels}(x, ...)
 }
 \description{
 import helper

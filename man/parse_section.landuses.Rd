@@ -4,7 +4,7 @@
 \alias{parse_section.landuses}
 \title{import helper}
 \usage{
-\method{parse_section}{landuses}(x)
+\method{parse_section}{landuses}(x, ...)
 }
 \description{
 import helper

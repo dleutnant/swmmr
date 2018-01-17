@@ -4,7 +4,7 @@
 \alias{parse_section.highest_flow_instability_indexes}
 \title{import helper}
 \usage{
-\method{parse_section}{highest_flow_instability_indexes}(x)
+\method{parse_section}{highest_flow_instability_indexes}(x, ...)
 }
 \description{
 import helper

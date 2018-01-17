@@ -4,7 +4,7 @@
 \alias{parse_section.vertices}
 \title{import helper}
 \usage{
-\method{parse_section}{vertices}(x)
+\method{parse_section}{vertices}(x, ...)
 }
 \description{
 import helper

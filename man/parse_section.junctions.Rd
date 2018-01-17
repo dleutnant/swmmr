@@ -4,7 +4,7 @@
 \alias{parse_section.junctions}
 \title{import helper}
 \usage{
-\method{parse_section}{junctions}(x)
+\method{parse_section}{junctions}(x, ...)
 }
 \description{
 import helper

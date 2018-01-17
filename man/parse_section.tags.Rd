@@ -4,7 +4,7 @@
 \alias{parse_section.tags}
 \title{import helper}
 \usage{
-\method{parse_section}{tags}(x)
+\method{parse_section}{tags}(x, ...)
 }
 \description{
 import helper

@@ -4,7 +4,7 @@
 \alias{parse_section.infiltration}
 \title{import helper}
 \usage{
-\method{parse_section}{infiltration}(x)
+\method{parse_section}{infiltration}(x, ...)
 }
 \description{
 import helper

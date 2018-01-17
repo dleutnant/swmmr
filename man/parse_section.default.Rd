@@ -4,7 +4,7 @@
 \alias{parse_section.default}
 \title{import helper}
 \usage{
-\method{parse_section}{default}(x)
+\method{parse_section}{default}(x, ...)
 }
 \description{
 import helper

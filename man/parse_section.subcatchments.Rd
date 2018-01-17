@@ -4,7 +4,7 @@
 \alias{parse_section.subcatchments}
 \title{import helper}
 \usage{
-\method{parse_section}{subcatchments}(x)
+\method{parse_section}{subcatchments}(x, ...)
 }
 \description{
 import helper
