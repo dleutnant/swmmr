@@ -472,6 +472,14 @@ parse_section.losses <- function(x, ...){
 
 #' import helper
 #' @keywords internal
+parse_section.controls <- function(x, ...){
+  
+  x
+  
+}
+
+#' import helper
+#' @keywords internal
 parse_section.pollutants <- function(x, ...){
   
   tidyr::separate(data = x,

@@ -1,7 +1,7 @@
 # input section
 #' @keywords internal
 input_sections <- c("aquifers","backdrop","buildup",
-                    "conduits","coordinates","coverages","curves",
+                    "conduits", "controls", "coordinates","coverages","curves",
                     "dividers","dwf",
                     "evaporation","events",
                     "files","groundwater","hydrographs",
