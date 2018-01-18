@@ -8,8 +8,8 @@ testthat::test_that("swmm_io", {
   
   # get the inp files
   inp_files <- grep("inp", list.files("~/EPA_SWMM_Projects/Examples",
-                                      full.names = T),
-                    value = T)
+                                      full.names = TRUE),
+                    value = TRUE)
   
   # initially run the models and save results to temp file
   temp_file <- purrr::rerun(length(inp_files), tempfile())
