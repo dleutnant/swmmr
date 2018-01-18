@@ -849,8 +849,14 @@ parse_section.lid_controls <- function(x, ...) {
                   into = c("Name", "Type/Layer", "Parameters"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
-                  convert = TRUE)
+                  fill = "right",
+                  convert = TRUE) %>% 
+    tidyr::separate(col = "Parameters", 
+                    into = paste0("Par", 1:7),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "right",
+                    convert = TRUE)
   
 }
 
