@@ -30,12 +30,13 @@ Imports:
     xts
 LinkingTo:
     Rcpp
-Suggests:
+Suggests: 
     DEoptim,
     ggplot2 (>= 2.2.1.9000),
     sf,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 VignetteBuilder: knitr
