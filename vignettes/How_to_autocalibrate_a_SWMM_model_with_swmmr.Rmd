@@ -38,9 +38,9 @@ to check for errors.
 ```{r model_setup}
 # set the path to inp file
 # in case your operating system is Windows, please change this path to
-# "C:\Users\dominik\Documents\EPA SWMM Projects\Examples\Example1.inp"
+# "C:\Users\your user name\Documents\EPA SWMM Projects\Examples\Example1.inp"
 # and substitute your user name.
-inp_file <- "/Users/dominik/EPA_SWMM_Projects/Examples/Example1.inp"
+inp_file <- "~/EPA_SWMM_Projects/Examples/Example1.inp"
 # both rpt and out files are temporary files
 tmp_rpt_file <- tempfile()
 tmp_out_file <- tempfile()
@@ -162,7 +162,7 @@ object and the observation data)
       trace = 10, # print progress every 10th iteration
       packages = c("swmmr"), # export packages to optimization environment
       parVar = c("nse"), # export function to optimization environment
-      parallelType = 1 # to use all available cores
+      parallelType = 0 # set to 1 to use all available cores
     ),
     inp = inp, # 'inp' object
     obs = obs # xts object containing observation data
