@@ -205,11 +205,11 @@ report$subcatchment_runoff_summary
 # model, i.e. it plots subcatchments, junctions, links and raingages
 library(ggplot2) # (>= 2.2.1.9000)
 library(tidyverse)
-#> ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ tibble  1.4.1     ✔ dplyr   0.7.4
 #> ✔ tidyr   0.7.2     ✔ stringr 1.2.0
 #> ✔ readr   1.1.1     ✔ forcats 0.2.0
-#> ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 library(sf)
@@ -220,6 +220,13 @@ plot(inp)
 #> Warning in weirs_to_sf(x): incomplete features: weirs
 #> Warning in orifices_to_sf(x): incomplete features: orifices
 #> Warning in pumps_to_sf(x): incomplete features: pumps
+#> Warning in evalq((function (..., call. = TRUE, immediate. = FALSE,
+#> noBreaks. = FALSE, : Self-intersection at or near point 3536.5920802119749
+#> 6164.1128320847902
+
+#> Warning in evalq((function (..., call. = TRUE, immediate. = FALSE,
+#> noBreaks. = FALSE, : Self-intersection at or near point 3536.5920802119749
+#> 6164.1128320847902
 ```
 
 ![](README-visualization-1.png)<!-- -->
