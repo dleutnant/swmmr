@@ -6,6 +6,8 @@
 
 ## New features
 
+* LID report file reader `read_lid_rpt`
+
 * `*.inp` and `*.rpt` files can be read with different locales (e.g. encodings).
 
 * Read `*.rpt` files with `read_rpt` and get direct access to simulation summaries.
