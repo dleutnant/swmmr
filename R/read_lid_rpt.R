@@ -24,7 +24,7 @@ read_lid_rpt <- function(x, return_xts = TRUE, ...) {
   
   # parse project and LID Unit
   meta_info <- readr::read_lines(file = x, skip = 2, n_max = 2) %>%
-    purrr::map_chr( ~ substr(., 10, nchar(.))) %>% 
+    substr(10, nchar(.)) %>% 
     trimws()
   
   # get the data

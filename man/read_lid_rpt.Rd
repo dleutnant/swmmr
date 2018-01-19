@@ -4,15 +4,18 @@
 \alias{read_lid_rpt}
 \title{Read SWMM's LID Report File}
 \usage{
-read_lid_rpt(x, ...)
+read_lid_rpt(x, return_xts = TRUE, ...)
 }
 \arguments{
 \item{x}{Name (incl. path) to a LID report file.}
 
+\item{return_xts}{logical. Sets the return type. If set to TRUE,
+xts objects are returned, FALSE gives tibbles.}
+
 \item{...}{optional arguments passed to \code{\link[readr]{read_table2}}}
 }
 \value{
-A tibble
+A tibble or xts object
 }
 \description{
 Reads a SWMM's LID Report File and returns a tibble
