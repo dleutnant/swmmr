@@ -49,3 +49,23 @@ testthat::test_that("swmm_io", {
   testthat::expect_equal(orig_size_of_out, new_size_of_out, info = "out check")
   
 })
+
+testthat::test_that("swmm_plot", {
+  
+  # only local tests
+  testthat::skip_on_cran()
+  testthat::skip_on_travis()
+  
+  # get the inp files
+  list_of_ggplots <- grep("inp", list.files("~/EPA_SWMM_Projects/Examples",
+                                      full.names = TRUE),
+                    value = TRUE) %>% 
+    # read by swmmr
+    purrr::map(swmmr::read_inp) %>% 
+    # plot with generic plot method
+    purrr::map(plot)
+  
+  # perform tests: Do we get objects of class ggplot2?
+  purrr::walk(list_of_ggplots, testthat::expect_s3_class, class = "ggplot")
+  
+})
