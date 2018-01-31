@@ -4,7 +4,7 @@
 \alias{parse_section.temperature}
 \title{import helper}
 \usage{
-\method{parse_section}{temperature}(x)
+\method{parse_section}{temperature}(x, ...)
 }
 \description{
 import helper

@@ -4,7 +4,7 @@
 \alias{parse_section.outlets}
 \title{import helper}
 \usage{
-\method{parse_section}{outlets}(x)
+\method{parse_section}{outlets}(x, ...)
 }
 \description{
 import helper

@@ -4,7 +4,7 @@
 \alias{parse_section.dwf}
 \title{import helper}
 \usage{
-\method{parse_section}{dwf}(x)
+\method{parse_section}{dwf}(x, ...)
 }
 \description{
 import helper

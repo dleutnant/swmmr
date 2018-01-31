@@ -4,7 +4,7 @@
 \alias{parse_section.subcatchment_runoff_summary}
 \title{import helper}
 \usage{
-\method{parse_section}{subcatchment_runoff_summary}(x)
+\method{parse_section}{subcatchment_runoff_summary}(x, ...)
 }
 \description{
 import helper

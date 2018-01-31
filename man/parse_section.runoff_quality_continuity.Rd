@@ -4,7 +4,7 @@
 \alias{parse_section.runoff_quality_continuity}
 \title{import helper}
 \usage{
-\method{parse_section}{runoff_quality_continuity}(x)
+\method{parse_section}{runoff_quality_continuity}(x, ...)
 }
 \description{
 import helper

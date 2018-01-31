@@ -4,7 +4,7 @@
 \alias{parse_section.inflows}
 \title{import helper}
 \usage{
-\method{parse_section}{inflows}(x)
+\method{parse_section}{inflows}(x, ...)
 }
 \description{
 import helper

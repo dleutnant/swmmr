@@ -4,7 +4,7 @@
 \alias{parse_section.symbols}
 \title{import helper}
 \usage{
-\method{parse_section}{symbols}(x)
+\method{parse_section}{symbols}(x, ...)
 }
 \description{
 import helper

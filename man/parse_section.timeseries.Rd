@@ -4,7 +4,7 @@
 \alias{parse_section.timeseries}
 \title{import helper}
 \usage{
-\method{parse_section}{timeseries}(x)
+\method{parse_section}{timeseries}(x, ...)
 }
 \description{
 import helper

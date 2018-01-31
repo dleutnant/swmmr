@@ -4,12 +4,14 @@
 \alias{read_inp}
 \title{Read SWMM's .inp file}
 \usage{
-read_inp(x, rm.comment = TRUE)
+read_inp(x, rm.comment = TRUE, ...)
 }
 \arguments{
 \item{x}{Name (incl. path) to an input file.}
 
 \item{rm.comment}{Should lines with comments starting with a ";" be discarded?}
+
+\item{...}{optional arguments passed to \code{\link[readr]{read_lines}}.}
 }
 \value{
 An object of class \code{inp}

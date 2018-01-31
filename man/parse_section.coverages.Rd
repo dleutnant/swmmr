@@ -4,7 +4,7 @@
 \alias{parse_section.coverages}
 \title{import helper}
 \usage{
-\method{parse_section}{coverages}(x)
+\method{parse_section}{coverages}(x, ...)
 }
 \description{
 import helper

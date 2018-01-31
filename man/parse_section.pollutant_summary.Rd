@@ -4,7 +4,7 @@
 \alias{parse_section.pollutant_summary}
 \title{import helper}
 \usage{
-\method{parse_section}{pollutant_summary}(x)
+\method{parse_section}{pollutant_summary}(x, ...)
 }
 \description{
 import helper

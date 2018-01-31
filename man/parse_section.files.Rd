@@ -4,7 +4,7 @@
 \alias{parse_section.files}
 \title{import helper}
 \usage{
-\method{parse_section}{files}(x)
+\method{parse_section}{files}(x, ...)
 }
 \description{
 import helper

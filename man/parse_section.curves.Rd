@@ -4,7 +4,7 @@
 \alias{parse_section.curves}
 \title{import helper}
 \usage{
-\method{parse_section}{curves}(x)
+\method{parse_section}{curves}(x, ...)
 }
 \description{
 import helper

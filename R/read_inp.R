@@ -1,7 +1,7 @@
-# result section
+# input section
 #' @keywords internal
 input_sections <- c("aquifers","backdrop","buildup",
-                    "conduits","coordinates","coverages","curves",
+                    "conduits", "controls", "coordinates","coverages","curves",
                     "dividers","dwf",
                     "evaporation","events",
                     "files","groundwater","hydrographs",
@@ -24,6 +24,7 @@ input_sections <- c("aquifers","backdrop","buildup",
 #' 
 #' @param x Name (incl. path) to an input file.
 #' @param rm.comment Should lines with comments starting with a ";" be discarded?
+#' @param ... optional arguments passed to \code{\link[readr]{read_lines}}.
 #' @return An object of class `inp`
 #' @examples  
 #' \dontrun{
@@ -31,10 +32,10 @@ input_sections <- c("aquifers","backdrop","buildup",
 #' } 
 #' @rdname read_inp
 #' @export 
-read_inp <- function(x, rm.comment = TRUE) {
+read_inp <- function(x, rm.comment = TRUE, ...) {
   
   # read lines
-  inp_lines <- readLines(x)
+  inp_lines <- readr::read_lines(x, ...)
   
   # delete leading whitespaces in strings
   inp_lines <- gsub("^\\s+", "", inp_lines)

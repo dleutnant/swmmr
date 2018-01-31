@@ -4,7 +4,7 @@
 \alias{parse_section.raingages}
 \title{import helper}
 \usage{
-\method{parse_section}{raingages}(x)
+\method{parse_section}{raingages}(x, ...)
 }
 \description{
 import helper

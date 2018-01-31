@@ -4,7 +4,7 @@
 \alias{parse_section.map}
 \title{import helper}
 \usage{
-\method{parse_section}{map}(x)
+\method{parse_section}{map}(x, ...)
 }
 \description{
 import helper

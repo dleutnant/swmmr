@@ -4,10 +4,12 @@
 \alias{read_rpt}
 \title{Read SWMM's .rpt file}
 \usage{
-read_rpt(x)
+read_rpt(x, ...)
 }
 \arguments{
 \item{x}{Name (incl. path) to an report file.}
+
+\item{...}{optional arguments passed to \code{\link[readr]{read_lines}}}
 }
 \value{
 An object of class \code{rpt}

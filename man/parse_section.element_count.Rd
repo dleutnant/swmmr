@@ -4,7 +4,7 @@
 \alias{parse_section.element_count}
 \title{import helper}
 \usage{
-\method{parse_section}{element_count}(x)
+\method{parse_section}{element_count}(x, ...)
 }
 \description{
 import helper

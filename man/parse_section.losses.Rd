@@ -4,7 +4,7 @@
 \alias{parse_section.losses}
 \title{import helper}
 \usage{
-\method{parse_section}{losses}(x)
+\method{parse_section}{losses}(x, ...)
 }
 \description{
 import helper

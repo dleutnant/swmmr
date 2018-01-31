@@ -4,7 +4,7 @@
 \alias{parse_section.hydrographs}
 \title{import helper}
 \usage{
-\method{parse_section}{hydrographs}(x)
+\method{parse_section}{hydrographs}(x, ...)
 }
 \description{
 import helper

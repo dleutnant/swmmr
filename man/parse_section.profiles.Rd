@@ -4,7 +4,7 @@
 \alias{parse_section.profiles}
 \title{import helper}
 \usage{
-\method{parse_section}{profiles}(x)
+\method{parse_section}{profiles}(x, ...)
 }
 \description{
 import helper

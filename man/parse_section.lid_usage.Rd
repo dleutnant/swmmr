@@ -4,7 +4,7 @@
 \alias{parse_section.lid_usage}
 \title{import helper}
 \usage{
-\method{parse_section}{lid_usage}(x)
+\method{parse_section}{lid_usage}(x, ...)
 }
 \description{
 import helper

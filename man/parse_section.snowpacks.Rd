@@ -4,7 +4,7 @@
 \alias{parse_section.snowpacks}
 \title{import helper}
 \usage{
-\method{parse_section}{snowpacks}(x)
+\method{parse_section}{snowpacks}(x, ...)
 }
 \description{
 import helper

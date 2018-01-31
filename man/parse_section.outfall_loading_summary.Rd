@@ -4,7 +4,7 @@
 \alias{parse_section.outfall_loading_summary}
 \title{import helper}
 \usage{
-\method{parse_section}{outfall_loading_summary}(x)
+\method{parse_section}{outfall_loading_summary}(x, ...)
 }
 \description{
 import helper

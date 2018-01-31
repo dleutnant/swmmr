@@ -4,7 +4,7 @@
 \alias{parse_section.conduit_surcharge_summary}
 \title{import helper}
 \usage{
-\method{parse_section}{conduit_surcharge_summary}(x)
+\method{parse_section}{conduit_surcharge_summary}(x, ...)
 }
 \description{
 import helper

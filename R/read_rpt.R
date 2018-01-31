@@ -1,6 +1,6 @@
-# result section
+# report section
 #' @keywords internal
-result_sections <- c("Element Count",
+report_sections <- c("Element Count",
                      "Pollutant Summary",
                      "Landuse Summary",
                      "Raingage Summary",
@@ -40,21 +40,22 @@ result_sections <- c("Element Count",
 #' 
 #' @param x Name (incl. path) to an report file.
 #' @return An object of class `rpt`
+#' @param ... optional arguments passed to \code{\link[readr]{read_lines}}
 #' @examples  
 #' \dontrun{
 #' list_of_rpt_results <- read_rpt("model.rpt")
 #' } 
 #' @rdname read_rpt
 #' @export
-read_rpt <- function(x) {
+read_rpt <- function(x, ...) {
   
   # read lines and trimws
-  rpt_lines <- readLines(x) %>% 
+  rpt_lines <- readr::read_lines(x, ...) %>% 
     trimws(.) %>% 
     .[!grepl("---------", .)]
   
   # which sections are available?
-  section_available <- purrr::map_lgl(result_sections, ~ any(grepl(., x = rpt_lines)))
+  section_available <- purrr::map_lgl(report_sections, ~ any(grepl(., x = rpt_lines)))
   
   # if no sections can be found, we got errors
   if (!any(section_available)) {
@@ -64,10 +65,10 @@ read_rpt <- function(x) {
   }
   
   # subset to available sections only
-  result_sections <- result_sections[section_available]
+  report_sections <- report_sections[section_available]
   
   # find section start
-  section_start <- purrr::map(result_sections, ~ grep(., x = rpt_lines) - 1) %>%
+  section_start <- purrr::map(report_sections, ~ grep(., x = rpt_lines) - 1) %>%
     purrr::map_if(., ~ identical(., integer(0)) | identical(., numeric(0)), ~ NA) %>% 
     as.integer(.)
   
@@ -85,7 +86,7 @@ read_rpt <- function(x) {
   section_not_emtpy <- (section_end-section_start > 0)
   section <- list(start = section_start[section_not_emtpy],
                   end = section_end[section_not_emtpy], 
-                  name = result_sections[section_not_emtpy])
+                  name = report_sections[section_not_emtpy])
   
   # create list with sections  
   list_of_sections <- section %>% 

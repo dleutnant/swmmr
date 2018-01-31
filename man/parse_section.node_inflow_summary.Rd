@@ -4,7 +4,7 @@
 \alias{parse_section.node_inflow_summary}
 \title{import helper}
 \usage{
-\method{parse_section}{node_inflow_summary}(x)
+\method{parse_section}{node_inflow_summary}(x, ...)
 }
 \description{
 import helper

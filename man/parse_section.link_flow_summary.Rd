@@ -4,7 +4,7 @@
 \alias{parse_section.link_flow_summary}
 \title{import helper}
 \usage{
-\method{parse_section}{link_flow_summary}(x)
+\method{parse_section}{link_flow_summary}(x, ...)
 }
 \description{
 import helper

@@ -5,8 +5,12 @@
 \alias{raingages_to_sf}
 \alias{junctions_to_sf}
 \alias{outfalls_to_sf}
+\alias{storages_to_sf}
 \alias{subcatchments_to_sf}
 \alias{links_to_sf}
+\alias{weirs_to_sf}
+\alias{orifices_to_sf}
+\alias{pumps_to_sf}
 \alias{inp_to_sf}
 \title{Convert swmm objects to simple feature geometries}
 \usage{
@@ -16,9 +20,17 @@ junctions_to_sf(x)
 
 outfalls_to_sf(x)
 
+storages_to_sf(x)
+
 subcatchments_to_sf(x)
 
 links_to_sf(x)
+
+weirs_to_sf(x)
+
+orifices_to_sf(x)
+
+pumps_to_sf(x)
 
 inp_to_sf(x)
 }
@@ -40,10 +52,18 @@ sections: \code{outfalls} and \code{coordinates})
 sections: \code{subcatchments}, \code{subareas}, \code{infiltration} and \code{polygons})
 \item \code{raingages_to_sf()}: converts raingages to simple features (required
 sections: \code{raingages} and \code{symbols})
-\item \code{inp_to_sf()}: converts junctions, links, subcatchments and raingages to simple features
-and returns a list
+\item \code{storages_to_sf()}: converts storages to simple features (required sections:
+\code{storages} and \code{coordinates})
+\item \code{weirs_to_sf()}: converts weirs to simple features (required sections:
+\code{weirs} and \code{coordinates})
+\item \code{orifices_to_sf()}: converts orifices to simple features (required sections:
+\code{orifices} and \code{coordinates})
+\item \code{pumps_to_sf()}: converts pumps to simple features (required sections:
+\code{pumps} and \code{coordinates})
+\item \code{inp_to_sf()}: converts junctions, outfalls, links, storages, weirs,
+orifices, pumps, subcatchments and raingages to a list of simple features
 }
 }
 \seealso{
-\code{\link[ggplot2]{geom_sf}}
+\code{\link[sf]{sf}} or \code{\link[ggplot2]{geom_sf}}
 }

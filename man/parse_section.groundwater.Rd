@@ -4,7 +4,7 @@
 \alias{parse_section.groundwater}
 \title{import helper}
 \usage{
-\method{parse_section}{groundwater}(x)
+\method{parse_section}{groundwater}(x, ...)
 }
 \description{
 import helper

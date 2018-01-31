@@ -4,7 +4,7 @@
 \alias{parse_section.washoff}
 \title{import helper}
 \usage{
-\method{parse_section}{washoff}(x)
+\method{parse_section}{washoff}(x, ...)
 }
 \description{
 import helper

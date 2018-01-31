@@ -4,7 +4,7 @@
 \alias{parse_section.evaporation}
 \title{import helper}
 \usage{
-\method{parse_section}{evaporation}(x)
+\method{parse_section}{evaporation}(x, ...)
 }
 \description{
 import helper
