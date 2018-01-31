@@ -17,7 +17,9 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
   if (rm.comment) x <- x[!startsWith(x, ";")]
   
   # convert character vector to tibble
-  x <- tibble::as_tibble(x)
+  x <- tibble::as_tibble(x) %>% 
+    # remove empty lines
+    dplyr::filter(value != "")
   
   # add section as class to prepare generic parser
   class(x) <- c(class(x), section_name)
@@ -26,7 +28,7 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
   x <- parse_section(x, inf_model = inf_model)
   
   # if a section is not parsed, we return NULL
-  if (is.null(x)) return (NULL)
+  if (is.null(x)) return(NULL)
   
   # remove dummy columns which names starts with *tab 
   x <- x[, !grepl("^tab", colnames(x))]
@@ -39,7 +41,7 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
                 "Node", "From Node", "To Node", "Gage")
   
   for (chr_col in chr_cols) {
-    if (chr_col %in% colnames(x)){
+    if (chr_col %in% colnames(x)) {
       x <- dplyr::mutate_at(x, chr_col, as.character)
     }
   }
@@ -76,7 +78,7 @@ parse_section.default <- function(x, ...) {
 #' import helper
 #' @keywords internal
 parse_section.options <- function(x, ...){
-  
+
   tidyr::separate(data = x, 
                   col = "value", 
                   into = c("Option", "Value"),
