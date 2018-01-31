@@ -22,4 +22,10 @@ if (getRversion() >= "2.15.1")  utils::globalVariables(c(".",
                                                          "polygon_is_closed",
                                                          "X-Coord", 
                                                          "Y-Coord",
-                                                         "geometry"))
+                                                         "geometry",
+                                                         "Project",
+                                                         "LID Unit",
+                                                         "group",
+                                                         "data",
+                                                         "Variable",
+                                                         "Value"))

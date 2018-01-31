@@ -6,8 +6,12 @@
 \alias{junctions_to_sf}
 \alias{outfalls_to_sf}
 \alias{storages_to_sf}
+\alias{storages_to_sf}
 \alias{subcatchments_to_sf}
 \alias{links_to_sf}
+\alias{weirs_to_sf}
+\alias{orifices_to_sf}
+\alias{pumps_to_sf}
 \alias{weirs_to_sf}
 \alias{orifices_to_sf}
 \alias{pumps_to_sf}
@@ -22,9 +26,17 @@ outfalls_to_sf(x)
 
 storages_to_sf(x)
 
+storages_to_sf(x)
+
 subcatchments_to_sf(x)
 
 links_to_sf(x)
+
+weirs_to_sf(x)
+
+orifices_to_sf(x)
+
+pumps_to_sf(x)
 
 weirs_to_sf(x)
 
