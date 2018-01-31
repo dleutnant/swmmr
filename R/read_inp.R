@@ -37,6 +37,9 @@ read_inp <- function(x, rm.comment = TRUE, ...) {
   # read lines
   inp_lines <- readr::read_lines(x, ...)
   
+  # delete leading whitespaces in strings
+  inp_lines <- gsub("^\\s+", "", inp_lines)
+  
   # find section start
   section_start <- grep("\\[", inp_lines, value = F)
 
