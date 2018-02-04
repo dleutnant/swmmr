@@ -22,7 +22,7 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
     dplyr::filter(value != "")
   
   # add section as class to prepare generic parser
-  class(x) <- c(class(x), section_name)
+  class(x) <- c(section_name, class(x))
   
   # generic parser
   x <- parse_section(x, inf_model = inf_model)
@@ -50,7 +50,7 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
   x <- dplyr::mutate_if(x, is.character, trimws)
   
   # section class got lost while formatting to tibble, so add it again
-  class(x) <- c(class(x), section_name)
+  class(x) <- c(section_name, class(x))
   
   # always return a tibble
   return(x)

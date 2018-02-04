@@ -371,7 +371,7 @@ shp_to_inp <- function(path_options = NULL,
   res <- list_of_sections %>%
     # define classes
     purrr::imap(function(.x, .y) {
-      class(.x) <- c(class(.x), .y)
+      class(.x) <- c(.y, class(.x))
       return(.x)
     }) %>%
     # assign section parameters individually
