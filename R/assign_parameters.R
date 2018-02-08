@@ -138,6 +138,49 @@ assign_parameters.infiltration <- function(x, infiltration, subcatchment=NULL, s
     x$Subcatchment <- x$Name
     #...take values defined in infiltration
     x <- dplyr::full_join(x, infiltration, by="Soil")
+    
+    
+    #... fill missing columns with default and select infiltration columns
+    if(model == "Horton"){
+      
+      #...take default values
+      if(!('MaxRate' %in% colnames(x))){
+        x$MaxRate <- 3 
+      }
+      if(!('MinRate' %in% colnames(x))){
+        x$MinRate <- 0.5 
+      }
+      if(!('Decay' %in% colnames(x))){
+        x$Decay <- 4
+      }
+      if(!('DryTime' %in% colnames(x))){
+        x$DryTime <- 7
+      }
+      if(!('MaxInfl' %in% colnames(x))){
+        x$MaxInfl <- 0
+      }
+      
+      #... select infiltration columns
+      x <- x[,c('Subcatchment', 'MaxRate', 'MinRate', 'Decay', 'DryTime', 'MaxInfl')]
+    }
+    
+    if(model == "Green_Ampt"){
+      
+      #...take default values
+      if(!('Suction' %in% colnames(x))){
+        x$Suction <- 3 
+      }
+      if(!('HydCon' %in% colnames(x))){
+        x$HydCon <- 0.5 
+      }
+      if(!('IMDMax' %in% colnames(x))){
+        x$IMDMax <- 4
+      }
+      
+      #... select infiltration columns
+      x <- x[,c('Subcatchment', 'Suction', 'HydCon', 'IMDMax')]
+    }
+    
   }else{
     if(model == "Horton"){
         x$Subcatchment <- x$Name

@@ -16,7 +16,7 @@
 #' @param path_pump_curve Name (incl. path) to a .txt file with pump curve information. Having the following structure: "Name of pump" "PUMP1-4" "x" "y", without header.
 #' @param path_weirs Name (incl. path) to a .shp file with line features. All parameters must be given: Name, FromNode, ToNode, Type, CrestHt, Cd, Gated, EC, Cd2, Sur.
 #' @param path_storages Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage" "Storage" "x" "y", without header.
-#' @param path_storage_curve Name (incl. path) to a .txt file with storage curve.
+#' @param path_storage_curve Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage unit" "Storage" "x" "y", without header.
 #' @return A list of class inp.
 #' @export
 #' @rdname shp_to_inp
@@ -34,7 +34,7 @@ shp_to_inp <- function(path_options = NULL,
                        path_pump_curve = NULL, 
                        path_weirs = NULL, 
                        path_storages = NULL, 
-                       path_storage_curve = NULL) { ## TODO: add to documentation path_storages_curve 
+                       path_storage_curve = NULL) {  
 
   # ... check missing arguments, add default or generate error messages, in some cases default values are added later...
 
@@ -144,39 +144,38 @@ shp_to_inp <- function(path_options = NULL,
   }
 
   # check if polygon shape is available, return error message or read shape and add subcatchment to sections:
-
   if (is.null(path_polygon)) {
     warning("Define path to polygon file including filename and ending otherwise sections subcatchments, subareas, infiltration are missing.")
-
+    
     # specify object subcatchment which is called when calling: assign_parameters.coverages
     subcatchment <- NULL
+    
   } else {
-    # read the polygon file
-    subcatchment <- sf::st_read(path_polygon, stringsAsFactors = F, quiet = TRUE) %>%
-      tibble::as_tibble() %>%
+    # read the polygon file 
+    subcatchment <- sf::st_read(path_polygon, stringsAsFactors = F, quiet = TRUE) %>% 
+      tibble::as_tibble() %>% 
       compare_to_dictionary()
-
+    
     # check the structure of polygon file:
-    if (all(c("Name", "Outlet", "Area", "RouteTo") %in% colnames(subcatchment))) {
-      list_of_sections[["subcatchments"]] <- subcatchment # subcatchment_typologies
-      list_of_sections[["subareas"]] <- subcatchment # subcatchment_typologies
-      list_of_sections[["polygons"]] <- subcatchment
-      if (list_of_sections$options$INFILTRATION == "Horton") {
-        list_of_sections[["infiltration"]] <- list("Horton", subcatchment) # infiltration
-      } else {
-        if (list_of_sections$options$INFILTRATION == "GREEN_AMPT") {
-          list_of_sections[["infiltration"]] <- list("Green_Ampt", subcatchment)
-        } else {
-          warning("Function is only running with Horton or Green_Ampt infiltration.")
-        }
-      }
-      ### unexpected 'else' error
-      # else{
-      #   stop("The polygon file has to include at least the columns named: Name,
-      #        Outlet, Area, RouteTo. For optional column names check the documentation.")
+    if (all(c("Name","Outlet","Area", "RouteTo") %in% colnames(subcatchment))) {
+      list_of_sections[['subcatchments']]  <- subcatchment # subcatchment_typologies
+      list_of_sections[['subareas']] <- subcatchment # subcatchment_typologies
+      list_of_sections[['polygons']] <- subcatchment
+    } else {
+      stop("The polygon file has to include at least the columns named: Name, Outlet, Area, RouteTo. For optional column names ckeck the documentation.")
     }
+    
+    # check infiltration model
+    if (list_of_sections$options$INFILTRATION == "Horton") {
+    list_of_sections[['infiltration']] <- list("Horton", subcatchment) # infiltration
+  } else {
+    if (list_of_sections$options$INFILTRATION == "GREEN_AMPT") {
+      list_of_sections[['infiltration']] <- list("Green_Ampt", subcatchment)
+    } else {
+      warning("Function is only running with Horton or Green_Ampt infiltration.")
+    }
+  } 
   }
-
 
   # ... infiltration parameter
   if (is.null(infiltration)) {
@@ -196,10 +195,7 @@ shp_to_inp <- function(path_options = NULL,
     }
   }
 
-
-
   # ... check for optional subcatchment_typologies:
-
   if (is.null(subcatchment_typologies)) {
     if (!("N_Imperv" %in% colnames(subcatchment)) | !("N_Perv" %in% colnames(subcatchment)) | !("S_Imperv" %in% colnames(subcatchment)) | !("S_Perv" %in% colnames(subcatchment)) | !("Pct_Zero" %in% colnames(subcatchment)) | !("RouteTo" %in% colnames(subcatchment)) | !("PctRouted" %in% colnames(subcatchment)) | !("Rain_Gage" %in% colnames(subcatchment)) | !("CurbLen" %in% colnames(subcatchment)) | !("Snowpack" %in% colnames(subcatchment)) | !("PercImperv" %in% colnames(subcatchment)) | !("Slope" %in% colnames(subcatchment)) | !("Width" %in% colnames(subcatchment))) {
       warning("N_Imperv, N_Perv, S_Imperv, S_Perv, Rain_Gage, CurbLen, Snowpack, PercImperv, Slope or Width are not defined in polygon.shp or Subcatchment_typologies. Check polygon.shp for completeness otherwise missing parameters in the sections subcatchment and subareas will be filled with default values.")
@@ -211,9 +207,7 @@ shp_to_inp <- function(path_options = NULL,
     }
   }
 
-
   # ... and for the junction point shape:
-
   if (is.null(path_point) == T) {
     warning("Define path to point file including filename and ending otherwise sections junctions and coordinates are missing.")
 
@@ -244,7 +238,6 @@ shp_to_inp <- function(path_options = NULL,
   }
 
   # ... also do it for the outfall point shape:
-
   if (is.null(path_outfall)) {
     warning("Define path to outfall file including filename and ending otherwise section outfall is missing.")
   } else {
@@ -278,7 +271,6 @@ shp_to_inp <- function(path_options = NULL,
     name_timeseries <- gsub("^.*/", "", path_timeseries)
     list_of_sections[["timeseries"]] <- paste0(name_RG, " ", "FILE ", name_timeseries)
   }
-
 
   # ...add Pumps section if path_pump exists
   if (is.null(path_pumps) == F) {
@@ -318,6 +310,7 @@ shp_to_inp <- function(path_options = NULL,
     # add section
     list_of_sections[["storages"]] <- storages
   }
+  
   # ... add storage curve
   if (is.null(path_storage_curve) == F) {
     if ("curves" %in% names(list_of_sections)) {
@@ -330,9 +323,7 @@ shp_to_inp <- function(path_options = NULL,
     }
   }
 
-
   # ... do the same for the conduit line shape:
-
   if (is.null(path_line)) {
     warning("Define path to line file including filename and ending, otherwise section conduits is missing.")
 
@@ -353,21 +344,18 @@ shp_to_inp <- function(path_options = NULL,
     }
   }
 
-
   # ...check for material properties:
   if (is.null(conduit_material)) {
     if (!("Roughness" %in% colnames(conduits))) {
       warning("Roughness is not defined in line.shp or Conduit_material. Check line.shp for completeness otherwise missing parameters in the sections conduits will be filled with default values.")
     }
   } else {
-    if (!("Material" %in% colnames(subcatchment))) {
+    if (!("Material" %in% colnames(conduits))) {
       stop("column Material is missing in line.shp")
     }
   }
 
-
   # ...further processing of entries in list_of_sections...
-
   res <- list_of_sections %>%
     # define classes
     purrr::imap(function(.x, .y) {
