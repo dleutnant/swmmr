@@ -40,7 +40,7 @@ shp_to_inp(path_options = NULL, path_polygon = NULL,
 
 \item{path_storages}{Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage" "Storage" "x" "y", without header.}
 
-\item{path_storage_curve}{Name (incl. path) to a .txt file with storage curve.}
+\item{path_storage_curve}{Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage unit" "Storage" "x" "y", without header.}
 }
 \value{
 A list of class inp.
