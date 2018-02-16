@@ -248,6 +248,9 @@ timeseries_to_dat <- function(x, name, path_out) {
 #' @param x An object of class inp.
 #' @param name Give a name for the current model, e.g. "Example1".
 #' @param path_out  Writeable directory name where to save the converted files. Folders: dat, shp and txt will be created if not existent.
+#' @return .dat, .shp and/or .txt files.
+#' @rdname inp_to_files
+#' @export
 inp_to_files <- function(x, name, path_out) {
   # check class
   stopifnot(inherits(x, "inp"))
