@@ -81,3 +81,23 @@ obj_fun <- function(x, inp, obs) {
 }
 
 
+## ----optim---------------------------------------------------------------
+  set.seed(84) # to get reproducible results
+
+  calibration_res <- DEoptim(
+    fn = obj_fun, 
+    lower = c(0, 0), 
+    upper = c(100, 100),
+    control = list(
+      itermax = 50, # maximum iterations
+      trace = 10, # print progress every 10th iteration
+      packages = c("swmmr"), # export packages to optimization environment
+      parVar = c("nse"), # export function to optimization environment
+      parallelType = 0 # set to 1 to use all available cores
+    ),
+    inp = inp, # 'inp' object
+    obs = obs # xts object containing observation data
+  )
+
+  summary(calibration_res)
+
