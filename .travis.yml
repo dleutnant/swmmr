@@ -3,3 +3,6 @@
 language: R
 sudo: false
 cache: packages
+
+# do not run R code in vignettes
+r_check_args: "--no-vignettes"
