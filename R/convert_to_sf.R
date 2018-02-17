@@ -705,8 +705,9 @@ inp_to_sf <- function(x) {
   return(sf)
 }
 
-# helper function to create a simple feature object from point geometry
-# function is not exported
+#' helper function to create a simple feature object from point geometry
+#' function is not exported
+#' 
 #' @param x a tibble to be converted
 #' @keywords internal
 create_sf_of_pt <- function(x) {
@@ -724,8 +725,9 @@ create_sf_of_pt <- function(x) {
   
 }
 
-# helper function to create a simple feature object from linestring geometry
-# function is not exported
+#' helper function to create a simple feature object from linestring geometry
+#' function is not exported
+#' 
 #' @param x a tibble to be converted
 #' @keywords internal
 create_sf_of_linestring <- function(x) {
