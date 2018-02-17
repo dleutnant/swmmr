@@ -13,6 +13,9 @@ inp_to_files(x, name, path_out)
 
 \item{path_out}{Writeable directory name where to save the converted files. Folders: dat, shp and txt will be created if not existent.}
 }
+\value{
+.dat, .shp and/or .txt files.
+}
 \description{
 Convert SWMM's .inp to .shp and txt files
 }
