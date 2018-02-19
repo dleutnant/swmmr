@@ -1201,12 +1201,12 @@ parse_section.subcatchment_runoff_summary <- function(x, ...){
 parse_section.subcatchment_washoff_summary <- function(x, ...){
   
   # extract pollutants
-  pollutants <- gsub("\\W", " ", x[5, ]) %>%
+  pollutants <- gsub("\\W", " ", x[4, ]) %>%
     trimws(.) %>% 
     strsplit(split = "\\s+", x = .) %>%
     unlist(.)
   
-  tidyr::separate(data = x[-c(1:6),],
+  tidyr::separate(data = x[-c(1:5),],
                   col = "value",
                   into = c("Subcatchment", pollutants),
                   sep = "\\s+",
