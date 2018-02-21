@@ -114,37 +114,43 @@ options_to_txt <- function(x, name, path_out) {
       options_txt[["pollutants"]] <- t(x[["pollutants"]]) %>%
         apply(., 1, paste, collapse = "\t") %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[pollutants]", .)
+        c("[pollutants]", .) %>%
+		gsub("NA", "", .)
     }
     if ("landuses" %in% names(x)) {
       options_txt[["landuses"]] <- t(x[["landuses"]]) %>%
         apply(., 1, paste, collapse = "\t") %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[landuses]", .)
+        c("[landuses]", .) %>%
+		gsub("NA", "", .)
     }
     if ("coverages" %in% names(x)) {
       options_txt[["coverages"]] <- t(x[["coverages"]]) %>%
         apply(., 1, paste, collapse = "\t") %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[coverages]", .)
+        c("[coverages]", .) %>%
+		gsub("NA", "", .)
     }
     if ("buildup" %in% names(x)) {
       options_txt[["buildup"]] <- t(x[["buildup"]]) %>%
         apply(., 1, paste, collapse = "\t") %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[buildup]", .)
+        c("[buildup]", .) %>%
+		gsub("NA", "", .)
     }
     if ("washoff" %in% names(x)) {
       options_txt[["washoff"]] <- t(x[["washoff"]]) %>%
         apply(., 1, paste, collapse = "\t") %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[washoff]", .)
+        c("[washoff]", .) %>%
+		gsub("NA", "", .)
     }
     if ("coverages" %in% names(x)) {
       options_txt[["coverages"]] <- t(x[["coverages"]]) %>%
         apply(., 1, paste, collapse = "\t") %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[coverages]", .)
+        c("[coverages]", .) %>%
+		gsub("NA", "", .)
     }
 
     # unlist and save txt file

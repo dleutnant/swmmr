@@ -493,7 +493,7 @@ parse_section.pollutants <- function(x, ...){
                            "Co-Frac", "Cdwf", "Cinit"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
