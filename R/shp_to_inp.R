@@ -166,10 +166,10 @@ shp_to_inp <- function(path_options = NULL,
     }
     
     # check infiltration model
-    if (list_of_sections$options$INFILTRATION == "Horton") {
+    if (list_of_sections$options$INFILTRATION == "Horton" | list_of_sections$options$INFILTRATION == "HORTON") {
     list_of_sections[['infiltration']] <- list("Horton", subcatchment) # infiltration
   } else {
-    if (list_of_sections$options$INFILTRATION == "GREEN_AMPT") {
+    if (list_of_sections$options$INFILTRATION == "Green_Ampt" | list_of_sections$options$INFILTRATION == "GREEN_AMPT") {
       list_of_sections[['infiltration']] <- list("Green_Ampt", subcatchment)
     } else {
       warning("Function is only running with Horton or Green_Ampt infiltration.")
@@ -179,12 +179,12 @@ shp_to_inp <- function(path_options = NULL,
 
   # ... infiltration parameter
   if (is.null(infiltration)) {
-    if (list_of_sections$options$INFILTRATION == "Horton") {
+    if (list_of_sections$options$INFILTRATION == "Horton" | list_of_sections$options$INFILTRATION == "HORTON") {
       if (!("MaxRate" %in% colnames(subcatchment)) | !("MinRate" %in% colnames(subcatchment)) | !("Decay" %in% colnames(subcatchment)) | !("DryTime" %in% colnames(subcatchment)) | !("MaxInfl" %in% colnames(subcatchment))) {
         warning("All or some Horton infiltration parameters are not defined, infiltration default values are taken.")
       }
     }
-    if (list_of_sections$options$INFILTRATION == "Green_Ampt") {
+    if (list_of_sections$options$INFILTRATION == "Green_Ampt" | list_of_sections$options$INFILTRATION == "GREEN_AMPT") {
       if (!("Suction" %in% colnames(subcatchment)) | !("HydCon" %in% colnames(subcatchment)) | !("IMDmax" %in% colnames(subcatchment))) {
         warning("All or some Green_Ampt infiltration parameters are not defined, infiltration default values are taken.")
       }
@@ -246,10 +246,10 @@ shp_to_inp <- function(path_options = NULL,
       tibble::as_tibble() %>%
       compare_to_dictionary()
     # check for completeness:
-    if (all(c("Name", "Bottom", "Type", "Gated") %in% colnames(outfalls))) {
+    if (all(c("Name", "Bottom", "Type") %in% colnames(outfalls))) {
       list_of_sections[["outfalls"]] <- outfalls
     } else {
-      stop("The outfall point shape has to include at least the columns named: Name, Bottom, Type, Gated.")
+      stop("The outfall point shape has to include at least the columns named: Name, Bottom, Type.")
     }
   }
 
@@ -336,11 +336,11 @@ shp_to_inp <- function(path_options = NULL,
       tibble::as_tibble() %>%
       compare_to_dictionary()
     # check column names
-    if (all(c("Name", "Length", "Type", "FromNode", "ToNode", "OutOffset", "Geom1") %in% colnames(conduits))) {
+    if (all(c("Name", "Length", "Shape", "FromNode", "ToNode", "OutOffset", "Geom1") %in% colnames(conduits))) {
       list_of_sections[["conduits"]] <- conduits
       list_of_sections[["xsections"]] <- conduits
     } else {
-      stop("The line file has to include at least the columns named: Name, Length, Type, FromNode, ToNode, OutOffset, Geom1.")
+      stop("The line file has to include at least the columns named: Name, Length, Shape, FromNode, ToNode, OutOffset, Geom1.")
     }
   }
 

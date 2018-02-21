@@ -216,8 +216,8 @@ assign_parameters.infiltration <- function(x, infiltration, subcatchment=NULL, s
       if(!('IMDMax' %in% colnames(x))){
         x$IMDMax <- 4
       }
+	  x <- x[,c('Subcatchment', 'Suction', 'HydCon', 'IMDMax')]
     }
-    x <- x[,c('Subcatchment', 'Suction', 'HydCon', 'IMDMax')]
 
   }
 
@@ -282,6 +282,10 @@ assign_parameters.coordinates <- function(x, infiltration=NULL, subcatchment=NUL
 #' @keywords internal
 assign_parameters.outfalls <- function(x, infiltration=NULL, subcatchment=NULL, subcatchment_typologies=NULL, conduit_material = NULL, junction_parameters = NULL){
   x$Elevation <- x$Bottom
+  
+  if(!("Gated" %in% colnames(x))){
+    x$Gated <- "NO"
+  }
   
   if(!("StageData" %in% colnames(x))){
     x$StageData <- ' '
@@ -362,7 +366,7 @@ assign_parameters.weirs <- function(x, infiltration=NULL, subcatchment=NULL, sub
 #' @keywords internal
 assign_parameters.storages <- function(x, infiltration=NULL, subcatchment=NULL, subcatchment_typologies=NULL, conduit_material = NULL, junction_parameters = NULL){
   #...add default values ?
-  x <- x[,c("Name", "Elev", "Ymax", "Y0", "geom_Shape", "Curve_Name", "N_A", "Fevap")]
+  x <- x[,c("Name", "Elev", "Ymax", "Y0", "Shape", "Curve_Name", "N_A", "Fevap")]
   return(x)
 }
 

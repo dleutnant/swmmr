@@ -11,7 +11,7 @@
 #' * `raingages_to_sf() `: converts raingages to simple features (required 
 #' sections: `raingages` and `symbols`)
 #' * `storages_to_sf()`: converts storages to simple features (required sections:
-#' `storages` and `coordinates`)
+#' `storage` and `coordinates`)
 #' * `weirs_to_sf()`: converts weirs to simple features (required sections:
 #' `weirs` and `coordinates`)
 #' * `orifices_to_sf()`: converts orifices to simple features (required sections:
@@ -97,13 +97,13 @@ storages_to_sf <- function(x) {
   stopifnot(inherits(x, "inp"))
   
   # check sections
-  if (!all(c("storages", "coordinates") %in% names(x))) {
-    warning("incomplete features: storages")
+  if (!all(c("storage", "coordinates") %in% names(x))) {
+    warning("incomplete features: storage")
     return(NULL)
   } 
   
   # return simple feature objects of storages
-  storages_sf <- dplyr::left_join(x = x[["storages"]],
+  storages_sf <- dplyr::left_join(x = x[["storage"]],
                                   y = x[["coordinates"]],
                                   by = c("Name" = "Node"))  %>% 
     create_sf_of_pt()
@@ -118,13 +118,13 @@ storages_to_sf <- function(x) {
   stopifnot(inherits(x, "inp"))
   
   # check sections
-  if (!all(c("storages", "coordinates") %in% names(x))) {
-    warning("incomplete features: storages")
+  if (!all(c("storage", "coordinates") %in% names(x))) {
+    warning("incomplete features: storage")
     return(NULL)
   } 
   
   # join junctions and coordinates
-  storages_sf <- dplyr::left_join(x = x[["storages"]],
+  storages_sf <- dplyr::left_join(x = x[["storage"]],
                               y = x[["coordinates"]],
                               by = c("Name" = "Node")) %>% 
     

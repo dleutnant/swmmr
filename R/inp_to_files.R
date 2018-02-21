@@ -62,11 +62,11 @@ sections_to_shp <- function(x, name, path_out) {
     print("section pumps is missing")
   }
 
-  if ("storages" %in% names(x)) {
+  if ("storage" %in% names(x)) {
     storages <- storages_to_sf(x)
     suppressMessages(sf::st_write(storages, file.path(path_out, paste0("shp/", name, "_storages.shp"))))
   } else {
-    print("section storages is missing")
+    print("section storage is missing")
   }
 
   print(paste0("*.shp files were written to: ", path_out, "/shp"))
