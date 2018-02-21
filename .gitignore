@@ -17,4 +17,3 @@ src-i386
 src-x64
 # out files in examples
 inst/extdata/Examples/*.out
-inst/doc

@@ -17,7 +17,6 @@ subcatchments, links, junctions and raingages. All objects are converted to simp
 geometries and passed to \code{\link[ggplot2]{geom_sf}}.
 }
 \examples{
- 
 \dontrun{
 inp <- read_inp("model.inp")
 plot(inp)

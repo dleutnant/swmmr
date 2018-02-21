@@ -83,7 +83,7 @@ read_rpt <- function(x, ...) {
   
   
   # remove empty sections (and skip section name)
-  section_not_emtpy <- (section_end-section_start > 0)
+  section_not_emtpy <- (section_end - section_start > 0)
   section <- list(start = section_start[section_not_emtpy],
                   end = section_end[section_not_emtpy], 
                   name = report_sections[section_not_emtpy])

@@ -50,7 +50,7 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
   x <- dplyr::mutate_if(x, is.character, trimws)
   
   # section class got lost while formatting to tibble, so add it again
-  class(x) <- c(section_name, class(x))
+  #class(x) <- c(section_name, class(x))
   
   # always return a tibble
   return(x)
@@ -1182,7 +1182,7 @@ parse_section.routing_time_step_summary <- function(x, ...){
 #' @keywords internal
 parse_section.subcatchment_runoff_summary <- function(x, ...){
   
-  tidyr::separate(data = x[-c(1:9),],
+  tidyr::separate(data = x[-c(1:6),],
                   col = "value",
                   into = c("Subcatchment", 
                            paste("Total", c("Precip", "Runon", "Evap", "Infil",
@@ -1201,12 +1201,12 @@ parse_section.subcatchment_runoff_summary <- function(x, ...){
 parse_section.subcatchment_washoff_summary <- function(x, ...){
   
   # extract pollutants
-  pollutants <- gsub("\\W", " ", x[5, ]) %>%
+  pollutants <- gsub("\\W", " ", x[4, ]) %>%
     trimws(.) %>% 
     strsplit(split = "\\s+", x = .) %>%
     unlist(.)
   
-  tidyr::separate(data = x[-c(1:6),],
+  tidyr::separate(data = x[-c(1:5),],
                   col = "value",
                   into = c("Subcatchment", pollutants),
                   sep = "\\s+",
@@ -1220,7 +1220,7 @@ parse_section.subcatchment_washoff_summary <- function(x, ...){
 #' @keywords internal
 parse_section.node_depth_summary <- function(x, ...){
   
-  tidyr::separate(data = x[-c(1:7), ],
+  tidyr::separate(data = x[-c(1:6), ],
                   col = "value",
                   into = c("Node", "Type",
                            "Average_Depth", "Maximum_Depth", "Maximum_HGL", 
@@ -1238,7 +1238,7 @@ parse_section.node_depth_summary <- function(x, ...){
 #' @keywords internal
 parse_section.node_inflow_summary <- function(x, ...){
   
-  tidyr::separate(data = x[-c(1:8), ],
+  tidyr::separate(data = x[-c(1:7), ],
                   col = "value",
                   into = c("Node", "Type",
                            "Maximum_Lateral_Inflow",
@@ -1258,7 +1258,7 @@ parse_section.node_inflow_summary <- function(x, ...){
 #' @keywords internal
 parse_section.node_flooding_summary <- function(x, ...){
   
-  tidyr::separate(data = x[-c(1:9), ],
+  tidyr::separate(data = x[-c(1:8), ],
                   col = "value",
                   into = c("Node", "Hours_Flooded",
                            "Maximum_Rate", 
@@ -1278,13 +1278,13 @@ parse_section.node_flooding_summary <- function(x, ...){
 parse_section.outfall_loading_summary <- function(x, ...){
   
   # extract pollutants
-  pollutants <- gsub("\\W", " ", x[6, ]) %>%
+  pollutants <- gsub("\\W", " ", x[5, ]) %>%
     trimws(.) %>% 
     strsplit(split = "\\s+", x = .) %>%
     unlist(.) %>% 
     .[-c(1:4)]
   
-  tidyr::separate(data = x[-c(1:7), ],
+  tidyr::separate(data = x[-c(1:6), ],
                   col = "value",
                   into = c("Outfall_Node", "Flow_Freq", "Avg_Flow", "Max_Flow", 
                            "Total_Volume", paste("Total", pollutants, sep = "_")),
@@ -1298,7 +1298,7 @@ parse_section.outfall_loading_summary <- function(x, ...){
 #' @keywords internal
 parse_section.link_flow_summary <- function(x, ...){
   
-  tidyr::separate(data = x[-c(1:7), ],
+  tidyr::separate(data = x[-c(1:6), ],
                   col = "value",
                   into = c("Link", "Type", "Maximum_Flow",
                            "Time_of_Max_Occurance_d",
@@ -1317,7 +1317,7 @@ parse_section.link_flow_summary <- function(x, ...){
 #' @keywords internal
 parse_section.conduit_surcharge_summary <- function(x, ...){
   
-  tidyr::separate(data = x[-c(1:6), ],
+  tidyr::separate(data = x[-c(1:5), ],
                   col = "value",
                   into = c("Conduit",
                            "Hours_Full_Both_Ends", 
@@ -1338,12 +1338,12 @@ parse_section.conduit_surcharge_summary <- function(x, ...){
 parse_section.link_pollutant_load_summary <- function(x, ...){
   
   # extract pollutants
-  pollutants <- gsub("\\W", " ", x[5, ]) %>%
+  pollutants <- gsub("\\W", " ", x[4, ]) %>%
     trimws(.) %>% 
     strsplit(split = "\\s+", x = .) %>%
     unlist(.)
   
-  tidyr::separate(data = x[-c(1:7), ],
+  tidyr::separate(data = x[-c(1:5), ],
                   col = "value",
                   into = c("Link", pollutants),
                   sep = "\\s+",
@@ -1358,7 +1358,7 @@ parse_section.link_pollutant_load_summary <- function(x, ...){
 parse_section.rpt_error <- function(x, ...){
   
   # ignore the first and last 4 lines (Version and timings)
-  tbl <- x[-c(1:4, (nrow(x)-4):(nrow(x))), ] %>%
+  tbl <- x[-c(1:4, (nrow(x) - 4):(nrow(x))), ] %>%
     dplyr::filter(. != "") %>% 
     unlist(use.names = FALSE)
   

@@ -29,3 +29,13 @@ if (getRversion() >= "2.15.1")  utils::globalVariables(c(".",
                                                          "data",
                                                          "Variable",
                                                          "Value"))
+
+
+#' checks if required package is available
+#' @keywords internal
+check_pkg_avail <- function(x) {
+  if (!requireNamespace(x, quietly = TRUE)) {
+    stop("Package ", x," needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+}

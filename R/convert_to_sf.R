@@ -30,7 +30,10 @@ NULL
 #' @export
 #' @rdname convert_to_sf
 raingages_to_sf <- function(x) {
-  
+
+  # checks if sf is available
+  check_pkg_avail("sf")
+    
   # check class and required elements
   stopifnot(inherits(x, "inp"))
   
@@ -50,6 +53,9 @@ raingages_to_sf <- function(x) {
 #' @export
 #' @rdname convert_to_sf
 junctions_to_sf <- function(x) {
+  
+  # checks if sf is available
+  check_pkg_avail("sf")
   
   # check class and required elements
   stopifnot(inherits(x, "inp"))
@@ -72,6 +78,9 @@ junctions_to_sf <- function(x) {
 #' @rdname convert_to_sf
 outfalls_to_sf <- function(x) {
   
+  # checks if sf is available
+  check_pkg_avail("sf")
+  
   # check class and required elements
   stopifnot(inherits(x, "inp"))
   
@@ -93,6 +102,9 @@ outfalls_to_sf <- function(x) {
 #' @rdname convert_to_sf
 storages_to_sf <- function(x) {
   
+  # checks if sf is available
+  check_pkg_avail("sf")
+  
   # check class and required elements
   stopifnot(inherits(x, "inp"))
   
@@ -113,6 +125,9 @@ storages_to_sf <- function(x) {
 #' @export
 #' @rdname convert_to_sf
 storages_to_sf <- function(x) {
+  
+  # checks if sf is available
+  check_pkg_avail("sf")
   
   # check class and required elements
   stopifnot(inherits(x, "inp"))
@@ -147,6 +162,9 @@ storages_to_sf <- function(x) {
 #' @export
 #' @rdname convert_to_sf
 subcatchments_to_sf <- function(x) {
+  
+  # checks if sf is available
+  check_pkg_avail("sf")
 
   # check class and required elements
   stopifnot(inherits(x, "inp"))
@@ -206,6 +224,9 @@ subcatchments_to_sf <- function(x) {
 #' @export
 #' @rdname convert_to_sf
 links_to_sf <- function(x) {
+  
+  # checks if sf is available
+  check_pkg_avail("sf")
   
   # check class and required elements
   stopifnot(inherits(x, "inp"))
@@ -270,6 +291,9 @@ links_to_sf <- function(x) {
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x) {
   
+  # checks if sf is available
+  check_pkg_avail("sf")
+  
   # check class and required elements
   stopifnot(inherits(x, "inp"))
   
@@ -318,6 +342,9 @@ weirs_to_sf <- function(x) {
 #' @export
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x) {
+  
+  # checks if sf is available
+  check_pkg_avail("sf")
   
   # check class and required elements
   stopifnot(inherits(x, "inp"))
@@ -368,6 +395,9 @@ orifices_to_sf <- function(x) {
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x) {
   
+  # checks if sf is available
+  check_pkg_avail("sf")
+  
   # check class and required elements
   stopifnot(inherits(x, "inp"))
   
@@ -416,6 +446,9 @@ pumps_to_sf <- function(x) {
 #' @export
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x) {
+  
+  # checks if sf is available
+  check_pkg_avail("sf")
   
   # check class and required elements
   stopifnot(inherits(x, "inp"))
@@ -490,6 +523,9 @@ weirs_to_sf <- function(x) {
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x) {
   
+  # checks if sf is available
+  check_pkg_avail("sf")
+  
   # check class and required elements
   stopifnot(inherits(x, "inp"))
   
@@ -562,6 +598,9 @@ orifices_to_sf <- function(x) {
 #' @export
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x) {
+  
+  # checks if sf is available
+  check_pkg_avail("sf")
   
   # check class and required elements
   stopifnot(inherits(x, "inp"))
@@ -637,6 +676,9 @@ pumps_to_sf <- function(x) {
 #' @rdname convert_to_sf
 inp_to_sf <- function(x) {
   
+  # checks if sf is available
+  check_pkg_avail("sf")
+  
   # check class
   stopifnot(inherits(x, "inp"))
   
@@ -663,8 +705,9 @@ inp_to_sf <- function(x) {
   return(sf)
 }
 
-# helper function to create a simple feature object from point geometry
-# function is not exported
+#' helper function to create a simple feature object from point geometry
+#' function is not exported
+#' 
 #' @param x a tibble to be converted
 #' @keywords internal
 create_sf_of_pt <- function(x) {
@@ -682,8 +725,9 @@ create_sf_of_pt <- function(x) {
   
 }
 
-# helper function to create a simple feature object from linestring geometry
-# function is not exported
+#' helper function to create a simple feature object from linestring geometry
+#' function is not exported
+#' 
 #' @param x a tibble to be converted
 #' @keywords internal
 create_sf_of_linestring <- function(x) {

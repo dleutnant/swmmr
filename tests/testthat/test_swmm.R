@@ -69,3 +69,29 @@ testthat::test_that("swmm_plot", {
   purrr::walk(list_of_ggplots, testthat::expect_s3_class, class = "ggplot")
   
 })
+
+testthat::test_that("rpt_reader", {
+  
+  # only local tests
+  testthat::skip_on_cran()
+  testthat::skip_on_travis()
+  
+  # get the inp files
+  inp_files <- grep("inp", list.files("~/EPA_SWMM_Projects/Examples",
+                                      full.names = TRUE),
+                    value = TRUE)
+  
+  # initially run the models and save results to temp file
+  temp_file <- purrr::rerun(length(inp_files), tempfile())
+  purrr::walk2(.x = inp_files, 
+               .y = temp_file,
+               ~ swmmr::run_swmm(.x, 
+                                 rpt = paste0(.y, ".rpt"),
+                                 out = paste0(.y, ".out")))
+
+  # read rpt files
+  list_of_rpt <- paste0(temp_file, ".rpt") %>% 
+    purrr::map(swmmr::read_rpt)
+  
+  purrr::walk(list_of_rpt, testthat::expect_s3_class, class = "rpt")  
+})
