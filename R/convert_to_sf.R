@@ -124,43 +124,6 @@ storages_to_sf <- function(x) {
 
 #' @export
 #' @rdname convert_to_sf
-storages_to_sf <- function(x) {
-  
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
-  
-  # check sections
-  if (!all(c("storage", "coordinates") %in% names(x))) {
-    warning("incomplete features: storage")
-    return(NULL)
-  } 
-  
-  # join junctions and coordinates
-  storages_sf <- dplyr::left_join(x = x[["storage"]],
-                              y = x[["coordinates"]],
-                              by = c("Name" = "Node")) %>% 
-    
-    # nest by coordinates
-    tidyr::nest(`X-Coord`,`Y-Coord`, .key = "geometry") %>% 
-    # create multi per subcatchment
-    dplyr::mutate(geometry = purrr::map(geometry,
-                                        ~ data.matrix(.) %>% 
-                                          sf::st_point(.))) %>% 
-    # create geometry column
-    dplyr::mutate(geometry = sf::st_sfc(geometry)) %>% 
-    # create simple feature objects
-    sf::st_sf()
-  
-  # return simple feature objects of subcatchments
-  return(storages_sf)
-  
-}
-
-#' @export
-#' @rdname convert_to_sf
 subcatchments_to_sf <- function(x) {
   
   # checks if sf is available
