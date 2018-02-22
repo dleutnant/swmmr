@@ -103,7 +103,8 @@ options_to_txt <- function(x, name, path_out) {
       options_txt[["[raingages]"]] <- t(x[["raingages"]]) %>%
         apply(., 1, paste, collapse = "\t") %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[raingages]", .)
+        c("[raingages]", .) %>%
+		gsub("TIMESERIES\t", "TIMESERIES ", .)
     }
     if ("evaporation" %in% names(x)) {
       options_txt[["[evaporation]"]] <- x[["evaporation"]] %>%
