@@ -108,7 +108,7 @@ shp_to_inp <- function(path_options = NULL,
 
     # find section lines
     section_lines <- grep("\\[", options, value = F)
-    section_end <- c(section_lines[-1], length(options))
+    section_end <- c(section_lines[-1]-1, length(options))
 
     # separate section title
     section_title <- gsub(
@@ -123,7 +123,7 @@ shp_to_inp <- function(path_options = NULL,
 
     # make tibble and transpose it
     for (i in 1:length(section_lines)) {
-      list_of_sections[[i]] <- options[(section_lines[i] + 1):(section_end[i] - 1)] %>%
+      list_of_sections[[i]] <- options[(section_lines[i] + 1):(section_end[i])] %>%
         cbind(list_of_sections[[i]]) %>%
         tibble::as.tibble(.) %>%
         tidyr::separate(., 1, c("Variable", "Value"), "\t", extra = "merge", fill = "left")
@@ -365,6 +365,10 @@ shp_to_inp <- function(path_options = NULL,
     # assign section parameters individually
     purrr::imap(., ~ assign_parameters(.x, infiltration, subcatchment, subcatchment_typologies, conduit_material, junction_parameters))
 
+  # adjust order of sections
+  section_order <-  c("title", "options", "evaporation", "raingages", "subcatchments", "subareas", "infiltration", "aquifers", "groundwater", "LID_controls", "LID_usage", "junction", "outfalls", "storage", "conduits", "pumps", "weirs", "xsections", "controls", "DWF", "pollutants", "landuses", "coverages", "loadings", "buildup", "washoff", "inflows", "timeseries", "curves", "patterns", "report", "tags", "map", "coordinates", "vertices", "polygons", "labels", "symbols", "backdrop")
+  res <- res[section_order[section_order %in% names(res)]]
+  
   # assign class attribute
   class(res) <- "inp"
 
