@@ -206,44 +206,38 @@ curves_to_txt <- function(x, name, path_out) {
 #' conversion helper
 #' @keywords internal
 timeseries_to_dat <- function(x, name, path_out) {
-  # if implemented: convert timeseries to dat files,
-  # !! implemented only for date = NA !!
+  # if implemented: convert timeseries to dat files
+  
   # check class and required elements
   stopifnot(inherits(x, "inp"))
-
+  
   if ("timeseries" %in% names(x)) {
     # ... check if txt folder exists in path_out otherwise create new directory
     if (!file.exists(file.path(path_out, "dat"))) {
       dir.create(file.path(path_out, "dat"))
     }
-
+    
     # ... convert section timeseries to swmm timeseries *.dat format
-    # test resolution of data
-    if (all(is.na(x$timeseries$Date))) {
-      # if no date is given, resolution is smaller than one day, take start date for timeseries
-      if (is.null(x$options) == F) {
-        date <- x$options$Value[x$options == "START_DATE"]
-      } else {
-        date <- "01/01/2018"
-      }
-
       # seperate timeseries
       timeseries <- list(
         start = which(duplicated(x$timeseries$Name) == F),
         end = c(which(duplicated(x$timeseries$Name) == F) - 1, length(x$timeseries$Name))[-1],
         name = x$timeseries$Name[duplicated(x$timeseries$Name) == F]
       )
-
-      # one *dat file per timeseries
-      mapply(function(start, end) {
-        paste(paste(x$timeseries$Time[start:end], x$timeseries$Value[start:end]), collapse = " ")
-      }, start = timeseries$start, end = timeseries$end) %>%
-        mapply(function(vector, date, ts) {
-          writeLines(c(date, vector), file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")), sep = " ")
-        }, vector = ., date = date, ts = timeseries$name)
-    }
-
+      
+      # one *.dat file per timeseries
+      if(all(is.na(x$timeseries$Date))) {
+        # if no date is given:
+        mapply(function(start, end, ts) write.table(x$timeseries[start:end, c("Time", "Value")], file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")), row.names = F, col.names = F, quote = F), start = timeseries$start, end = timeseries$end, ts = timeseries$name)
+      }else{
+        if(all(is.na(x$timeseries$Date) == F)){
+          # if date is given:
+          mapply(function(start, end, ts) write.table(x$timeseries[start:end, c("Date","Time", "Value")], file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")), row.names = F, col.names = F, quote = F), start = timeseries$start, end = timeseries$end, ts = timeseries$name)
+        }
+      }
+      
     print(paste0("timeseries.dat files were written to: ", path_out, "/dat"))
+    
   } else {
     print("section timeseries is missing")
   }

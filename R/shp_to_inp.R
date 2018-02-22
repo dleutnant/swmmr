@@ -268,8 +268,7 @@ shp_to_inp <- function(path_options = NULL,
   } else {
     # add path to timeseries file
     name_RG <- gsub("TIMESERIES ", "", list_of_sections[["raingages"]]$Source)
-    name_timeseries <- gsub("^.*/", "", path_timeseries)
-    list_of_sections[["timeseries"]] <- paste0(name_RG, " ", "FILE ", name_timeseries)
+    list_of_sections[["timeseries"]] <- paste0(name_RG, " ", "FILE ", path_timeseries)
   }
 
   # ...add Pumps section if path_pump exists
