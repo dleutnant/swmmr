@@ -6,7 +6,6 @@
 \alias{junctions_to_sf}
 \alias{outfalls_to_sf}
 \alias{storages_to_sf}
-\alias{storages_to_sf}
 \alias{subcatchments_to_sf}
 \alias{links_to_sf}
 \alias{weirs_to_sf}
@@ -23,8 +22,6 @@ raingages_to_sf(x)
 junctions_to_sf(x)
 
 outfalls_to_sf(x)
-
-storages_to_sf(x)
 
 storages_to_sf(x)
 
@@ -65,7 +62,7 @@ sections: \code{subcatchments}, \code{subareas}, \code{infiltration} and \code{p
 \item \code{raingages_to_sf()}: converts raingages to simple features (required
 sections: \code{raingages} and \code{symbols})
 \item \code{storages_to_sf()}: converts storages to simple features (required sections:
-\code{storages} and \code{coordinates})
+\code{storage} and \code{coordinates})
 \item \code{weirs_to_sf()}: converts weirs to simple features (required sections:
 \code{weirs} and \code{coordinates})
 \item \code{orifices_to_sf()}: converts orifices to simple features (required sections:

@@ -229,11 +229,11 @@ timeseries_to_dat <- function(x, name, path_out) {
       # one *.dat file per timeseries
       if(all(is.na(x$timeseries$Date))) {
         # if no date is given:
-        mapply(function(start, end, ts) write.table(x$timeseries[start:end, c("Time", "Value")], file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")), row.names = F, col.names = F, quote = F), start = timeseries$start, end = timeseries$end, ts = timeseries$name)
+        mapply(function(start, end, ts) utils::write.table(x$timeseries[start:end, c("Time", "Value")], file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")), row.names = F, col.names = F, quote = F), start = timeseries$start, end = timeseries$end, ts = timeseries$name)
       }else{
         if(all(is.na(x$timeseries$Date) == F)){
           # if date is given:
-          mapply(function(start, end, ts) write.table(x$timeseries[start:end, c("Date","Time", "Value")], file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")), row.names = F, col.names = F, quote = F), start = timeseries$start, end = timeseries$end, ts = timeseries$name)
+          mapply(function(start, end, ts) utils::write.table(x$timeseries[start:end, c("Date","Time", "Value")], file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")), row.names = F, col.names = F, quote = F), start = timeseries$start, end = timeseries$end, ts = timeseries$name)
         }
       }
       
