@@ -7,7 +7,7 @@ assign_parameters <- function(x, infiltration=NULL, subcatchment=NULL, subcatchm
 #' conversion helper
 #' @keywords internal
 assign_parameters.default <- function(x, infiltration=NULL, subcatchment=NULL, subcatchment_typologies=NULL, conduit_material = NULL, junction_parameters = NULL){ 
- x
+ tibble::as_tibble(x)
 }
 
 #' conversion helper
