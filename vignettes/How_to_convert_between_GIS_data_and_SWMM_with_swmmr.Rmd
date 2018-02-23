@@ -1,6 +1,6 @@
 ---
 title: "Conversion between GIS data and SWMM with swmmr"
-author: "Anneke Döring"
+author: "Anneke DÃ¶ring"
 output: html_document
 ---
 
@@ -30,7 +30,6 @@ library(sf)
 # please change the path to:
 # "C:/Users/.../Documents/EPA_SWMM_Projects/Examples/"
 # substitute '...' with your user name
-
 ``` 
 
 ```{r model_setup}
@@ -81,13 +80,14 @@ Based on the converted files of Example1, the usage of swmmr's function shp_to_i
 
 ```{r shp_to_inp}
 # convert shp and txt files to inp object:
-Example1_con <- shp_to_inp(path_options = file.path(out_dir,"txt/Example1_options.txt"),
-                  path_timeseries = file.path(out_dir,"dat/Example1_timeseries_TS1.dat"),
-                  path_polygon = file.path(out_dir,"shp/Example1_polygon.shp"),
-                  path_line = file.path(out_dir,"shp/Example1_link.shp"),
-                  path_point = file.path(out_dir,"shp/Example1_point.shp"),
-                  path_outfall = file.path(out_dir,"shp/Example1_outfall.shp")
-                  )
+Example1_con <- shp_to_inp(
+  path_options = file.path(out_dir,"txt/Example1_options.txt"),
+  path_timeseries = file.path(out_dir,"dat/Example1_timeseries_TS1.dat"),
+  path_polygon = file.path(out_dir,"shp/Example1_polygon.shp"),
+  path_line = file.path(out_dir,"shp/Example1_link.shp"),
+  path_point = file.path(out_dir,"shp/Example1_point.shp"),
+  path_outfall = file.path(out_dir,"shp/Example1_outfall.shp")
+)
 
 # glance the structure of the converted Example1
 summary(Example1_con)
