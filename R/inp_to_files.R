@@ -12,59 +12,97 @@ sections_to_shp <- function(x, name, path_out) {
     dir.create(file.path(path_out, "shp"))
   }
 
+  # dleutnant: 
+  # There is currently an issue in writing sf objects on OS X which
+  # causes R to crash if the file to be written already exists.
+  # s. https://github.com/r-spatial/sf/issues/649
+  # This hack per default overwrites an existent file only on OS X 
+  # it is assumend that SWMM users are less likely OS X users... ;-(
+  if (.get_os() == "darwin") {
+    warning("Data source is deleted before attempting to write.")
+    delete_dsn <- TRUE 
+  } else {
+    delete_dsn <- FALSE
+  }
+
+  # dleutnant: 
+  # maybe instead of writing each section individually, we might
+  # use sth:
+  # inp_to_sf(x) %>% 
+  #   purrr::iwalk(., ~ sf::st_write(.x, file.path(path_out, 
+  #                                                paste0("shp/", .y, "_.shp"))))
+  
   # ... convert sections to sf
   if ("subcatchments" %in% names(x)) {
     polygon <- subcatchments_to_sf(x)
-    suppressMessages(sf::st_write(polygon, file.path(path_out, paste0("shp/", name, "_polygon.shp"))))
+    suppressMessages(sf::st_write(polygon,
+                                  file.path(path_out, 
+                                            paste0("shp/", name, "_polygon.shp")),
+                                  delete_dsn = delete_dsn))
   } else {
     print("section subcatchments is missing")
   }
 
   if ("conduits" %in% names(x)) {
     link <- links_to_sf(x)
-    suppressMessages(sf::st_write(link, file.path(path_out, paste0("shp/", name, "_link.shp"))))
+    suppressMessages(sf::st_write(link, 
+                                  file.path(path_out, 
+                                            paste0("shp/", name, "_link.shp")),
+                                  delete_dsn = delete_dsn))
   } else {
     print("section conduits is missing")
   }
 
   if ("junctions" %in% names(x)) {
     point <- junctions_to_sf(x)
-    suppressMessages(sf::st_write(point, file.path(path_out, paste0("shp/", name, "_point.shp"))))
+    suppressMessages(sf::st_write(point, file.path(path_out,
+                                                   paste0("shp/", name, "_point.shp")),
+                                  delete_dsn = delete_dsn))
   } else {
     print("section junctions is missing")
   }
 
   if ("outfalls" %in% names(x)) {
     outfall <- outfalls_to_sf(x)
-    suppressMessages(sf::st_write(outfall, file.path(path_out, paste0("shp/", name, "_outfall.shp"))))
+    suppressMessages(sf::st_write(outfall, file.path(path_out, 
+                                                     paste0("shp/", name, "_outfall.shp")),
+                                  delete_dsn = delete_dsn))
   } else {
     print("section outfalls is missing")
   }
 
   if ("weirs" %in% names(x)) {
     weirs <- weirs_to_sf(x)
-    suppressMessages(sf::st_write(weirs, file.path(path_out, paste0("shp/", name, "_weir.shp"))))
+    suppressMessages(sf::st_write(weirs, file.path(path_out, 
+                                                   paste0("shp/", name, "_weir.shp")),
+                                  delete_dsn = delete_dsn))
   } else {
     print("section weirs is missing")
   }
 
   if ("orifices" %in% names(x)) {
     orifices <- orifices_to_sf(x)
-    suppressMessages(sf::st_write(orifices, file.path(path_out, paste0("shp/", name, "_orifices.shp"))))
+    suppressMessages(sf::st_write(orifices, file.path(path_out, 
+                                                      paste0("shp/", name, "_orifices.shp")),
+                                  delete_dsn = delete_dsn))
   } else {
     print("section orifices is missing")
   }
 
   if ("pumps" %in% names(x)) {
     pumps <- pumps_to_sf(x)
-    suppressMessages(sf::st_write(pumps, file.path(path_out, paste0("shp/", name, "_pumps.shp"))))
+    suppressMessages(sf::st_write(pumps, file.path(path_out, 
+                                                   paste0("shp/", name, "_pumps.shp")),
+                                  delete_dsn = delete_dsn))
   } else {
     print("section pumps is missing")
   }
 
   if ("storage" %in% names(x)) {
     storages <- storages_to_sf(x)
-    suppressMessages(sf::st_write(storages, file.path(path_out, paste0("shp/", name, "_storages.shp"))))
+    suppressMessages(sf::st_write(storages, file.path(path_out, 
+                                                      paste0("shp/", name, "_storages.shp")),
+                                  delete_dsn = delete_dsn))
   } else {
     print("section storage is missing")
   }
