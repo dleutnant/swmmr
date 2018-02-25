@@ -34,8 +34,18 @@ if (getRversion() >= "2.15.1")  utils::globalVariables(c(".",
 #' checks if required package is available
 #' @keywords internal
 check_pkg_avail <- function(x) {
-  if (!requireNamespace(x, quietly = TRUE)) {
-    stop("Package ", x," needed for this function to work. Please install it.",
+  
+  # make sure the dev version of ggplot2 is installed (which has geom_sf)
+  if (x == "ggplot2") {
+    vc <- list(op = ">=", version = "2.2.1.9000")
+  } else {
+    vc <- NULL
+  }
+
+  if (!requireNamespace(x, quietly = TRUE, versionCheck = vc)) {
+    stop("Package ", ifelse(!is.null(vc), paste(x, vc$op, vc$version), x),
+         " needed for this function to work. Please install it.",
          call. = FALSE)
   }
+  
 }
