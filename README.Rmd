@@ -146,9 +146,12 @@ ggplot() +
   # change scales
   scale_fill_viridis_c() +
   scale_colour_viridis_c(direction = -1) +
+  # change theme
+  theme_linedraw() +
+  theme(panel.grid.major = element_line(colour = "white")) +
   # add labels
-  labs(title = "Visualization of a SWMM model", 
-       subtitle = "with help of swmmr, ggplot2 and sf")
+  labs(title = "SWMM model Example1", 
+       subtitle = "customized visualization")
 
 ```
 
