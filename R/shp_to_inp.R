@@ -15,7 +15,7 @@
 #' @param path_pumps Name (incl. path) to a .shp file with line features. All parameters must be given: Name, FromNode, ToNode, Pcurve, status, Startup, Shutoff.
 #' @param path_pump_curve Name (incl. path) to a .txt file with pump curve information. Having the following structure: "Name of pump" "PUMP1-4" "x" "y", without header.
 #' @param path_weirs Name (incl. path) to a .shp file with line features. All parameters must be given: Name, FromNode, ToNode, Type, CrestHt, Cd, Gated, EC, Cd2, Sur.
-#' @param path_storages Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage" "Storage" "x" "y", without header.
+#' @param path_storage Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage" "Storage" "x" "y", without header.
 #' @param path_storage_curve Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage unit" "Storage" "x" "y", without header.
 #' @return A list of class inp.
 #' @export
@@ -33,7 +33,7 @@ shp_to_inp <- function(path_options = NULL,
                        path_pumps = NULL, 
                        path_pump_curve = NULL, 
                        path_weirs = NULL, 
-                       path_storages = NULL, 
+                       path_storage = NULL, 
                        path_storage_curve = NULL) {  
 
   # ... check missing arguments, add default or generate error messages, in some cases default values are added later...
@@ -300,14 +300,14 @@ shp_to_inp <- function(path_options = NULL,
   }
 
   # ...add storages
-  if (is.null(path_storages) == F) {
+  if (is.null(path_storage) == F) {
     # read shape
-    storages <- sf::st_read(path_storages, stringsAsFactors = F, quiet = TRUE) %>%
+    storage <- sf::st_read(path_storage, stringsAsFactors = F, quiet = TRUE) %>%
       tibble::as_tibble() %>%
       compare_to_dictionary()
 
     # add section
-    list_of_sections[["storages"]] <- storages
+    list_of_sections[["storage"]] <- storage
   }
   
   # ... add storage curve

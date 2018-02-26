@@ -364,7 +364,7 @@ assign_parameters.weirs <- function(x, infiltration=NULL, subcatchment=NULL, sub
 
 #' conversion helper
 #' @keywords internal
-assign_parameters.storages <- function(x, infiltration=NULL, subcatchment=NULL, subcatchment_typologies=NULL, conduit_material = NULL, junction_parameters = NULL){
+assign_parameters.storage <- function(x, infiltration=NULL, subcatchment=NULL, subcatchment_typologies=NULL, conduit_material = NULL, junction_parameters = NULL){
   #...add default values ?
   x <- x[,c("Name", "Elev", "Ymax", "Y0", "Shape", "Curve_Name", "N_A", "Fevap")]
   return(x)
