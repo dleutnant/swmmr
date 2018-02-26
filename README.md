@@ -148,12 +148,12 @@ results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
 #> $total_rainfall
 ```
 
-![](README-example-1.png)<!-- -->
+![](man/figures/README-example-1.png)<!-- -->
 
     #> 
     #> $total_runoff
 
-![](README-example-2.png)<!-- -->
+![](man/figures/README-example-2.png)<!-- -->
 
 ``` r
 
@@ -186,14 +186,14 @@ report$subcatchment_runoff_summary
 #> # A tibble: 8 x 9
 #>   Subcatchment Total_Precip Total_Runon Total_Evap Total_Infil
 #>   <chr>               <dbl>       <dbl>      <dbl>       <dbl>
-#> 1 1                    2.65           0          0        1.16
-#> 2 2                    2.65           0          0        1.21
-#> 3 3                    2.65           0          0        1.16
-#> 4 4                    2.65           0          0        1.16
-#> 5 5                    2.65           0          0        1.24
-#> 6 6                    2.65           0          0        2.27
-#> 7 7                    2.65           0          0        2.14
-#> 8 8                    2.65           0          0        2.25
+#> 1 1                    2.65          0.         0.        1.16
+#> 2 2                    2.65          0.         0.        1.21
+#> 3 3                    2.65          0.         0.        1.16
+#> 4 4                    2.65          0.         0.        1.16
+#> 5 5                    2.65          0.         0.        1.24
+#> 6 6                    2.65          0.         0.        2.27
+#> 7 7                    2.65          0.         0.        2.14
+#> 8 8                    2.65          0.         0.        2.25
 #> # ... with 4 more variables: Total_Runoff_Depth <dbl>,
 #> #   Total_Runoff_Volume <dbl>, Total_Peak_Runoff <dbl>,
 #> #   Total_Runoff_Coeff <dbl>
@@ -207,11 +207,11 @@ report$subcatchment_runoff_summary
 # model, i.e. it plots subcatchments, junctions, links and raingages
 library(ggplot2) # (>= 2.2.1.9000)
 library(tidyverse)
-#> ── Attaching packages ────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ tibble  1.4.2     ✔ dplyr   0.7.4
 #> ✔ tidyr   0.8.0     ✔ stringr 1.3.0
 #> ✔ readr   1.1.1     ✔ forcats 0.3.0
-#> ── Conflicts ───────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 library(sf)
@@ -231,7 +231,7 @@ plot(inp)
 #> 6164.1128320847902
 ```
 
-![](README-visualization-1.png)<!-- -->
+![](man/figures/README-visualization-1.png)<!-- -->
 
 ``` r
 
@@ -283,7 +283,7 @@ ggplot() +
        subtitle = "with help of swmmr, ggplot2 and sf")
 ```
 
-![](README-visualization-2.png)<!-- -->
+![](man/figures/README-visualization-2.png)<!-- -->
 
 ## Contributions
 
@@ -331,11 +331,11 @@ from the Interface Guide of
 To cite package ‘swmmr’ in publications use:
 
 Dominik Leutnant and Anneke Doering (2018). swmmr: R Interface for US
-EPA’s SWMM. R package version 0.7.2.9000.
+EPA’s SWMM. R package version 0.8.0.
 <https://github.com/dleutnant/swmmr>
 
 A BibTeX entry for LaTeX users is
 
 @Manual{, title = {swmmr: R Interface for US EPA’s SWMM}, author =
 {Dominik Leutnant and Anneke Doering}, year = {2018}, note = {R package
-version 0.7.2.9000}, url = {<https://github.com/dleutnant/swmmr>}, }
+version 0.8.0}, url = {<https://github.com/dleutnant/swmmr>}, }
