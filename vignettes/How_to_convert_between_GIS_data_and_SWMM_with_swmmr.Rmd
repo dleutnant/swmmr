@@ -163,3 +163,32 @@ junction_parameters <- tibble(
 ```
 
 The shp_to_inp function relies on the correct naming of the column names given in the .shp files: either you use the original swmm encoding (also given in swmmr::read_inp) or the swmm encoding abbreviated to seven characters (which is coerced when storing shp files, e.g. with sf::st_write).
+
+In the moment, inp_to_files and shp_to_inp support the following SWMM inp sections:
+
+- options
+- raingages
+- subcatchments
+- subareas
+- infiltration
+- junctions
+- outfalls
+- storage
+- conduits
+- weirs
+- xsections
+- pollutants
+- landuses
+- coverages
+- buildup
+- washoff
+- curves
+- report
+- coordinates
+- polygons
+
+The following sections are implemented with restrictions:
+
+- evaporation: only constant value
+- pumps: missing default values
+- timeseries: *.dat file only
