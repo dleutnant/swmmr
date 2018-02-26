@@ -33,7 +33,7 @@ LinkingTo:
     Rcpp
 Suggests: 
     DEoptim,
-    ggplot2 (>= 2.2.1.9000),
+    ggplot2,
     sf (>= 0.6-0),
     knitr,
     rmarkdown,
