@@ -1,10 +1,12 @@
-# swmmr 0.7.2.9000
+# swmmr 0.8.0
 
 ## Breaking changes
 
 * `read_inp` sections are now all in lower letters.
 
 ## New features
+
+* vignettes added
 
 * LID report file reader `read_lid_rpt`
 

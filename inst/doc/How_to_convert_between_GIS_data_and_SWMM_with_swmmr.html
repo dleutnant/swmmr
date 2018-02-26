@@ -12,7 +12,7 @@
 
 <meta name="author" content="Anneke Döring" />
 
-<meta name="date" content="2018-02-25" />
+<meta name="date" content="2018-02-26" />
 
 <title>Conversion between GIS data and SWMM with swmmr</title>
 
@@ -280,7 +280,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Conversion between GIS data and SWMM with swmmr</h1>
 <h4 class="author"><em>Anneke Döring</em></h4>
-<h4 class="date"><em>2018-02-25</em></h4>
+<h4 class="date"><em>2018-02-26</em></h4>
 
 
 
@@ -495,6 +495,35 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb29-40" data-line-number="40">  <span class="dt">Apond =</span> <span class="dv">1</span></a>
 <a class="sourceLine" id="cb29-41" data-line-number="41">)</a></code></pre></div>
 <p>The shp_to_inp function relies on the correct naming of the column names given in the .shp files: either you use the original swmm encoding (also given in swmmr::read_inp) or the swmm encoding abbreviated to seven characters (which is coerced when storing shp files, e.g. with sf::st_write).</p>
+<p>In the moment, inp_to_files and shp_to_inp support the following SWMM inp sections:</p>
+<ul>
+<li>options</li>
+<li>raingages</li>
+<li>subcatchments</li>
+<li>subareas</li>
+<li>infiltration</li>
+<li>junctions</li>
+<li>outfalls</li>
+<li>storage</li>
+<li>conduits</li>
+<li>weirs</li>
+<li>xsections</li>
+<li>pollutants</li>
+<li>landuses</li>
+<li>coverages</li>
+<li>buildup</li>
+<li>washoff</li>
+<li>curves</li>
+<li>report</li>
+<li>coordinates</li>
+<li>polygons</li>
+</ul>
+<p>The following sections are implemented with restrictions:</p>
+<ul>
+<li>evaporation: only constant value</li>
+<li>pumps: missing default values</li>
+<li>timeseries: *.dat file only</li>
+</ul>
 </section>
 </section>
 
