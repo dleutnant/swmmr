@@ -20,8 +20,8 @@ testthat::test_that("swmm_io", {
                                  out = paste0(.y, ".out")))
   
   # get the size of original rpt and out files
-  orig_size_of_rpt <- file.size(purrr::map_chr(temp_file, ~ paste0(., ".rpt")))
-  orig_size_of_out <- file.size(purrr::map_chr(temp_file, ~ paste0(., ".out")))
+  orig_size_of_rpt <- file.size(paste0(temp_file, ".rpt"))
+  orig_size_of_out <- file.size(paste0(temp_file, ".out"))
   
   # now read the models into R
   inp_obj <- purrr::map(inp_files, swmmr::read_inp)
@@ -36,8 +36,8 @@ testthat::test_that("swmm_io", {
   purrr::walk(tmp_inp, swmmr::run_swmm)
   
   # get the size of new rpt and out files
-  new_size_of_rpt <- file.size(purrr::map_chr(tmp_inp, ~ paste0(., ".rpt")))
-  new_size_of_out <- file.size(purrr::map_chr(tmp_inp, ~ paste0(., ".out")))
+  new_size_of_rpt <- file.size(paste0(tmp_inp, ".rpt"))
+  new_size_of_out <- file.size(paste0(tmp_inp, ".out"))
   
   # remove files
   purrr::walk(c(tmp_inp, temp_file), ~ file.remove(list.files(tempdir(), 
