@@ -7,9 +7,8 @@ testthat::test_that("swmm_io", {
   testthat::skip_on_travis()
   
   # get the inp files
-  inp_files <- grep("inp", list.files("~/EPA_SWMM_Projects/Examples",
-                                      full.names = TRUE),
-                    value = TRUE)
+  inp_files <- system.file("extdata", paste0("Example", 1:6, ".inp"), 
+                           package = "swmmr", mustWork = TRUE)
   
   # initially run the models and save results to temp file
   temp_file <- purrr::rerun(length(inp_files), tempfile())
@@ -57,9 +56,8 @@ testthat::test_that("swmm_plot", {
   testthat::skip_on_travis()
   
   # get the inp files
-  list_of_ggplots <- grep("inp", list.files("~/EPA_SWMM_Projects/Examples",
-                                      full.names = TRUE),
-                    value = TRUE) %>% 
+  list_of_ggplots <- system.file("extdata", paste0("Example", 1:6, ".inp"),
+                                 package = "swmmr", mustWork = TRUE) %>% 
     # read by swmmr
     purrr::map(swmmr::read_inp) %>% 
     # plot with generic plot method
@@ -77,9 +75,8 @@ testthat::test_that("rpt_reader", {
   testthat::skip_on_travis()
   
   # get the inp files
-  inp_files <- grep("inp", list.files("~/EPA_SWMM_Projects/Examples",
-                                      full.names = TRUE),
-                    value = TRUE)
+  inp_files <- system.file("extdata", paste0("Example", 1:6, ".inp"), 
+                           package = "swmmr", mustWork = TRUE)
   
   # initially run the models and save results to temp file
   temp_file <- purrr::rerun(length(inp_files), tempfile())
