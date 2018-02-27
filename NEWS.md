@@ -14,9 +14,7 @@
 
 * Read `*.rpt` files with `read_rpt` and get direct access to simulation summaries.
 
-* New functions to plot swmm objects from `*.inp` files.
-
-* Convert swmm objects to simple features (sf).
+* Convert swmm objects to simple features (sf) with `*_to_sf`.
 
 * `read_inp` returns now an object of class `inp`.
 
