@@ -5,7 +5,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ## ----load_libs, message= FALSE-------------------------------------------
 # First load the following packages:
 library(swmmr)
-library(tidyverse)
+library(purrr)
+library(dplyr)
 library(sf)
 
 ## ----model_preparation---------------------------------------------------
@@ -43,8 +44,8 @@ list.files(out_dir)
 
 # check existence of shape, text and dat files:
 c("shp", "txt", "dat") %>% 
-  purrr::map( ~ file.path(out_dir, .)) %>% 
-  purrr::map(list.files)
+  map( ~ file.path(out_dir, .)) %>% 
+  map(list.files)
 
 
 ## ----shp_to_inp----------------------------------------------------------

@@ -291,8 +291,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The usage of swmmr’s function inp_to_files is explained with Example1 shipped with the SWMM executable:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># First load the following packages:</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(swmmr)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(sf)</a></code></pre></div>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(purrr)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(sf)</a></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># in case your operating system is Windows, the examples are saved in the following directory:</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co"># &quot;C:/Users/.../Documents/EPA SWMM Projects/Examples/&quot;</span></a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># please change the path to:</span></a>
@@ -384,26 +385,50 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>##  [1] &quot;dat&quot;                                                                                 
 ##  [2] &quot;file310016fac55b&quot;                                                                    
 ##  [3] &quot;file310029b2e526&quot;                                                                    
-##  [4] &quot;git-commit-message-310011ea2ed3.txt&quot;                                                 
-##  [5] &quot;git-commit-message-310021424d33.txt&quot;                                                 
-##  [6] &quot;git-commit-message-31007da6054.txt&quot;                                                  
-##  [7] &quot;git-commit-message-3100c52fa5b.txt&quot;                                                  
-##  [8] &quot;inp_new&quot;                                                                             
-##  [9] &quot;libloc_213_8f8c4eafe9e43f75.rds&quot;                                                     
-## [10] &quot;preview-31001bb272af.dir&quot;                                                            
-## [11] &quot;preview-310060874d5d.dir&quot;                                                            
-## [12] &quot;preview-3100683df057.dir&quot;                                                            
-## [13] &quot;preview-3100f575ee1.dir&quot;                                                             
-## [14] &quot;preview-321e55bfe088.html&quot;                                                           
-## [15] &quot;preview-32433ea26b6c.html&quot;                                                           
-## [16] &quot;repos_https%3A%2F%2Fcran.rstudio.com%2Fbin%2Fmacosx%2Fel-capitan%2Fcontrib%2F3.4.rds&quot;
-## [17] &quot;rs-graphics-9117585f-6f72-4d94-9369-628e2ad2201b&quot;                                    
-## [18] &quot;shp&quot;                                                                                 
-## [19] &quot;txt&quot;</code></pre>
+##  [4] &quot;file3100552c69f5&quot;                                                                    
+##  [5] &quot;file31006ac2ff36&quot;                                                                    
+##  [6] &quot;file31006e334fe7&quot;                                                                    
+##  [7] &quot;file31007e94b5cf&quot;                                                                    
+##  [8] &quot;git-commit-message-310011ea2ed3.txt&quot;                                                 
+##  [9] &quot;git-commit-message-310011eedb6b.txt&quot;                                                 
+## [10] &quot;git-commit-message-310021424d33.txt&quot;                                                 
+## [11] &quot;git-commit-message-31002331ab72.txt&quot;                                                 
+## [12] &quot;git-commit-message-31004540d44b.txt&quot;                                                 
+## [13] &quot;git-commit-message-310066d75d94.txt&quot;                                                 
+## [14] &quot;git-commit-message-31007da6054.txt&quot;                                                  
+## [15] &quot;git-commit-message-3100c52fa5b.txt&quot;                                                  
+## [16] &quot;inp_new&quot;                                                                             
+## [17] &quot;libloc_213_8f8c4eafe9e43f75.rds&quot;                                                     
+## [18] &quot;preview-31001bb272af.dir&quot;                                                            
+## [19] &quot;preview-310060874d5d.dir&quot;                                                            
+## [20] &quot;preview-3100683df057.dir&quot;                                                            
+## [21] &quot;preview-3100f575ee1.dir&quot;                                                             
+## [22] &quot;preview-321e55bfe088.html&quot;                                                           
+## [23] &quot;preview-32433ea26b6c.html&quot;                                                           
+## [24] &quot;repos_https%3A%2F%2Fcran.rstudio.com%2Fbin%2Fmacosx%2Fel-capitan%2Fcontrib%2F3.4.rds&quot;
+## [25] &quot;Rprofile-devtools&quot;                                                                   
+## [26] &quot;rs-graphics-9117585f-6f72-4d94-9369-628e2ad2201b&quot;                                    
+## [27] &quot;shp&quot;                                                                                 
+## [28] &quot;temp_libpath3100433d4cb&quot;                                                             
+## [29] &quot;temp_libpath31004f959fb8&quot;                                                            
+## [30] &quot;temp_libpath31006b1c78e2&quot;                                                            
+## [31] &quot;test31001a44745e.c&quot;                                                                  
+## [32] &quot;test31001a44745e.o&quot;                                                                  
+## [33] &quot;test31001a44745e.so&quot;                                                                 
+## [34] &quot;test3100588756ff.c&quot;                                                                  
+## [35] &quot;test3100588756ff.o&quot;                                                                  
+## [36] &quot;test3100588756ff.so&quot;                                                                 
+## [37] &quot;test31006dfac6f6.c&quot;                                                                  
+## [38] &quot;test31006dfac6f6.o&quot;                                                                  
+## [39] &quot;test31006dfac6f6.so&quot;                                                                 
+## [40] &quot;test31007e67c865.c&quot;                                                                  
+## [41] &quot;test31007e67c865.o&quot;                                                                  
+## [42] &quot;test31007e67c865.so&quot;                                                                 
+## [43] &quot;txt&quot;</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co"># check existence of shape, text and dat files:</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"><span class="kw">c</span>(<span class="st">&quot;shp&quot;</span>, <span class="st">&quot;txt&quot;</span>, <span class="st">&quot;dat&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span>purrr<span class="op">::</span><span class="kw">map</span>( <span class="op">~</span><span class="st"> </span><span class="kw">file.path</span>(out_dir, .)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="st">  </span>purrr<span class="op">::</span><span class="kw">map</span>(list.files)</a></code></pre></div>
+<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span><span class="kw">map</span>( <span class="op">~</span><span class="st"> </span><span class="kw">file.path</span>(out_dir, .)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="st">  </span><span class="kw">map</span>(list.files)</a></code></pre></div>
 <pre><code>## [[1]]
 ##  [1] &quot;Example1_link.dbf&quot;    &quot;Example1_link.shp&quot;    &quot;Example1_link.shx&quot;   
 ##  [4] &quot;Example1_outfall.dbf&quot; &quot;Example1_outfall.shp&quot; &quot;Example1_outfall.shx&quot;

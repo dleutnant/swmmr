@@ -288,12 +288,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h2>Introduction</h2>
 <p>Model calibration or optimization is an essential part within the modelling chain to improve the model quality. During calibration, model parameter values are systematically modified to optimize an objective function, which numerically expresses the difference between observation and simulation data. In this tutorial, we walk through the required steps to autocalibrate a SWMM model with <code>swmmr</code>. We calibrate the <em>Example1.inp</em> model which is shipped with the offical SWMM executable from US EPA. For the optimization, we use the <code>DEoptim</code> package, which provides a differential evolution optimization algorithm.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(swmmr)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(DEoptim)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#&gt; Loading required package: parallel</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co">#&gt; DEoptim package</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">#&gt; Differential Evolution algorithm in R</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#&gt; Authors: D. Ardia, K. Mullen, B. Peterson and J. Ulrich</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(DEoptim)</a></code></pre></div>
 </section>
 <section id="setup" class="level2">
 <h2>Setup</h2>
