@@ -44,9 +44,7 @@ the example shipped with the SWMM5 executable.
 ### Initiate a SWMM run and retrieve simulation results
 
 ```{r example}
-
 library(swmmr)
-library(ggplot2)
 library(purrr) # to conveniently work with list objects
 
 # set path to inp
@@ -78,10 +76,10 @@ results <- read_out(files$out, iType = 3, vIndex = c(1, 4))
 str(results, max.level = 2)
 
 # basic summary
-results[[1]] %>% purrr::map(summary)
+results[[1]] %>% invoke(merge, .) %>% summary
 
 # basic plotting
-results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
+results[[1]] %>% imap( ~ plot(.x, main = .y))
 
 # We also might be interested in the report file:
 # use read_rpt to get is a list of data.frames with SWMM summary sections
@@ -96,25 +94,18 @@ report$subcatchment_runoff_summary
 
 ### Visualize the model structure
 
+With help of packages 'ggplot2' and 'sf' we can easily plot entire swmm models.
+Note that ggplot2 (>= 2.2.1.9000) is required, which provides the geometric 
+object `geom_sf()`.
+
 ```{r visualization}
-# With help of packages 'ggplot2' and 'sf' we can easily plot swmm objects:
-# There is a default plot function which provides a fast way to visualize your 
-# model, i.e. it plots subcatchments, junctions, links and raingages
-library(ggplot2) # (>= 2.2.1.9000)
-library(tidyverse)
-library(sf)
+library(ggplot2)
 
-plot(inp)
-
-# Because of the underlying ggplot structure, we can individually plot and highlight 
-# swmm objects:
-# convert subcatchments to sf geometry
+# initially, we convert the objects to be plotted as sf objects:
+# here: subcatchments, links, junctions, raingages
 sub_sf <- subcatchments_to_sf(inp)
-# convert links
 lin_sf <- links_to_sf(inp)
-# convert junctions
 jun_sf <- junctions_to_sf(inp)
-# convert raingages
 rg_sf <- raingages_to_sf(inp)
 
 # calculate coordinates (centroid of subcatchment) for label position
@@ -155,7 +146,6 @@ ggplot() +
   # add labels
   labs(title = "SWMM model Example1", 
        subtitle = "customized visualization")
-
 ```
 
 ## Contributions

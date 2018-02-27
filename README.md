@@ -40,9 +40,7 @@ use the example shipped with the SWMM5 executable.
 ### Initiate a SWMM run and retrieve simulation results
 
 ``` r
-
 library(swmmr)
-library(ggplot2)
 library(purrr) # to conveniently work with list objects
 
 # set path to inp
@@ -127,27 +125,17 @@ str(results, max.level = 2)
 #>  NULL
 
 # basic summary
-results[[1]] %>% purrr::map(summary)
-#> $total_rainfall
-#>      Index                        .x[[i]]       
-#>  Min.   :1998-01-01 01:00:00   Min.   :0.00000  
-#>  1st Qu.:1998-01-01 09:45:00   1st Qu.:0.00000  
-#>  Median :1998-01-01 18:30:00   Median :0.00000  
-#>  Mean   :1998-01-01 18:30:00   Mean   :0.07361  
-#>  3rd Qu.:1998-01-02 03:15:00   3rd Qu.:0.00000  
-#>  Max.   :1998-01-02 12:00:00   Max.   :0.80000  
-#> 
-#> $total_runoff
-#>      Index                        .x[[i]]       
-#>  Min.   :1998-01-01 01:00:00   Min.   : 0.0000  
-#>  1st Qu.:1998-01-01 09:45:00   1st Qu.: 0.0000  
-#>  Median :1998-01-01 18:30:00   Median : 0.0000  
-#>  Mean   :1998-01-01 18:30:00   Mean   : 2.1592  
-#>  3rd Qu.:1998-01-02 03:15:00   3rd Qu.: 0.1033  
-#>  Max.   :1998-01-02 12:00:00   Max.   :24.2530
+results[[1]] %>% invoke(merge, .) %>% summary
+#>      Index                     total_rainfall     total_runoff    
+#>  Min.   :1998-01-01 01:00:00   Min.   :0.00000   Min.   : 0.0000  
+#>  1st Qu.:1998-01-01 09:45:00   1st Qu.:0.00000   1st Qu.: 0.0000  
+#>  Median :1998-01-01 18:30:00   Median :0.00000   Median : 0.0000  
+#>  Mean   :1998-01-01 18:30:00   Mean   :0.07361   Mean   : 2.1592  
+#>  3rd Qu.:1998-01-02 03:15:00   3rd Qu.:0.00000   3rd Qu.: 0.1033  
+#>  Max.   :1998-01-02 12:00:00   Max.   :0.80000   Max.   :24.2530
 
 # basic plotting
-results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
+results[[1]] %>% imap( ~ plot(.x, main = .y))
 #> $total_rainfall
 ```
 
@@ -204,49 +192,18 @@ report$subcatchment_runoff_summary
 
 ### Visualize the model structure
 
-``` r
-# With help of packages 'ggplot2' and 'sf' we can easily plot swmm objects:
-# There is a default plot function which provides a fast way to visualize your 
-# model, i.e. it plots subcatchments, junctions, links and raingages
-library(ggplot2) # (>= 2.2.1.9000)
-library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
-#> ✔ tibble  1.4.2     ✔ dplyr   0.7.4
-#> ✔ tidyr   0.8.0     ✔ stringr 1.3.0
-#> ✔ readr   1.1.1     ✔ forcats 0.3.0
-#> ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-#> ✖ dplyr::filter() masks stats::filter()
-#> ✖ dplyr::lag()    masks stats::lag()
-library(sf)
-#> Linking to GEOS 3.6.2, GDAL 2.2.3, proj.4 4.9.3
-
-plot(inp)
-#> Warning in storages_to_sf(x): incomplete features: storage
-#> Warning in weirs_to_sf(x): incomplete features: weirs
-#> Warning in orifices_to_sf(x): incomplete features: orifices
-#> Warning in pumps_to_sf(x): incomplete features: pumps
-#> Warning in evalq((function (..., call. = TRUE, immediate. = FALSE,
-#> noBreaks. = FALSE, : Self-intersection at or near point 3536.5920802119749
-#> 6164.1128320847902
-
-#> Warning in evalq((function (..., call. = TRUE, immediate. = FALSE,
-#> noBreaks. = FALSE, : Self-intersection at or near point 3536.5920802119749
-#> 6164.1128320847902
-```
-
-![](man/figures/README-visualization-1.png)<!-- -->
+With help of packages ‘ggplot2’ and ‘sf’ we can easily plot entire swmm
+models. Note that ggplot2 (\>= 2.2.1.9000) is required, which provides
+the geometric object `geom_sf()`.
 
 ``` r
+library(ggplot2)
 
-# Because of the underlying ggplot structure, we can individually plot and highlight 
-# swmm objects:
-# convert subcatchments to sf geometry
+# initially, we convert the objects to be plotted as sf objects:
+# here: subcatchments, links, junctions, raingages
 sub_sf <- subcatchments_to_sf(inp)
-# convert links
 lin_sf <- links_to_sf(inp)
-# convert junctions
 jun_sf <- junctions_to_sf(inp)
-# convert raingages
 rg_sf <- raingages_to_sf(inp)
 
 # calculate coordinates (centroid of subcatchment) for label position
@@ -289,7 +246,7 @@ ggplot() +
        subtitle = "customized visualization")
 ```
 
-![](man/figures/README-visualization-2.png)<!-- -->
+![](man/figures/README-visualization-1.png)<!-- -->
 
 ## Contributions
 
