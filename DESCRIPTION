@@ -9,7 +9,7 @@ Description: Functions to connect the widely used Storm Water Management Model (
   with help of Rcpp. Additionally, reading SWMM's '.inp' and '.rpt' files is supported to 
   glance model structures and to get direct access to simulation summaries.
 Version: 0.8.0
-Date: 2018-02-26
+Date: 2018-02-27
 Authors@R: c(
   person("Dominik", "Leutnant", email = "leutnant@fh-muenster.de", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3293-2315")), 
   person("Anneke", "Doering", email = "doering@hydromech.uni-hannover.de", role = c("aut"))
