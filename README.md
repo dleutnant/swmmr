@@ -45,8 +45,11 @@ library(swmmr)
 library(ggplot2)
 library(purrr) # to conveniently work with list objects
 
-# set path to inp (avoid white spaces in file paths!)
-inp_path <- "~/EPA_SWMM_Projects/Examples/Example1.inp"
+# set path to inp
+# If your operating system is Windows, the Example model files are usually 
+# located at "C:\Users\your user name\Documents\EPA SWMM Projects\Examples".
+# For convenience the Example1.inp model is also included in the swmmr package.
+inp_path <- system.file("extdata", "Example1.inp", package = "swmmr", mustWork = TRUE)
 
 # glance model structure, the result is a list of data.frames with SWMM sections
 inp <- read_inp(x = inp_path)
