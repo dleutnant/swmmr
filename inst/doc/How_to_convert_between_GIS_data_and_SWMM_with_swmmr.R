@@ -5,7 +5,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## ----load_libs, message= FALSE-------------------------------------------
 # First load the following packages:
 library(swmmr)
-library(dplyr)
+library(tidyverse)
 library(sf)
 
 ## ----model_preparation---------------------------------------------------
@@ -16,14 +16,17 @@ library(sf)
 # substitute '...' with your user name
 
 ## ----model_setup---------------------------------------------------------
-# set path to inp file
-inp_file <- "~/EPA_SWMM_Projects/Examples/Example1.inp"
-
+# set path to inp
+# If your operating system is Windows, the Example1.inp model is usually 
+# located at "C:\Users\your user name\Documents\EPA SWMM Projects\Examples".
+# For convenience the Example1.inp model is also included in the swmmr package.
+# Feel free to change this to your path of choice.
+inp_file <- system.file("extdata", "Example1.inp", package = "swmmr", mustWork = TRUE)
 
 ## ----out_dir-------------------------------------------------------------
-# set the path to the output directory for the example files:
-out_dir <- path.expand("~/EPA_SWMM_Projects")
-
+# set the path to the output directory for the example files (here, we use a temp directory)
+# Feel free to change this to your path of choice. 
+out_dir <- tempdir()
 
 ## ----inp_to_files--------------------------------------------------------
 # read the "Example1.inp" using read_inp
@@ -38,14 +41,10 @@ inp_to_files(x = Example1, name = "Example1", path_out = out_dir)
 # check folders in your output directory:
 list.files(out_dir)
 
-# check existence of shape files:
-list.files(paste0(out_dir,"/shp"))
-
-# check existence of txt files:
-list.files(paste0(out_dir,"/txt"))
-
-# check existence of dat files:
-list.files(paste0(out_dir,"/dat"))
+# check existence of shape, text and dat files:
+c("shp", "txt", "dat") %>% 
+  purrr::map( ~ file.path(out_dir, .)) %>% 
+  purrr::map(list.files)
 
 
 ## ----shp_to_inp----------------------------------------------------------
@@ -65,7 +64,6 @@ summary(Example1_con)
 # save the input file to a new folder in the output directory:
 dir.create(file.path(out_dir, "inp_new"))
 write_inp(Example1_con, file.path(out_dir, "inp_new", "Example1_con.inp"))
-
 
 ## ----objects-------------------------------------------------------------
 # ... assuming infiltration parameters are not given in the .shp file, an R object (tibble or data.frame) called infiltration can be added. Additionally a column 'Soil' must be added to polygon shp file.

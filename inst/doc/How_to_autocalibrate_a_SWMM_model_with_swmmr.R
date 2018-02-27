@@ -9,11 +9,13 @@ library(swmmr)
 library(DEoptim)
 
 ## ----model_setup---------------------------------------------------------
-# set the path to inp file
-# in case your operating system is Windows, please change this path to
-# "C:\Users\your user name\Documents\EPA SWMM Projects\Examples\Example1.inp"
-# and substitute your user name.
-inp_file <- "~/EPA_SWMM_Projects/Examples/Example1.inp"
+# set path to inp
+# If your operating system is Windows, the Example1.inp model is usually 
+# located at "C:\Users\your user name\Documents\EPA SWMM Projects\Examples".
+# For convenience the Example1.inp model is also included in the swmmr package.
+# Feel free to change this to your path of choice.
+inp_file <- system.file("extdata", "Example1.inp", package = "swmmr", mustWork = TRUE)
+
 # both rpt and out files are temporary files
 tmp_rpt_file <- tempfile()
 tmp_out_file <- tempfile()
@@ -81,7 +83,7 @@ obj_fun <- function(x, inp, obs) {
 }
 
 
-## ----optim--------------------------------------------------------------------------------------------------------------------
+## ----optim---------------------------------------------------------------
   set.seed(84) # to get reproducible results
 
   calibration_res <- DEoptim(
