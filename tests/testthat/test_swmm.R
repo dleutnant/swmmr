@@ -49,24 +49,24 @@ testthat::test_that("swmm_io", {
   
 })
 
-testthat::test_that("swmm_plot", {
-  
-  # only local tests
-  testthat::skip_on_cran()
-  testthat::skip_on_travis()
-  
-  # get the inp files
-  list_of_ggplots <- system.file("extdata", paste0("Example", 1:6, ".inp"),
-                                 package = "swmmr", mustWork = TRUE) %>% 
-    # read by swmmr
-    purrr::map(swmmr::read_inp) %>% 
-    # plot with generic plot method
-    purrr::map(plot)
-  
-  # perform tests: Do we get objects of class ggplot2?
-  purrr::walk(list_of_ggplots, testthat::expect_s3_class, class = "ggplot")
-  
-})
+# testthat::test_that("swmm_plot", {
+#   
+#   # only local tests
+#   testthat::skip_on_cran()
+#   testthat::skip_on_travis()
+#   
+#   # get the inp files
+#   list_of_ggplots <- system.file("extdata", paste0("Example", 1:6, ".inp"),
+#                                  package = "swmmr", mustWork = TRUE) %>% 
+#     # read by swmmr
+#     purrr::map(swmmr::read_inp) %>% 
+#     # plot with generic plot method
+#     purrr::map(plot)
+#   
+#   # perform tests: Do we get objects of class ggplot2?
+#   purrr::walk(list_of_ggplots, testthat::expect_s3_class, class = "ggplot")
+#   
+# })
 
 testthat::test_that("rpt_reader", {
   

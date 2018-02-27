@@ -74,5 +74,5 @@ orifices, pumps, subcatchments and raingages to a list of simple features
 }
 }
 \seealso{
-\code{\link[sf]{sf}} or \code{\link[ggplot2]{geom_sf}}
+\code{\link[sf]{sf}}
 }

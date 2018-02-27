@@ -24,7 +24,7 @@
 #' @param x An object of class 'inp', created by \code{\link{read_inp}}.
 #' @return A simple feature or a list of simple features
 #' @name convert_to_sf
-#' @seealso \code{\link[sf]{sf}} or \code{\link[ggplot2]{geom_sf}}
+#' @seealso \code{\link[sf]{sf}}
 NULL
 
 #' @export
