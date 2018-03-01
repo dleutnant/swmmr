@@ -190,7 +190,7 @@ report$subcatchment_runoff_summary
 #> #   Total_Runoff_Coeff <dbl>
 ```
 
-### Visualize the model structure
+### Visualisation of model structure
 
 With help of packages ‘ggplot2’ and ‘sf’ we can easily plot entire swmm
 models. Note that ggplot2 (\>= 2.2.1.9000) is required, which provides
