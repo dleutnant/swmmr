@@ -1,7 +1,6 @@
 # History files
 .Rhistory
 .Rapp.history
-
 # Example code in package build process
 *-Ex.R
 # RStudio files
@@ -17,3 +16,4 @@ src-i386
 src-x64
 # out files in examples
 inst/extdata/Examples/*.out
+.DS_Store
