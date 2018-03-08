@@ -1,7 +1,9 @@
 ## ----setup, include = FALSE----------------------------------------------
+calibration_res <- NULL
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>", 
+  eval = TRUE # set to FALSE to prevent eval on CRAN!
 )
 
 ## ----load_libs-----------------------------------------------------------

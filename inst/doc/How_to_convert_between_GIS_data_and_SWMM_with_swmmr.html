@@ -12,7 +12,7 @@
 
 <meta name="author" content="Anneke Döring" />
 
-<meta name="date" content="2018-03-01" />
+<meta name="date" content="2018-03-09" />
 
 <title>Conversion between GIS data and SWMM with swmmr</title>
 
@@ -280,11 +280,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Conversion between GIS data and SWMM with swmmr</h1>
 <h4 class="author"><em>Anneke Döring</em></h4>
-<h4 class="date"><em>2018-03-01</em></h4>
+<h4 class="date"><em>2018-03-09</em></h4>
 
 
 
-<section id="swmmrs-function-inp_to_files" class="level2">
+<div id="swmmrs-function-inp_to_files" class="section level2">
 <h2>swmmr’s function inp_to_files</h2>
 <hr />
 <p>This function is an addition to the swmmr package. The function inp_to_files is used to convert SWMM projects saved as .inp to several independent files. While geographical informations are stored in .shp files, informations of the sections options, report, raingages, evaporation, pollutants, landuses, buildup, washoff and coverages are stored in one .txt file named ‘options.txt’. Furthermore timeseries are converted to SWMM’s timeseries format and saved in .dat files.</p>
@@ -350,10 +350,10 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## [1] &quot;Snowpck PctRotd plygn__&quot;</code></pre>
 <pre><code>## Warning in CPL_write_ogr(obj, dsn, layer, driver,
 ## as.character(dataset_options), : GDAL Error 1: /var/folders/5s/
-## kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_polygon.shp does
+## kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_polygon.shp does
 ## not appear to be a file or directory.</code></pre>
-<pre><code>## Deleting source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_polygon.shp' failed
-## Writing layer `Example1_polygon' to data source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_polygon.shp' using driver `ESRI Shapefile'
+<pre><code>## Deleting source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_polygon.shp' failed
+## Writing layer `Example1_polygon' to data source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_polygon.shp' using driver `ESRI Shapefile'
 ## features:       8
 ## fields:         19
 ## geometry type:  Polygon
@@ -361,19 +361,19 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## [1] &quot;Culvert&quot;</code></pre>
 <pre><code>## Warning in CPL_write_ogr(obj, dsn, layer, driver,
 ## as.character(dataset_options), : GDAL Error 1: /var/folders/5s/
-## kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_link.shp does not
+## kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_link.shp does not
 ## appear to be a file or directory.</code></pre>
-<pre><code>## Deleting source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_link.shp' failed
-## Writing layer `Example1_link' to data source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_link.shp' using driver `ESRI Shapefile'
+<pre><code>## Deleting source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_link.shp' failed
+## Writing layer `Example1_link' to data source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_link.shp' using driver `ESRI Shapefile'
 ## features:       13
 ## fields:         15
 ## geometry type:  Line String</code></pre>
 <pre><code>## Warning in CPL_write_ogr(obj, dsn, layer, driver,
 ## as.character(dataset_options), : GDAL Error 1: /var/folders/5s/
-## kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_point.shp does
+## kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_point.shp does
 ## not appear to be a file or directory.</code></pre>
-<pre><code>## Deleting source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_point.shp' failed
-## Writing layer `Example1_point' to data source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_point.shp' using driver `ESRI Shapefile'
+<pre><code>## Deleting source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_point.shp' failed
+## Writing layer `Example1_point' to data source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_point.shp' using driver `ESRI Shapefile'
 ## features:       13
 ## fields:         6
 ## geometry type:  Point
@@ -381,10 +381,10 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## [1] &quot;Stage Data Route To&quot;</code></pre>
 <pre><code>## Warning in CPL_write_ogr(obj, dsn, layer, driver,
 ## as.character(dataset_options), : GDAL Error 1: /var/folders/5s/
-## kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_outfall.shp does
+## kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_outfall.shp does
 ## not appear to be a file or directory.</code></pre>
-<pre><code>## Deleting source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_outfall.shp' failed
-## Writing layer `Example1_outfall' to data source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp/Example1_outfall.shp' using driver `ESRI Shapefile'
+<pre><code>## Deleting source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_outfall.shp' failed
+## Writing layer `Example1_outfall' to data source `/var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp/Example1_outfall.shp' using driver `ESRI Shapefile'
 ## features:       1
 ## fields:         4
 ## geometry type:  Point
@@ -392,23 +392,20 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## [1] &quot;section orifices is missing&quot;
 ## [1] &quot;section pumps is missing&quot;
 ## [1] &quot;section storage is missing&quot;
-## [1] &quot;*.shp files were written to: /var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/shp&quot;
-## [1] &quot;*.txt file was written to: /var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/txt&quot;
+## [1] &quot;*.shp files were written to: /var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/shp&quot;
+## [1] &quot;*.txt file was written to: /var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/txt&quot;
 ## [1] &quot;section curves is missing&quot;
-## [1] &quot;timeseries.dat files were written to: /var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//Rtmpv9zMX2/dat&quot;</code></pre>
+## [1] &quot;timeseries.dat files were written to: /var/folders/5s/kgm05t2s0_52gz1s445mnlgw0000gn/T//RtmpApP2ZZ/dat&quot;</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="co"># check folders in your output directory:</span></a>
 <a class="sourceLine" id="cb22-2" data-line-number="2"><span class="kw">list.files</span>(out_dir)</a></code></pre></div>
-<pre><code>##  [1] &quot;dat&quot;                                                                                 
-##  [2] &quot;file40c9257d4b1d&quot;                                                                    
-##  [3] &quot;file40c92dcac228&quot;                                                                    
-##  [4] &quot;file40c944ce7025&quot;                                                                    
-##  [5] &quot;file40c95f53d3ff&quot;                                                                    
-##  [6] &quot;libloc_213_8f8c4eafe9e43f75.rds&quot;                                                     
-##  [7] &quot;repos_https%3A%2F%2Fcran.rstudio.com%2Fbin%2Fmacosx%2Fel-capitan%2Fcontrib%2F3.4.rds&quot;
-##  [8] &quot;repos_https%3A%2F%2Fcran.rstudio.com%2Fsrc%2Fcontrib.rds&quot;                            
-##  [9] &quot;rs-graphics-2a7f6f3f-3a75-497d-806f-932950bfc87f&quot;                                    
-## [10] &quot;shp&quot;                                                                                 
-## [11] &quot;txt&quot;</code></pre>
+<pre><code>## [1] &quot;dat&quot;                                                                                 
+## [2] &quot;file2c6d1a28007a&quot;                                                                    
+## [3] &quot;file2c6d38375700&quot;                                                                    
+## [4] &quot;libloc_213_8f8c4eafe9e43f75.rds&quot;                                                     
+## [5] &quot;repos_https%3A%2F%2Fcran.rstudio.com%2Fbin%2Fmacosx%2Fel-capitan%2Fcontrib%2F3.4.rds&quot;
+## [6] &quot;rs-graphics-c33e4810-b236-4f48-9151-34af14fa69db&quot;                                    
+## [7] &quot;shp&quot;                                                                                 
+## [8] &quot;txt&quot;</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="co"># check existence of shape, text and dat files:</span></a>
 <a class="sourceLine" id="cb24-2" data-line-number="2"><span class="kw">c</span>(<span class="st">&quot;shp&quot;</span>, <span class="st">&quot;txt&quot;</span>, <span class="st">&quot;dat&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb24-3" data-line-number="3"><span class="st">  </span><span class="kw">map</span>( <span class="op">~</span><span class="st"> </span><span class="kw">file.path</span>(out_dir, .)) <span class="op">%&gt;%</span><span class="st"> </span></a>
@@ -424,12 +421,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## 
 ## [[3]]
 ## [1] &quot;Example1_timeseries_TS1.dat&quot;</code></pre>
-</section>
-<section id="swmmrs-function-shp_to_inp" class="level2">
+</div>
+<div id="swmmrs-function-shp_to_inp" class="section level2">
 <h2>swmmr’s function shp_to_inp</h2>
 <hr />
 <p>This is the counterpart to inp_to_files. Geographical informations stored in .shp files are converted to the input file format ‘.inp’ of SWMM using R. Informations on simulation settings, rain timeseries etc., stored in .txt or .dat files, complete these geographical informations.</p>
-<section id="conversion-of-example1-files-to-one-inp-file" class="level3">
+<div id="conversion-of-example1-files-to-one-inp-file" class="section level3">
 <h3>Conversion of Example1 files to one inp file</h3>
 <p>Based on the converted files of Example1, the usage of swmmr’s function shp_to_inp is explained:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="co"># convert shp and txt files to inp object:</span></a>
@@ -473,17 +470,17 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb30-2" data-line-number="2"><span class="kw">dir.create</span>(<span class="kw">file.path</span>(out_dir, <span class="st">&quot;inp_new&quot;</span>))</a>
 <a class="sourceLine" id="cb30-3" data-line-number="3"><span class="kw">write_inp</span>(Example1_con, <span class="kw">file.path</span>(out_dir, <span class="st">&quot;inp_new&quot;</span>, <span class="st">&quot;Example1_con.inp&quot;</span>))</a></code></pre></div>
 <p>Now simulation runs can be initiated…</p>
-</section>
-</section>
-<section id="setup-a-new-swmm-project-using-shp_to_inp" class="level2">
+</div>
+</div>
+<div id="setup-a-new-swmm-project-using-shp_to_inp" class="section level2">
 <h2>setup a new SWMM project using shp_to_inp</h2>
 <p>There are three different ways to define the parameters of the different SWMM sections:</p>
-<ol type="1">
+<ol style="list-style-type: decimal">
 <li>all parameter values are given in .shp files containing polygon, point or line features and one .txt file containing informations on simulation settings</li>
 <li>a minimum of information is given in the attribute tables of the shp files, additional parameters are completed with information given in the R objects: infiltration, subcatchment_typologies, conduit_material and junction_parameters</li>
 <li>information that is neither given in the input files (.shp or .txt) or supplementary R objects is internally complemented with default values</li>
 </ol>
-<section id="supplementary-r-objects" class="level3">
+<div id="supplementary-r-objects" class="section level3">
 <h3>supplementary R objects:</h3>
 <p>Here examples for the structure of supplementary R objects are given:</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="co"># ... assuming infiltration parameters are not given in the .shp file, an R object (tibble or data.frame) called infiltration can be added. Additionally a column 'Soil' must be added to polygon shp file.</span></a>
@@ -557,8 +554,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <li>pumps: missing default values</li>
 <li>timeseries: *.dat file only</li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
 

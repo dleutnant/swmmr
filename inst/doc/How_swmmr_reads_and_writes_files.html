@@ -12,7 +12,7 @@
 
 <meta name="author" content="Dominik Leutnant" />
 
-<meta name="date" content="2018-03-01" />
+<meta name="date" content="2018-03-09" />
 
 <title>How swmmr reads and writes SWMM files</title>
 
@@ -214,15 +214,15 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">How swmmr reads and writes SWMM files</h1>
 <h4 class="author"><em>Dominik Leutnant</em></h4>
-<h4 class="date"><em>2018-03-01</em></h4>
+<h4 class="date"><em>2018-03-09</em></h4>
 
 
 
-<section id="what-is-a-inp-file" class="level2">
+<div id="what-is-a-inp-file" class="section level2">
 <h2>What is a inp file?</h2>
 <p>US EPA’s Stormwater Management Model (SWMM) stores all relevant data in the so called *.inp file. This plain ASCII coded file contains information about model structure (e.g., subcatchments) and model options (e.g. flow units, flow routing, simulation period). The file itself is structured into sections which starts and ends with opening and closing squared brackets (<code>[</code>, <code>]</code>).</p>
-</section>
-<section id="which-inp-sections-are-allowed" class="level2">
+</div>
+<div id="which-inp-sections-are-allowed" class="section level2">
 <h2>Which inp sections are allowed?</h2>
 <p>Currently, 51 sections are recognized. These are:</p>
 <pre><code>#&gt;  [1] &quot;aquifers&quot;      &quot;backdrop&quot;      &quot;buildup&quot;       &quot;conduits&quot;     
@@ -238,20 +238,20 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 #&gt; [41] &quot;subcatchments&quot; &quot;symbols&quot;       &quot;tags&quot;          &quot;temperature&quot;  
 #&gt; [45] &quot;timeseries&quot;    &quot;title&quot;         &quot;treatment&quot;     &quot;vertices&quot;     
 #&gt; [49] &quot;washoff&quot;       &quot;weirs&quot;         &quot;xsections&quot;</code></pre>
-</section>
-<section id="what-happens-on-read_inp" class="level2">
+</div>
+<div id="what-happens-on-read_inp" class="section level2">
 <h2>What happens on <code>read_inp</code>?</h2>
 <p><code>swmmr</code>’s inp parser walks through the file and separates the file into section blocks. A section is recognized if its name is enclosed by squared brackets. Each section has an own parsing scheme, which especially holds header information (i.e. colnames). The result of a parsed section is always a <code>tibble</code>, which subsequently leads to a list of <code>tibbles</code> for the entire <code>inp</code> file.</p>
-</section>
-<section id="what-happens-on-write_inp" class="level2">
+</div>
+<div id="what-happens-on-write_inp" class="section level2">
 <h2>What happens on <code>write_inp</code>?</h2>
 <p>The benefit of parsing the <code>inp</code> file into a list of <code>tibbles</code> becomes clearly if a new <code>inp</code> file has to be written to disk: <code>swmmr</code>’s inp writer just walks through the <code>inp</code> object and writes each tibble (whitespace separated) into one file. However, column names of sections are not written to clearly indicate the origin of file (i.e. <code>swmmr</code>). If column names are really required, the new generated inp file can still be opened with SWMM and saved back with the GUI.</p>
-</section>
-<section id="what-is-a-rpt-file" class="level2">
+</div>
+<div id="what-is-a-rpt-file" class="section level2">
 <h2>What is a rpt file?</h2>
 <p>After each SWMM simulation run, a report file (<code>*.rpt</code>) is generated containing status reports and result summaries.</p>
-</section>
-<section id="which-rpt-sections-are-parsed" class="level2">
+</div>
+<div id="which-rpt-sections-are-parsed" class="section level2">
 <h2>Which rpt sections are parsed?</h2>
 <p>Currently, 24 report sections are recognized. These are:</p>
 <pre><code>#&gt;  [1] &quot;Element Count&quot;                    &quot;Pollutant Summary&quot;               
@@ -266,11 +266,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 #&gt; [19] &quot;Node Inflow Summary&quot;              &quot;Node Flooding Summary&quot;           
 #&gt; [21] &quot;Outfall Loading Summary&quot;          &quot;Link Flow Summary&quot;               
 #&gt; [23] &quot;Conduit Surcharge Summary&quot;        &quot;Link Pollutant Load Summary&quot;</code></pre>
-</section>
-<section id="what-happens-on-read_rpt" class="level2">
+</div>
+<div id="what-happens-on-read_rpt" class="section level2">
 <h2>What happens on <code>read_rpt</code>?</h2>
 <p>Report files are read in the same manner like <code>inp</code> files. The output will be a <code>tibble</code> for each summary, which results as a list of <code>tibbles</code> for a single <code>rpt</code> file.</p>
-</section>
+</div>
 
 
 
