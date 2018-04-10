@@ -1,6 +1,6 @@
 ## Package Update
 
-This is a package update to swmmr 0.8.0.
+This is a package update to swmmr 0.8.1.
 
 ## Test environments
 * local OS X install, R 3.4.3

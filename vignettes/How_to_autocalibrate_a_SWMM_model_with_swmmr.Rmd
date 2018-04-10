@@ -14,7 +14,7 @@ calibration_res <- NULL
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", 
-  eval = FALSE # set to FALSE to prevent eval on CRAN!
+  eval = !identical(Sys.getenv("NO_VIGNETTE_ON_CRAN"), "") # set to FALSE to prevent eval on CRAN!
 )
 ```
 

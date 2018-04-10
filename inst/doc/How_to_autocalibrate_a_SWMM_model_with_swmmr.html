@@ -12,7 +12,7 @@
 
 <meta name="author" content="Dominik Leutnant" />
 
-<meta name="date" content="2018-03-09" />
+<meta name="date" content="2018-04-10" />
 
 <title>How to autocalibrate a SWMM model with swmmr</title>
 
@@ -280,7 +280,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">How to autocalibrate a SWMM model with swmmr</h1>
 <h4 class="author"><em>Dominik Leutnant</em></h4>
-<h4 class="date"><em>2018-03-09</em></h4>
+<h4 class="date"><em>2018-04-10</em></h4>
 
 
 
@@ -288,12 +288,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h2>Introduction</h2>
 <p>Model calibration or optimization is an essential part within the modelling chain to improve the model quality. During calibration, model parameter values are systematically modified to optimize an objective function, which numerically expresses the difference between observation and simulation data. In this tutorial, we walk through the required steps to autocalibrate a SWMM model with <code>swmmr</code>. We calibrate the <em>Example1.inp</em> model which is shipped with the offical SWMM executable from US EPA. For the optimization, we use the <code>DEoptim</code> package, which provides a differential evolution optimization algorithm.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(swmmr)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(DEoptim)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#&gt; Loading required package: parallel</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co">#&gt; DEoptim package</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">#&gt; Differential Evolution algorithm in R</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#&gt; Authors: D. Ardia, K. Mullen, B. Peterson and J. Ulrich</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(DEoptim)</a></code></pre></div>
 </div>
 <div id="setup" class="section level2">
 <h2>Setup</h2>
@@ -314,8 +309,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb2-14" data-line-number="14">  <span class="dt">inp =</span> inp_file,</a>
 <a class="sourceLine" id="cb2-15" data-line-number="15">  <span class="dt">rpt =</span> tmp_rpt_file,</a>
 <a class="sourceLine" id="cb2-16" data-line-number="16">  <span class="dt">out =</span> tmp_out_file</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17">)</a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt; arguments 'minimized' and 'invisible' are for Windows only</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-17" data-line-number="17">)</a></code></pre></div>
 <p>The original output of the first simulation run is assumed to be the observation data. The parameter of interest is <code>total_runoff</code> at node <code>18</code>. We load the observation data as an <code>xts</code> object with <code>read_out</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">obs &lt;-<span class="st"> </span><span class="kw">read_out</span>(</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">  <span class="dt">file =</span> swmm_files<span class="op">$</span>out,</a>
@@ -326,19 +320,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>To keep it simple, we only calibrate the model parameter <code>Perc_Imperv</code> of subcatchments which are larger than 10 ha. The original parameter values are “50” for subcatchment “5” and “10” for subcatchment “6”. The model structure is loaded with <code>read_inp</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># read model structure</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">inp &lt;-<span class="st"> </span><span class="kw">read_inp</span>(swmm_files<span class="op">$</span>inp) </a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; Warning: Expected 6 pieces. Additional pieces discarded in 13 rows [1, 2,</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt; Warning: Expected 9 pieces. Additional pieces discarded in 13 rows [1, 2,</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].</span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># show the original parameter values</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">inp<span class="op">$</span>subcatchments[inp<span class="op">$</span>subcatchments<span class="op">$</span>Area <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>, ]</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co">#&gt; # A tibble: 2 x 9</span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#&gt;   Name  `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen</span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt;  &lt;int&gt;       &lt;int&gt; &lt;int&gt;      &lt;dbl&gt;   &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt; 1 5     RG1         15        15          50   500     0.0100       0</span></a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; 2 6     RG1         23        12          10   500     0.0100       0</span></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt; # ... with 1 more variable: Snowpack &lt;lgl&gt;</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co"># show the original parameter values</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">inp<span class="op">$</span>subcatchments[inp<span class="op">$</span>subcatchments<span class="op">$</span>Area <span class="op">&gt;</span><span class="st"> </span><span class="dv">10</span>, ]</a></code></pre></div>
 </div>
 <div id="goodness-of-fit-criteria" class="section level2">
 <h2>Goodness-of-fit criteria</h2>
@@ -414,21 +398,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb7-14" data-line-number="14">    <span class="dt">inp =</span> inp, <span class="co"># 'inp' object</span></a>
 <a class="sourceLine" id="cb7-15" data-line-number="15">    <span class="dt">obs =</span> obs <span class="co"># xts object containing observation data</span></a>
 <a class="sourceLine" id="cb7-16" data-line-number="16">  )</a>
-<a class="sourceLine" id="cb7-17" data-line-number="17"><span class="co">#&gt; Iteration: 10 bestvalit: -0.999971 bestmemit:   47.215498   14.404115</span></a>
-<a class="sourceLine" id="cb7-18" data-line-number="18"><span class="co">#&gt; Iteration: 20 bestvalit: -0.999995 bestmemit:   46.259078   14.239166</span></a>
-<a class="sourceLine" id="cb7-19" data-line-number="19"><span class="co">#&gt; Iteration: 30 bestvalit: -1.000000 bestmemit:   50.367285    9.605135</span></a>
-<a class="sourceLine" id="cb7-20" data-line-number="20"><span class="co">#&gt; Iteration: 40 bestvalit: -1.000000 bestmemit:   49.873423   10.138400</span></a>
-<a class="sourceLine" id="cb7-21" data-line-number="21"><span class="co">#&gt; Iteration: 50 bestvalit: -1.000000 bestmemit:   50.082598    9.916026</span></a>
-<a class="sourceLine" id="cb7-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb7-23" data-line-number="23">  <span class="kw">summary</span>(calibration_res)</a>
-<a class="sourceLine" id="cb7-24" data-line-number="24"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb7-25" data-line-number="25"><span class="co">#&gt; ***** summary of DEoptim object ***** </span></a>
-<a class="sourceLine" id="cb7-26" data-line-number="26"><span class="co">#&gt; best member   :  50.0826 9.91603 </span></a>
-<a class="sourceLine" id="cb7-27" data-line-number="27"><span class="co">#&gt; best value    :  -1 </span></a>
-<a class="sourceLine" id="cb7-28" data-line-number="28"><span class="co">#&gt; after         :  50 generations </span></a>
-<a class="sourceLine" id="cb7-29" data-line-number="29"><span class="co">#&gt; fn evaluated  :  102 times </span></a>
-<a class="sourceLine" id="cb7-30" data-line-number="30"><span class="co">#&gt; *************************************</span></a></code></pre></div>
-<p>The calibration yields 50.0825976, 9.9160262 as optimized parameter values which is close to the original values.</p>
+<a class="sourceLine" id="cb7-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb7-18" data-line-number="18">  <span class="kw">summary</span>(calibration_res)</a></code></pre></div>
+<p>The calibration yields as optimized parameter values which is close to the original values.</p>
 </div>
 
 
