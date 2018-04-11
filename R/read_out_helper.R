@@ -35,7 +35,7 @@
                                    multiple = TRUE)
       }
       
-      result <- list(iIndex = which(list_of_elements$subcatchments$names %in% object_name) - 1,
+      result <- list(iIndex = match(object_name, list_of_elements$subcatchments$names) - 1,
                      names = object_name)
       
     } else {
@@ -54,7 +54,7 @@
                                             multiple = TRUE)
         }
         
-        result <- list(iIndex = which(list_of_elements$nodes$names %in% object_name) - 1,
+        result <- list(iIndex = match(object_name, list_of_elements$nodes$names) - 1,
                        names = object_name)
         
       } else {
@@ -71,7 +71,7 @@
                                               multiple = TRUE)
           } 
           
-          result <- list(iIndex = which(list_of_elements$links$names %in% object_name) - 1,
+          result <- list(iIndex = match(object_name, list_of_elements$links$names) - 1,
                          names = object_name)
           
         } else {
@@ -84,8 +84,8 @@
       }
     }
   }
-
-  if (identical(result$iIndex, numeric(0))) stop("Unclear iIndex.",call. = FALSE)
+  if (anyNA(result$iIndex)) stop("Unclear iIndex.", call. = FALSE)
+  if (identical(result$iIndex, numeric(0))) stop("Unclear iIndex.", call. = FALSE)
   
   return(result)
 }

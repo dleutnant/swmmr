@@ -1,3 +1,9 @@
+# swmmr 0.8.1
+
+## Bug fixes
+
+* `read_out` correctly reads and assigns multiple objects instead of shuffling (thanks to Benjamin and Christian for spotting this bug)
+
 # swmmr 0.8.0
 
 ## Breaking changes
