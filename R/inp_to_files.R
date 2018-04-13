@@ -18,12 +18,15 @@ sections_to_shp <- function(x, name, path_out) {
   # s. https://github.com/r-spatial/sf/issues/649
   # This hack per default overwrites an existent file only on OS X 
   # it is assumend that SWMM users are less likely OS X users... ;-(
-  if (.get_os() == "darwin") {
-    warning("Data source is deleted before attempting to write.")
-    delete_dsn <- TRUE 
-  } else {
-    delete_dsn <- FALSE
-  }
+  
+  # update: 180413 issue is fixed in sf 0.6-1
+  # if (.get_os() == "darwin") {
+  #   warning("Data source is deleted before attempting to write.")
+  #   delete_dsn <- TRUE 
+  # } else {
+  #   delete_dsn <- FALSE
+  # }
+  delete_dsn <- FALSE
 
   # dleutnant: 
   # maybe instead of writing each section individually, we might
