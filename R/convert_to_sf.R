@@ -150,16 +150,18 @@ subcatchments_to_sf <- function(x) {
                      by = c("Name" = "Subcatchment")) 
   
   # add lids if available
-  if ("lidusage" %in% names(x)) {
+  if ("lid_usage" %in% names(x)) {
     subc_sf <- dplyr::left_join(x = subc_sf,
-                                y = x[["lidusage"]],
+                                y = x[["lid_usage"]],
                                 by = c("Name" = "Subcatchment"),
-                                suffix = c(".subcatchment", ".lidusage"))
+                                suffix = c(".subcatchment", ".lid_usage"))
   }
     
   subc_sf <- subc_sf %>% 
     # nest by coordinates
     tidyr::nest(`X-Coord`,`Y-Coord`, .key = "geometry") %>%
+    # remove geometries with less than 3 points
+    dplyr::filter(purrr::map_lgl(geometry, ~ nrow(.)>2)) %>% 
     # check if polygon is closed
     dplyr::mutate(polygon_is_closed = purrr::map_lgl(geometry,
                                                      ~ identical(head(., 1),

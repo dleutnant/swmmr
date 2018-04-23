@@ -1,5 +1,9 @@
 # swmmr 0.8.1.9000
 
+## Bug fixes
+
+* `subcatchments_to_sf` returned an error if a geometry was insufficient defined (3 points are now at least required)
+
 # swmmr 0.8.1
 
 ## Bug fixes
