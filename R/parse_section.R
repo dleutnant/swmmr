@@ -1198,6 +1198,27 @@ parse_section.subcatchment_runoff_summary <- function(x, ...){
 
 #' import helper
 #' @keywords internal
+parse_section.lid_performance_summary <- function(x, ...){
+  
+  #c("Total","Evap","Infil","Surface","Drain","Initial","Final","Continuity")
+  #c("Inflow","Loss","Loss","Outflow","Outflow","Storage","Storage","Error")
+  
+  
+  tidyr::separate(data = x[-c(1:6),],
+                  col = "value",
+                  into = c("Subcatchment","LID Control", 
+                           paste(c("Total","Evap","Infil","Surface","Drain","Initial","Final","Continuity"), 
+                                 c("Inflow","Loss","Loss","Outflow","Outflow","Storage","Storage","Error"), 
+                                 sep = "_")),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
+}
+
+#' import helper
+#' @keywords internal
 parse_section.subcatchment_washoff_summary <- function(x, ...){
   
   # extract pollutants
