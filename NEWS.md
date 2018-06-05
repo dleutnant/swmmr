@@ -4,6 +4,8 @@
 
 * `subcatchments_to_sf` returned an error if a geometry was insufficient defined (3 points are now at least required)
 
+* LID performance summary from `*.rpt` file is now correctly read (@maltehenrichs)
+
 # swmmr 0.8.1
 
 ## Bug fixes

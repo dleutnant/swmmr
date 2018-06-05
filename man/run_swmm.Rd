@@ -28,7 +28,7 @@ windows: "C:/Program Files (x86)/EPA SWMM 5.1/swmm5.exe"}
 \item{wait}{a logical (not \code{NA}) indicating whether the \R
     interpreter should wait for the command to finish, or run it
     asynchronously.  This will be ignored (and the interpreter will
-    always wait) if \code{stdout = TRUE}.}
+    always wait) if \code{stdout = TRUE} or \code{stderr = TRUE}.}
 }
 \description{
 This function runs a swmm inp file. If rpt and out files are not
