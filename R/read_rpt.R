@@ -33,7 +33,9 @@ report_sections <- c("Element Count",
                      #"Link Results",
                      "Link Flow Summary", 
                      "Conduit Surcharge Summary",
-                     "Link Pollutant Load Summary")
+                     "Link Pollutant Load Summary",
+                     "Pumping Summary",
+                     "Groundwater Summary")
 
 #' Read SWMM's .rpt file
 #'
@@ -79,9 +81,9 @@ read_rpt <- function(x, ...) {
     if (startsWith(rpt_lines[x], "not just")) x <- x - 7
     return(x)
   }) %>%
-    c(., length(rpt_lines) - 5) %>% 
+    # remove last three lines (analysis)
+    c(., length(rpt_lines) - 3) %>% 
     as.integer(.)
-  
   
   # remove empty sections (and skip section name)
   section_not_emtpy <- (section_end - section_start > 0)
