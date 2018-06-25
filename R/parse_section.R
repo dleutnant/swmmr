@@ -38,7 +38,7 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
   
   # make sure ID columns are of type character
   chr_cols <- c("Name", "Link", "Links", "Subcatchment", "Outlet",
-                "Node", "From Node", "To Node", "Gage")
+                "Node", "From Node", "To Node", "Gage", "Pump")
   
   for (chr_col in chr_cols) {
     if (chr_col %in% colnames(x)) {
@@ -1367,6 +1367,50 @@ parse_section.link_pollutant_load_summary <- function(x, ...){
   tidyr::separate(data = x[-c(1:5), ],
                   col = "value",
                   into = c("Link", pollutants),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
+}
+
+#' import helper
+#' @keywords internal
+parse_section.pumping_summary <- function(x, ...){
+  
+  tidyr::separate(data = x[-c(1:6), ],
+                  col = "value",
+                  into = c("Pump", "Percent_Utilized", 
+                           "Number_of_StartUps",
+                           "Min_Flow",
+                           "Avg_Flow",
+                           "Max_Flow",
+                           "Total_Volume",
+                           "Power_Usage",
+                           "Time_Off_Pump_Curve_Low",
+                           "Time_Off_Pump_Curve_High"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
+}
+
+#' import helper
+#' @keywords internal
+parse_section.groundwater_summary <- function(x, ...){
+  
+  tidyr::separate(data = x[-c(1:7), ],
+                  col = "value",
+                  into = c("Subcatchment",
+                           "Total_Infil", "Total_Evap", 
+                           "Total_Lower_Seepage",
+                           "Total_Lateral_Outflow",
+                           "Maximum_Lateral_Outflow",
+                           "Average_Upper_Moist",
+                           "Average_Water_Table",
+                           "Final_Upper_Moist",
+                           "Final_Water_Table"),
                   sep = "\\s+",
                   extra = "merge",
                   fill = "left",
