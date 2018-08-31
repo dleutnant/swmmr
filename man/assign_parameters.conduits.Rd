@@ -5,8 +5,8 @@
 \title{conversion helper}
 \usage{
 \method{assign_parameters}{conduits}(x, infiltration = NULL,
-  subcatchment = NULL, subcatchment_typologies = NULL, conduit_material,
-  junction_parameters = NULL)
+  subcatchment = NULL, subcatchment_typologies = NULL,
+  conduit_material, junction_parameters = NULL)
 }
 \description{
 conversion helper

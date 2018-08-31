@@ -1,14 +1,6 @@
 #' import helper
 #' @keywords internal
-section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
-  
-  # special case for infiltration section
-  if (section_name == "infiltration") {
-    header <- x[startsWith(x, ";;")]
-    if (any(grepl("MaxRate", header))) inf_model <- "horton"
-    if (any(grepl("Suction", header))) inf_model <- "green_ampt"
-    if (any(grepl("CurveNum", header))) inf_model <- "curve_number"
-  }
+section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL) {
   
   # remove header lines 
   x <- x[!startsWith(x, ";;")]
@@ -25,8 +17,12 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE) {
   class(x) <- c(section_name, class(x))
   
   # generic parser
-  x <- parse_section(x, inf_model = inf_model)
-  
+  if (section_name == "infiltration") {
+    x <- parse_section(x, inf_model = tolower(options$INFILTRATION))
+  } else {
+    x <- parse_section(x)
+  }
+
   # if a section is not parsed, we return NULL
   if (is.null(x)) return(NULL)
   

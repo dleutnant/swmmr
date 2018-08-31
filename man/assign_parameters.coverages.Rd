@@ -4,9 +4,9 @@
 \alias{assign_parameters.coverages}
 \title{conversion helper}
 \usage{
-\method{assign_parameters}{coverages}(x, infiltration = NULL, subcatchment,
-  subcatchment_typologies = NULL, conduit_material = NULL,
-  junction_parameters = NULL)
+\method{assign_parameters}{coverages}(x, infiltration = NULL,
+  subcatchment, subcatchment_typologies = NULL,
+  conduit_material = NULL, junction_parameters = NULL)
 }
 \description{
 conversion helper

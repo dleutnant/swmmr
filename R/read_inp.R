@@ -63,8 +63,22 @@ read_inp <- function(x, rm.comment = TRUE, ...) {
     purrr::map( ~ inp_lines[.$start:.$end]) %>% 
     purrr::set_names(base::tolower(section$name))
   
+  # get options
+  if (is.null(list_of_sections$options)) {
+    warning("inp file does not contain section 'options'")
+    options <- NULL
+  } else {
+    opt <- section_to_tbl(x = list_of_sections$options, 
+                          section_name = "options", 
+                          rm.comment = TRUE)
+    options <- as.list(opt$Value)
+    names(options) <- opt$Option
+  }
+  
   # parse sections individually
-  res <- purrr::imap(list_of_sections, ~ section_to_tbl(.x, .y, rm.comment = rm.comment)) %>% 
+  res <- purrr::imap(list_of_sections, ~ section_to_tbl(.x, .y, 
+                                                        rm.comment = rm.comment, 
+                                                        options = options)) %>% 
     # discard nulls (nulls are returned if section is not parsed)
     purrr::discard(is.null) %>% 
     # discard empty tibbles (sections were parsed but empty)

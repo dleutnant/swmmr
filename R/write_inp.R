@@ -22,7 +22,7 @@ write_inp <- function(x, file) {
   for (section in names(x)) {
     
     # write section name
-    cat(paste0("[", toupper(section), "]"), "\n")  
+    cat(paste0("[", toupper(section), "]"), sep = "\n")
     
     # write the data without names 
     utils::write.table(x = x[section],

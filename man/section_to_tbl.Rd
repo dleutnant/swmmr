@@ -4,7 +4,7 @@
 \alias{section_to_tbl}
 \title{import helper}
 \usage{
-section_to_tbl(x, section_name, rm.comment = FALSE)
+section_to_tbl(x, section_name, rm.comment = FALSE, options = NULL)
 }
 \description{
 import helper

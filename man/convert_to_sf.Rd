@@ -11,9 +11,6 @@
 \alias{weirs_to_sf}
 \alias{orifices_to_sf}
 \alias{pumps_to_sf}
-\alias{weirs_to_sf}
-\alias{orifices_to_sf}
-\alias{pumps_to_sf}
 \alias{inp_to_sf}
 \title{Convert swmm objects to simple feature geometries}
 \usage{

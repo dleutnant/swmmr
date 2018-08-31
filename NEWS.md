@@ -6,6 +6,8 @@
 
 * LID performance summary from `*.rpt` file is now correctly read (@maltehenrichs)
 
+* `write_inp` and `read_inp` are more robust.
+
 # swmmr 0.8.1
 
 ## Bug fixes
