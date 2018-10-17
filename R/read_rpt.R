@@ -68,7 +68,12 @@ read_rpt <- function(x, ...) {
   }
   
   # subset to available sections only
-  report_sections <- report_sections[section_available]
+  report_sections <- report_sections[section_available] %>% 
+    # sort vector
+    purrr::map_int(., ~ grep(., x = rpt_lines)) %>% 
+    purrr::set_names(report_sections[section_available]) %>% 
+    sort %>% 
+    names
   
   # find section start
   section_start <- purrr::map(report_sections, ~ grep(., x = rpt_lines) - 1) %>%
@@ -84,6 +89,16 @@ read_rpt <- function(x, ...) {
     # remove last three lines (analysis)
     c(., length(rpt_lines) - 3) %>% 
     as.integer(.)
+  
+  # occasionally, swmm produces less than 2 empty lines between sections
+  for (i in seq_along(section_end)) {
+    x <- section_end[i]
+    # check if subsequent line is empty
+    while (!identical(rpt_lines[x + 1], "") & x < length(rpt_lines)) {
+      x <- x + 1  
+    }
+    section_end[i] <- x
+  }
   
   # remove empty sections (and skip section name)
   section_not_emtpy <- (section_end - section_start > 0)
