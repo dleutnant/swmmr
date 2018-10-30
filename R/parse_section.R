@@ -1305,13 +1305,21 @@ parse_section.outfall_loading_summary <- function(x, ...){
     unlist(.) %>% 
     .[-c(1:4)]
   
+  #modify into vector if no pollutants 
+  if(length(pollutants)>0){
+    into = c("Outfall_Node", "Flow_Freq", "Avg_Flow", "Max_Flow", 
+             "Total_Volume", paste("Total", pollutants, sep = "_"))
+  } else {
+    into = c("Outfall_Node", "Flow_Freq", "Avg_Flow", "Max_Flow", 
+             "Total_Volume")
+  }
+  
   tidyr::separate(data = x[-c(1:6), ],
                   col = "value",
-                  into = c("Outfall_Node", "Flow_Freq", "Avg_Flow", "Max_Flow", 
-                           "Total_Volume", paste("Total", pollutants, sep = "_")),
+                  into = into,
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
 }
 
