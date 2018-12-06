@@ -659,6 +659,7 @@ inp_to_sf <- function(x) {
              raingages = raingages_to_sf(x))
   
   # discard NULLs
+  ## TODO: st_is_valid is called two times!?
   sf <- purrr::discard(sf, is.null) %>% 
     # remove invalid geometries
     purrr::iwalk( ~ {
