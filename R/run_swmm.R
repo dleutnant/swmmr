@@ -70,6 +70,12 @@ run_swmm <- function(inp,
   
   os <- .get_os()
   
+  # TODO:
+  # global variable?
+  # add /usr/local/bin/swmm5 for swmm5 
+  # .get_latest_swmm_windows
+  # change default darwin location
+  # C:\Program Files (x86)\EPA SWMM 5.1.013\swmm5.exe
   exec <- switch(os,
                  windows = "C:/Program Files (x86)/EPA SWMM 5.1/swmm5.exe",
                  linux   = "/usr/bin/swmm5",
@@ -98,4 +104,40 @@ run_swmm <- function(inp,
   }
   
   return(tolower(os))
+}
+
+#' Determine the latest swmm5.exe in the specified  program files folder
+#' @keywords internal
+.get_latest_swmm_windows <- function(path = "c:/Program Files (x86)/", prefix = "EPA SWMM", exe = "swmm5.exe") {
+  
+  # program directory
+  version_vec <- list.dirs(path, recursive = FALSE) %>% 
+    # get directories with EPA SWMM sequence
+    grep(prefix, ., value = TRUE) %>% 
+    # get the name of the directory only
+    basename() %>% 
+    # focus the version number
+    gsub(prefix, "", .) %>% 
+    # remove white spaces
+    trimws()
+  
+  # modify compareVersion to be applicable with Reduce
+  compareVersion_mod <- function(a, b) {
+    winner <- utils::compareVersion(a, b)
+    if (winner == -1) return(b)
+    if (winner > -1) return(a)
+    return(NA)
+  }
+  
+  # find winner in vector
+  version <- Reduce(compareVersion_mod, x = version_vec)
+  
+  # create full name to swmm5.exe
+  full_name <- file.path(path, paste(prefix, version), exe)
+  
+  # final check
+  if (!file.exists(full_name)) stop("Executable not found.")
+  
+  return(full_name)
+  
 }
