@@ -40,92 +40,162 @@ List OpenSwmmOutFile(const char* outFile)
 
   int magic1, magic2, errCode, offset, offset0;
   int err;
+  size_t size;
   
   // --- open the output file
   Fout = fopen(outFile, "rb");
-  if (Fout == NULL) return List::create(_["error"] = 2);
+  
+  if (Fout == NULL) {
+
+    printf("Could not open '%s' for binary reading.\n", outFile);
+    
+    return List::create(_["error"] = 2);
+  }
+  
+  printf("File %s opened.\n", outFile);
   
   // --- check that file contains at least 14 records
   fseek(Fout, 0L, SEEK_END);
-  if (ftell(Fout) < 14*RECORDSIZE)
-  {
+  
+  if (ftell(Fout) < 14 * RECORDSIZE) {
+    
     fclose(Fout);
+    
     err = 1;
+    
+    printf("File does not have at least 14 records.\n");
+      
     return List::create(_["error"] = 3);
   }
   
+  printf("File has at least 14 records.\n");
+
   // --- read parameters from end of file
-  fseek(Fout, -5*RECORDSIZE, SEEK_END);
-  fread(&offset0, RECORDSIZE, 1, Fout);
-  fread(&StartPos, RECORDSIZE, 1, Fout);
-  fread(&SWMM_Nperiods, RECORDSIZE, 1, Fout);
-  fread(&errCode, RECORDSIZE, 1, Fout);
-  fread(&magic2, RECORDSIZE, 1, Fout);
+  fseek(Fout, -5 * RECORDSIZE, SEEK_END);
   
+  size = fread(&offset0, RECORDSIZE, 1, Fout);
+  
+  printf("offset0 has been read.\n");
+  
+  size = fread(&StartPos, RECORDSIZE, 1, Fout);
+  
+  printf("StartPos has been read.\n");
+  
+  size = fread(&SWMM_Nperiods, RECORDSIZE, 1, Fout);
+  
+  printf("SWMM_Nperiods has been read.\n");
+  
+  size = fread(&errCode, RECORDSIZE, 1, Fout);
+  
+  printf("errCode has been read.\n");
+  
+  size = fread(&magic2, RECORDSIZE, 1, Fout);
+  
+  printf("magic2 has been read.\n");
+
   // --- read magic number from beginning of file
   fseek(Fout, 0L, SEEK_SET);
-  fread(&magic1, RECORDSIZE, 1, Fout);
+  
+  size = fread(&magic1, RECORDSIZE, 1, Fout);
+
+  printf("magic1: %d, magic2: %d\n", magic1, magic2);
   
   // --- perform error checks
-  if (magic1 != magic2) err = 1;
-  else if (errCode != 0) err = 1;
-  else if (SWMM_Nperiods == 0) err = 1;
-  else err = 0;
+  if (magic1 != magic2) {
+    err = 1;
+  } 
+  else if (errCode != 0) {
+    err = 1;
+  } 
+  else if (SWMM_Nperiods == 0) {
+    err = 1;
+  }
+  else {
+    err = 0;
+  }
   
   // --- quit if errors found
-  if (err > 0 )
-  {
+  if (err > 0 ) {
+    
     fclose(Fout);
     Fout = NULL;
+    
     return List::create(_["error"] = err);
+  }
+  else {
+    
+    printf("No error so far!\n");
   }
   
   // --- otherwise read additional parameters from start of file
-  fread(&SWMM_version, RECORDSIZE, 1, Fout);
-  fread(&SWMM_FlowUnits, RECORDSIZE, 1, Fout);
-  fread(&SWMM_Nsubcatch, RECORDSIZE, 1, Fout);
-  fread(&SWMM_Nnodes, RECORDSIZE, 1, Fout);
-  fread(&SWMM_Nlinks, RECORDSIZE, 1, Fout);
-  fread(&SWMM_Npolluts, RECORDSIZE, 1, Fout);
+  size = fread(&SWMM_version, RECORDSIZE, 1, Fout);
+  printf("SWMM_version read: %d.\n", SWMM_version);
   
+  size = fread(&SWMM_FlowUnits, RECORDSIZE, 1, Fout);
+  printf("SWMM_FlowUnits read: %d\n", SWMM_FlowUnits);
+  
+  size = fread(&SWMM_Nsubcatch, RECORDSIZE, 1, Fout);  
+  printf("SWMM_Nsubcatch read: %d\n", SWMM_Nsubcatch);
+
+  size = fread(&SWMM_Nnodes, RECORDSIZE, 1, Fout);
+  printf("SWMM_Nnodes read: %d\n", SWMM_Nnodes);
+  
+  size = fread(&SWMM_Nlinks, RECORDSIZE, 1, Fout);
+  printf("SWMM_Nlinks read: %d\n", SWMM_Nlinks);
+  
+  size = fread(&SWMM_Npolluts, RECORDSIZE, 1, Fout);
+  printf("SWMM_Npolluts read: %d\n", SWMM_Npolluts);
+
   // dummy variable to store arrays of chars
-  char tmp; 
- 
+  char buffer[80]; 
+
   // --- extract subcatchment names
   std::vector<int> IDsubcatch(SWMM_Nsubcatch);
   std::vector<std::string> Namesubcatch(SWMM_Nsubcatch);
-  for ( int i=1; i<=SWMM_Nsubcatch; ++i) 
-    {
-    fread(&IDsubcatch[i-1], RECORDSIZE, 1, Fout);
-    Namesubcatch[i-1] = fgets(&tmp, IDsubcatch[i-1]+1, Fout);
-    }
+
+  for (int i = 1; i <= SWMM_Nsubcatch; ++i) {
+    
+    size = fread(&IDsubcatch[i - 1], RECORDSIZE, 1, Fout);
+    Namesubcatch[i-1] = fgets(buffer, IDsubcatch[i-1]+1, Fout);
+  }
   
+  printf("Subcatchments read.\n");
+
+  //return List::create(_["ok"] = 1);
+
   // --- extract node names
   std::vector<int>  IDnodes(SWMM_Nnodes);
   std::vector<std::string> Namenodes(SWMM_Nnodes);
   for ( int i=1; i<=SWMM_Nnodes; ++i) 
   {
-    fread(&IDnodes[i-1], RECORDSIZE, 1, Fout);
-    Namenodes[i-1] = fgets(&tmp, IDnodes[i-1]+1, Fout); 
+    size = fread(&IDnodes[i-1], RECORDSIZE, 1, Fout);
+    Namenodes[i-1] = fgets(buffer, IDnodes[i-1]+1, Fout); 
   }
 
+  printf("Nodes read.\n");
+  
   // --- extract link names
   std::vector<int> IDlinks(SWMM_Nlinks);
   std::vector<std::string> Namelinks(SWMM_Nlinks);
   for ( int i=1; i<=SWMM_Nlinks; ++i) 
   {
-    fread(&IDlinks[i-1], RECORDSIZE, 1, Fout);
-    Namelinks[i-1] = fgets(&tmp, IDlinks[i-1]+1, Fout); 
+    size = fread(&IDlinks[i-1], RECORDSIZE, 1, Fout);
+    Namelinks[i-1] = fgets(buffer, IDlinks[i-1]+1, Fout); 
   }
 
+  printf("Links read.\n");
+  
   // --- extract pollutant names
   std::vector<int> IDpolls(SWMM_Npolluts);
   std::vector<std::string> Namepolls(SWMM_Npolluts);
+  
   for ( int i=1; i<=SWMM_Npolluts; ++i) 
   {
-    fread(&IDpolls[i-1], RECORDSIZE, 1, Fout);
-    Namepolls[i-1] = fgets(&tmp, IDpolls[i-1]+1, Fout); 
+    size = fread(&IDpolls[i-1], RECORDSIZE, 1, Fout);
+    Namepolls[i-1] = fgets(buffer, IDpolls[i-1]+1, Fout); 
   }
+
+  printf("Pollutants read.\n");
 
   // Skip over saved subcatch/node/link input values
   offset = (SWMM_Nsubcatch+2) * RECORDSIZE  // Subcatchment area
@@ -135,19 +205,19 @@ List OpenSwmmOutFile(const char* outFile)
     fseek(Fout, offset, SEEK_SET);
     
     // Read number & codes of computed variables
-    fread(&SubcatchVars, RECORDSIZE, 1, Fout); // # Subcatch variables
+    size = fread(&SubcatchVars, RECORDSIZE, 1, Fout); // # Subcatch variables
     fseek(Fout, SubcatchVars*RECORDSIZE, SEEK_CUR);
-    fread(&NodeVars, RECORDSIZE, 1, Fout);     // # Node variables
+    size = fread(&NodeVars, RECORDSIZE, 1, Fout);     // # Node variables
     fseek(Fout, NodeVars*RECORDSIZE, SEEK_CUR);
-    fread(&LinkVars, RECORDSIZE, 1, Fout);     // # Link variables
+    size = fread(&LinkVars, RECORDSIZE, 1, Fout);     // # Link variables
     fseek(Fout, LinkVars*RECORDSIZE, SEEK_CUR);
-    fread(&SysVars, RECORDSIZE, 1, Fout);     // # System variables
+    size = fread(&SysVars, RECORDSIZE, 1, Fout);     // # System variables
     
     // --- read data just before start of output results
     offset = StartPos - 3*RECORDSIZE;
     fseek(Fout, offset, SEEK_SET);
-    fread(&SWMM_StartDate, sizeof(double), 1, Fout);
-    fread(&SWMM_ReportStep, RECORDSIZE, 1, Fout);
+    size = fread(&SWMM_StartDate, sizeof(double), 1, Fout);
+    size = fread(&SWMM_ReportStep, RECORDSIZE, 1, Fout);
     
     // --- compute number of bytes of results values used per time period
     BytesPerPeriod = 2*RECORDSIZE +      // date value (a double)
@@ -172,6 +242,7 @@ Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex)
 {
   int offset;
   std::vector<float> resultvec(SWMM_Nperiods);
+  size_t size;
   
   // --- compute offset into output file
 
@@ -204,7 +275,7 @@ Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex)
     // --- re-position the file and read the result
     fseek(Fout, offset, SEEK_SET);
     
-    fread(&resultvec[i-1], RECORDSIZE, 1, Fout);
+    size = fread(&resultvec[i-1], RECORDSIZE, 1, Fout);
   }
 
   return wrap(resultvec);
@@ -231,11 +302,11 @@ Rcpp::NumericVector GetSwmmTimes()
 int CloseSwmmOutFile()
 //-----------------------------------------------------------------------------
 {
-  if (Fout != NULL)
-  {
+  if (Fout != NULL) {
     fclose(Fout);
     Fout = NULL;
     return 1;
   }
+  
   return 0;
 }
