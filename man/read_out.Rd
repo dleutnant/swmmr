@@ -5,7 +5,7 @@
 \title{Read time series data from SWMM's .out file}
 \usage{
 read_out(file = "", iType = NULL, object_name = NULL,
-  vIndex = NULL)
+  vIndex = NULL, firstPeriod = NULL, lastPeriod = NULL)
 }
 \arguments{
 \item{file}{The file to be read.}
@@ -19,6 +19,10 @@ Leave empty for retrieving elements available.}
 
 \item{vIndex}{Sets the variables to be read (s. Details).
 Leave empty for retrieving elements available.}
+
+\item{firstPeriod}{integer number of first period to be returned}
+
+\item{lastPeriod}{integer number of lastPeriod to be returned}
 }
 \value{
 A list of xts-objects.
