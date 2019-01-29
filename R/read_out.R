@@ -13,6 +13,8 @@ NULL
 #' Leave empty for retrieving elements available.
 #' @param vIndex Sets the variables to be read (s. Details).
 #' Leave empty for retrieving elements available.
+#' @param firstPeriod integer number of first period to be returned
+#' @param lastPeriod integer number of lastPeriod to be returned
 #' @return A list of xts-objects.
 #' 
 #' @examples  
@@ -80,11 +82,10 @@ NULL
 #' 
 #' @rdname read_out
 #' @export
-read_out <- function(file="",
-                     iType = NULL,
-                     object_name = NULL,
-                     vIndex = NULL) {
-  
+read_out <- function(
+  file = "", iType = NULL, object_name = NULL, vIndex = NULL, 
+  firstPeriod = NULL, lastPeriod = NULL)
+{
   # open swmm out file
   list_of_results <- OpenSwmmOutFile(outFile = file)
   
@@ -103,10 +104,10 @@ read_out <- function(file="",
   }
 
   # check if water pollutants are available
-  if (identical(character(0), list_of_results$pollutants$names)) {
-    PollNames <- NULL  
+  PollNames <- if (identical(character(0), list_of_results$pollutants$names)) {
+    NULL  
   } else {
-    PollNames <- list_of_results$pollutants$names
+    list_of_results$pollutants$names
   } 
                       
   # make selection of results more convenient
@@ -115,38 +116,37 @@ read_out <- function(file="",
   # retrieve times --> will probably move to Rcpp in near future
   time <- as.POSIXct(GetSwmmTimes(), tz = "GMT", origin = "1899-12-30")
   
+  if (is.null(firstPeriod)) {
+    firstPeriod <- 1
+  }
+  
+  if (is.null(lastPeriod)) {
+    lastPeriod <- length(time)
+  }
+  
   # if iType is either subc, nodes or links ...
-  if (iType < 3) {
+  iIndex <- if (iType < 3) {
     # get Index, i.e. the position of object
-    iIndex <- .get_iIndex(list_of_results, iType, object_name)
+    .get_iIndex(list_of_results, iType, object_name)
   } else {
     # case system variables
-    iIndex  <- list(iIndex = 777, names = "system_variable")
+    list(iIndex = 777, names = "system_variable")
   }
 
-  # for each iIndex, i.e. for each subcatchment, nodes or links ...
-  list_of_xts <- lapply(seq_len(length(iIndex$iIndex)), FUN = function(x) {
-
-    # get vIndex, i.e. the type of variables 
-    vIndex <- .get_vIndex(iType = iType, vIndex = vIndex, PollNames = PollNames)
-    
-    # for each vIndex
-    data <- lapply(seq_len(length(vIndex$vIndex)),
-                   FUN = function(y) GetSwmmResult(iType = iType,
-                                                   iIndex = iIndex$iIndex[x],
-                                                   vIndex = vIndex$vIndex[y]))
-    # create xts objects
-    res <- lapply(data, function(z) xts::xts(x = z, order.by = time))
-    
-    names(res) <- vIndex$names
-
-    return(res)
-    
-  })
-
-  # give list elements name of subcathments|nodes|links|sysvar
-  names(list_of_xts) <- iIndex$names
+  # get vIndex, i.e. the type of variables 
+  vIndex <- .get_vIndex(iType = iType, vIndex = vIndex, PollNames = PollNames)
   
-  return(list_of_xts)
+  # for each iIndex, i.e. for each subcatchment, nodes or links ...
+  # give list elements name of subcathments|nodes|links|sysvar
+  stats::setNames(nm = iIndex$names, lapply(iIndex$iIndex, FUN = function(ii) {
 
+    # for each vIndex
+    data <- lapply(vIndex$vIndex, FUN = function(vi) GetSwmmResultPart(
+      iType = iType, iIndex = ii, vIndex = vi, firstPeriod = firstPeriod,
+      lastPeriod = lastPeriod
+    ))
+    
+    # create xts objects
+    stats::setNames(lapply(data, xts::xts, order.by = time), vIndex$names)
+  }))
 }

@@ -216,49 +216,63 @@ List OpenSwmmOutFile(const char* outFile)
 
 }
 
+int restrict_to_range(int i, int from, int to, const char* name) {
+  
+  if (i < from) {
+    printf("Setting %s to min-value %d", name, from);
+    i = from;
+  }
+  
+  if (i > to) {
+    printf("Setting %s to max-value %d", name, to);
+    i = to;
+  }
+  
+  return i;
+}
+
 //-----------------------------------------------------------------------------
 // [[Rcpp::export]]
 Rcpp::NumericVector GetSwmmResultPart(
   int iType, int iIndex, int vIndex, int firstPeriod, int lastPeriod
 )
 {
-  int offset_subcatch = SWMM_Nsubcatch * SubcatchVars;
-  int offset_nodes = SWMM_Nnodes * NodeVars;
-  int offset_links = SWMM_Nlinks * LinkVars;
   int offset;
   int skip;
   int vars;
   
   std::vector<float> resultvec(lastPeriod - firstPeriod + 1);
   size_t size;
+
+  if (iType != SUBCATCH && iType != NODE && iType != LINK && iType != SYS) {
+    return wrap(resultvec);
+  }
+
+  firstPeriod = restrict_to_range(firstPeriod, 1, SWMM_Nperiods, "firstPeriod");
+  lastPeriod = restrict_to_range(lastPeriod, 1, SWMM_Nperiods, "lastPeriod");
+
+  if (firstPeriod > lastPeriod) {
+    int i = firstPeriod;
+    firstPeriod = lastPeriod;
+    lastPeriod = i;
+  }
   
   // --- compute offset into output file
 
-  for (int i = firstPeriod; i <= lastPeriod; ++i)
-  {
+  for (int i = firstPeriod; i <= lastPeriod; ++i) {
+    
     offset = StartPos + (i - 1) * BytesPerPeriod + 2 * RECORDSIZE;
-    
-    if (iType != SUBCATCH && iType != NODE && iType != LINK && iType != SYS) {
-      return wrap(resultvec);
-    }
-    
-    if (iType == SUBCATCH) {
-      skip = 0;
-      vars = SubcatchVars;
-    }
-    else if (iType == NODE) {
-      skip = offset_subcatch;
-      vars = NodeVars;
-    }
-    else if (iType == LINK) {
-      skip = offset_subcatch + offset_nodes;
-      vars = LinkVars;
-    }
-    else if (iType == SYS) {
-      skip = offset_subcatch + offset_nodes + offset_links;
-      vars = SysVars;
-    }
-    
+
+    skip = 0 +
+      ((iType > SUBCATCH) ? SWMM_Nsubcatch * SubcatchVars : 0) +
+      ((iType > NODE)     ? SWMM_Nnodes    * NodeVars     : 0) +
+      ((iType > LINK)     ? SWMM_Nlinks    * LinkVars     : 0);
+
+    vars = (iType == SUBCATCH)? SubcatchVars : 
+      (iType == NODE) ? NodeVars :
+      (iType == LINK) ? LinkVars :
+      (iType == SYS) ? SysVars : -1;
+
     offset += RECORDSIZE * (skip + iIndex * vars + vIndex);
 
     // --- re-position the file and read the result
