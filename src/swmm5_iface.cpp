@@ -74,46 +74,27 @@ List OpenSwmmOutFile(const char* outFile)
   fseek(Fout, -5 * RECORDSIZE, SEEK_END);
   
   size = fread(&offset0, RECORDSIZE, 1, Fout);
-  
-  printf("offset0 has been read.\n");
-  
   size = fread(&StartPos, RECORDSIZE, 1, Fout);
-  
-  printf("StartPos has been read.\n");
-  
   size = fread(&SWMM_Nperiods, RECORDSIZE, 1, Fout);
-  
-  printf("SWMM_Nperiods has been read.\n");
-  
   size = fread(&errCode, RECORDSIZE, 1, Fout);
-  
-  printf("errCode has been read.\n");
-  
   size = fread(&magic2, RECORDSIZE, 1, Fout);
   
-  printf("magic2 has been read.\n");
+  printf("offset0: %d\n", offset0);
+  printf("StartPos: %d\n", StartPos);
+  printf("SWMM_Nperiods: %d\n", SWMM_Nperiods);
+  printf("errCode: %d\n", errCode);
+  printf("magic2: %d\n", magic2);
 
   // --- read magic number from beginning of file
   fseek(Fout, 0L, SEEK_SET);
   
   size = fread(&magic1, RECORDSIZE, 1, Fout);
 
-  printf("magic1: %d, magic2: %d\n", magic1, magic2);
+  printf("magic1: %d\n", magic1);
   
   // --- perform error checks
-  if (magic1 != magic2) {
-    err = 1;
-  } 
-  else if (errCode != 0) {
-    err = 1;
-  } 
-  else if (SWMM_Nperiods == 0) {
-    err = 1;
-  }
-  else {
-    err = 0;
-  }
-  
+  err = (magic1 != magic2 || errCode != 0 || SWMM_Nperiods == 0)? 1:0;
+
   // --- quit if errors found
   if (err > 0 ) {
     
@@ -237,48 +218,63 @@ List OpenSwmmOutFile(const char* outFile)
 
 //-----------------------------------------------------------------------------
 // [[Rcpp::export]]
-Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex)
-//-----------------------------------------------------------------------------
+Rcpp::NumericVector GetSwmmResultPart(
+  int iType, int iIndex, int vIndex, int firstPeriod, int lastPeriod
+)
 {
+  int offset_subcatch = SWMM_Nsubcatch * SubcatchVars;
+  int offset_nodes = SWMM_Nnodes * NodeVars;
+  int offset_links = SWMM_Nlinks * LinkVars;
   int offset;
-  std::vector<float> resultvec(SWMM_Nperiods);
+  int skip;
+  int vars;
+  
+  std::vector<float> resultvec(lastPeriod - firstPeriod + 1);
   size_t size;
   
   // --- compute offset into output file
 
-  for ( int i=1; i<=SWMM_Nperiods; ++i)
+  for (int i = firstPeriod; i <= lastPeriod; ++i)
   {
-    offset = StartPos + (i-1)*BytesPerPeriod + 2*RECORDSIZE;
-    if ( iType == SUBCATCH )
-    {
-      offset += RECORDSIZE*(iIndex*SubcatchVars + vIndex);
-    }
-    else if (iType == NODE)
-    {
-      offset += RECORDSIZE*(SWMM_Nsubcatch*SubcatchVars +
-        iIndex*NodeVars + vIndex);
-    }
-    else if (iType == LINK)
-    {
-      offset += RECORDSIZE*(SWMM_Nsubcatch*SubcatchVars +
-        SWMM_Nnodes*NodeVars +
-        iIndex*LinkVars + vIndex);
-    }
-    else if (iType == SYS)
-    {
-      offset += RECORDSIZE*(SWMM_Nsubcatch*SubcatchVars +
-        SWMM_Nnodes*NodeVars +
-        SWMM_Nlinks*LinkVars + vIndex);
-    }
-    else return wrap(resultvec);
+    offset = StartPos + (i - 1) * BytesPerPeriod + 2 * RECORDSIZE;
     
+    if (iType != SUBCATCH && iType != NODE && iType != LINK && iType != SYS) {
+      return wrap(resultvec);
+    }
+    
+    if (iType == SUBCATCH) {
+      skip = 0;
+      vars = SubcatchVars;
+    }
+    else if (iType == NODE) {
+      skip = offset_subcatch;
+      vars = NodeVars;
+    }
+    else if (iType == LINK) {
+      skip = offset_subcatch + offset_nodes;
+      vars = LinkVars;
+    }
+    else if (iType == SYS) {
+      skip = offset_subcatch + offset_nodes + offset_links;
+      vars = SysVars;
+    }
+    
+    offset += RECORDSIZE * (skip + iIndex * vars + vIndex);
+
     // --- re-position the file and read the result
     fseek(Fout, offset, SEEK_SET);
     
-    size = fread(&resultvec[i-1], RECORDSIZE, 1, Fout);
+    size = fread(&resultvec[i - 1], RECORDSIZE, 1, Fout);
   }
 
   return wrap(resultvec);
+}
+
+//-----------------------------------------------------------------------------
+// [[Rcpp::export]]
+Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex)
+{
+  return GetSwmmResultPart(iType, iIndex, vIndex, 1, SWMM_Nperiods);
 }
 
 //-----------------------------------------------------------------------------
