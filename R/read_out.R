@@ -115,13 +115,26 @@ read_out <- function(
   
   # retrieve times --> will probably move to Rcpp in near future
   time <- as.POSIXct(GetSwmmTimes(), tz = "GMT", origin = "1899-12-30")
+
+  maxPeriod <- length(time)
   
   if (is.null(firstPeriod)) {
     firstPeriod <- 1
   }
   
   if (is.null(lastPeriod)) {
-    lastPeriod <- length(time)
+    lastPeriod <- maxPeriod
+  }
+
+  stop_if_out_of_range(firstPeriod, 1, maxPeriod)
+  stop_if_out_of_range(lastPeriod, 1, maxPeriod)
+    
+  if (lastPeriod < firstPeriod) {
+    
+    stop(
+      "lastPeriod must be greater or equal to firstPeriod (", firstPeriod, ")!", 
+      call. = FALSE
+    )
   }
   
   # if iType is either subc, nodes or links ...
@@ -147,6 +160,20 @@ read_out <- function(
     ))
     
     # create xts objects
-    stats::setNames(lapply(data, xts::xts, order.by = time), vIndex$names)
+    stats::setNames(
+      lapply(data, xts::xts, order.by = time[firstPeriod:lastPeriod]), 
+      vIndex$names
+    )
   }))
+}
+
+# stop_if_out_of_range ---------------------------------------------------------
+stop_if_out_of_range <- function(x, a, b)
+{
+  if (x < a || x > b) {
+    stop(
+      deparse(substitute(x)), " must be a value between ", a, " and ", b, "!",
+      call. = FALSE 
+    )
+  }
 }

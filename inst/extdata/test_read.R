@@ -12,9 +12,13 @@ swmmr::run_swmm(inp_file, out = out_file, exec = exec)
 #swmmr:::CloseSwmmOutFile()
 
 #swmmr::read_out(out_file, iType = 2, object_name = "1", vIndex = 0)
-args <- list(file = out_file, iType = 0, object_name = "1", vIndex = 0)
-result1 <- do.call(swmmr::read_out, args)
-result2 <- do.call(swmmr::read_out, c(args, firstPeriod = 2))
+args <- list(file = out_file, iType = 0, object_name = c("1", "2"), vIndex = 0)
+
+do.call(swmmr::read_out, args)
+do.call(swmmr::read_out, c(args, firstPeriod = 200))
+do.call(swmmr::read_out, c(args, firstPeriod = -1))
+do.call(swmmr::read_out, c(args, firstPeriod = 35, lastPeriod = 33))
+do.call(swmmr::read_out, c(args, firstPeriod = 2, lastPeriod = 12))
 
 swmmr:::GetSwmmResultPart(iType = 1, iIndex = 1, vIndex = 1, firstPeriod = 0, lastPeriod = 0)
 

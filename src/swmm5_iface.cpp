@@ -219,12 +219,11 @@ List OpenSwmmOutFile(const char* outFile)
 int restrict_to_range(int i, int from, int to, const char* name) {
   
   if (i < from) {
-    printf("Setting %s to min-value %d", name, from);
+    printf("Setting %s (%d) to min allowed value: %d\n", name, i, from);
     i = from;
-  }
-  
-  if (i > to) {
-    printf("Setting %s to max-value %d", name, to);
+  } 
+  else if (i > to) {
+    printf("Setting %s (%d) to max allowed value: %d\n", name, i, to);
     i = to;
   }
   
@@ -240,7 +239,10 @@ Rcpp::NumericVector GetSwmmResultPart(
   int offset;
   int skip;
   int vars;
-  
+
+  firstPeriod = restrict_to_range(firstPeriod, 1, SWMM_Nperiods, "firstPeriod");
+  lastPeriod = restrict_to_range(lastPeriod, firstPeriod, SWMM_Nperiods, "lastPeriod");
+
   std::vector<float> resultvec(lastPeriod - firstPeriod + 1);
   size_t size;
 
@@ -248,15 +250,6 @@ Rcpp::NumericVector GetSwmmResultPart(
     return wrap(resultvec);
   }
 
-  firstPeriod = restrict_to_range(firstPeriod, 1, SWMM_Nperiods, "firstPeriod");
-  lastPeriod = restrict_to_range(lastPeriod, 1, SWMM_Nperiods, "lastPeriod");
-
-  if (firstPeriod > lastPeriod) {
-    int i = firstPeriod;
-    firstPeriod = lastPeriod;
-    lastPeriod = i;
-  }
-  
   // --- compute offset into output file
 
   for (int i = firstPeriod; i <= lastPeriod; ++i) {
@@ -278,7 +271,7 @@ Rcpp::NumericVector GetSwmmResultPart(
     // --- re-position the file and read the result
     fseek(Fout, offset, SEEK_SET);
     
-    size = fread(&resultvec[i - 1], RECORDSIZE, 1, Fout);
+    size = fread(&resultvec[i - firstPeriod], RECORDSIZE, 1, Fout);
   }
 
   return wrap(resultvec);
