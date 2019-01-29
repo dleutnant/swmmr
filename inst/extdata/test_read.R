@@ -11,4 +11,5 @@ swmmr::run_swmm(inp_file, out = out_file, exec = exec)
 swmmr:::OpenSwmmOutFile(out_file)
 swmmr:::CloseSwmmOutFile()
 
-result <- swmmr::read_out(out_file, iType = 2, object_name = "1", vIndex = 0)
+swmmr::read_out(out_file, iType = 2, object_name = "1", vIndex = 0)
+swmmr:::GetSwmmResultPart(iType = 2, iIndex = 1, vIndex = 0, firstPeriod = 1, lastPeriod = 1)
