@@ -15,7 +15,13 @@ NULL
 #' Leave empty for retrieving elements available.
 #' @param firstPeriod integer number of first period to be returned
 #' @param lastPeriod integer number of lastPeriod to be returned
-#' @return A list of xts-objects.
+#' @param multiColumn if \code{TRUE} (the default is \code{FALSE}), the result
+#' is a list of xts objects with each object containing all variables instead of 
+#' a list of lists of xts objects.
+#' @param byObject if \code{TRUE}, each top level list element represents an
+#' object, otherwise a variable
+#' @return A list of a list of xts-objects (if \code{multiColumn = TRUE}) or a
+#' list of xts-objects (if \code{multiColumn = FALSE}).
 #' 
 #' @examples  
 #' \dontrun{
@@ -84,7 +90,9 @@ NULL
 #' @export
 read_out <- function(
   file = "", iType = NULL, object_name = NULL, vIndex = NULL, 
-  firstPeriod = NULL, lastPeriod = NULL)
+  firstPeriod = NULL, lastPeriod = NULL, multiColumn = FALSE,
+  byObject = TRUE
+)
 {
   # open swmm out file
   list_of_results <- OpenSwmmOutFile(outFile = file)
@@ -148,23 +156,52 @@ read_out <- function(
 
   # get vIndex, i.e. the type of variables 
   vIndex <- .get_vIndex(iType = iType, vIndex = vIndex, PollNames = PollNames)
+
+  # provide timestamps
+  order_by <- time[firstPeriod:lastPeriod]
   
   # for each iIndex, i.e. for each subcatchment, nodes or links ...
   # give list elements name of subcathments|nodes|links|sysvar
-  stats::setNames(nm = iIndex$names, lapply(iIndex$iIndex, FUN = function(ii) {
+  arg_combis <- expand.grid(iIndex = iIndex$iIndex, vIndex = vIndex$vIndex)
 
-    # for each vIndex
-    data <- lapply(vIndex$vIndex, FUN = function(vi) GetSwmmResultPart(
-      iType = iType, iIndex = ii, vIndex = vi, firstPeriod = firstPeriod,
+  result_list <- lapply(seq_len(nrow(arg_combis)), function(i) {
+    
+    GetSwmmResultPart(
+      iType = iType, 
+      iIndex = arg_combis$iIndex[i], 
+      vIndex = arg_combis$vIndex[i],
+      firstPeriod = firstPeriod, 
       lastPeriod = lastPeriod
-    ))
+    )
+  })
+
+  indexObjects <- list(iIndex = iIndex, vIndex = vIndex)
+  
+  indexNames <- if (byObject) c("iIndex", "vIndex") else c("vIndex", "iIndex")
+
+  result <- lapply(indexObjects[[indexNames[1]]][[1]], FUN = function(i) {
+    
+    data <- result_list[which(arg_combis[[indexNames[1]]] == i)]
     
     # create xts objects
-    stats::setNames(
-      lapply(data, xts::xts, order.by = time[firstPeriod:lastPeriod]), 
-      vIndex$names
-    )
-  }))
+    if (multiColumn) {
+    
+      xts::xts(order.by = order_by, matrix(
+        do.call(c, data), 
+        ncol = length(data), 
+        dimnames = list(NULL, indexObjects[[indexNames[2]]]$names)
+      ))
+      
+    } else {
+      
+      stats::setNames(nm = indexObjects[[indexNames[2]]]$names, lapply(
+        data, xts::xts, order.by = order_by
+      ))
+    }
+    
+  })
+  
+  stats::setNames(result, indexObjects[[indexNames[1]]]$names)
 }
 
 # stop_if_out_of_range ---------------------------------------------------------
