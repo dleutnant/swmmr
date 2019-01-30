@@ -55,20 +55,29 @@ List OpenSwmmOutFile(const char* outFile)
   printf("File %s opened.\n", outFile);
   
   // --- check that file contains at least 14 records
-  fseek(Fout, 0L, SEEK_END);
+  int fseeko_value = fseeko(Fout, 0L, SEEK_END);
+
+  if (fseeko_value != 0) {
+
+    fclose(Fout);
+    
+    printf("Could not jump to the end of the file!\n");
+    
+    return List::create(_["error"] = 3);
+  }
   
   // use ftello() instead of ftell():
   // https://stackoverflow.com/questions/16696297/ftell-at-a-position-past-2gb
-  off_t ftell_result = ftello(Fout);
+  off_t ftello_value = ftello(Fout);
   
-  if (ftell_result < 14 * RECORDSIZE) {
+  if (ftello_value < 14 * RECORDSIZE) {
     
     fclose(Fout);
     
     err = 1;
     
     printf("File does not have at least 14 records.\n");
-    printf("ftell returned: %jd\n", (intmax_t) ftell_result);
+    printf("ftello returned: %jd\n", (intmax_t) ftello_value);
     printf("14 * RECORDSIZE is: %d\n", 14 * RECORDSIZE);
     
     return List::create(_["error"] = 3);
