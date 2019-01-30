@@ -166,13 +166,19 @@ read_out <- function(
 
   result_list <- lapply(seq_len(nrow(arg_combis)), function(i) {
     
-    GetSwmmResultPart(
+    cat(sprintf("Reading time series %d/%d ... ", i, nrow(arg_combis)))
+    
+    series <- GetSwmmResultPart(
       iType = iType, 
       iIndex = arg_combis$iIndex[i], 
       vIndex = arg_combis$vIndex[i],
       firstPeriod = firstPeriod, 
       lastPeriod = lastPeriod
     )
+    
+    cat("ok.\n")
+    
+    series
   })
 
   indexObjects <- list(iIndex = iIndex, vIndex = vIndex)
