@@ -9,11 +9,20 @@ out_file <- "/home/hauke/Downloads/SWMM/result.out"
 
 file.size(out_file) / (1024^3)
 
-#result <- swmmr:::OpenSwmmOutFile(out_file)
-#swmmr:::CloseSwmmOutFile()
+result <- swmmr:::OpenSwmmOutFile(out_file)
+swmmr:::GetSwmmTimes()
+swmmr:::CloseSwmmOutFile()
 
-result <- swmmr::read_out(out_file, byObject = FALSE, multiColumn = TRUE,
-                          firstPeriod = 100, lastPeriod = 200)
+#kwb.utils::assignPackageObjects("swmmr")
+#kwb.utils::assignArgumentDefaults(swmmr::read_out)
+#file = out_file; byObject = FALSE; multiColumn = TRUE
+system.time(result2 <- swmmr::read_out(
+  file = out_file, byObject = FALSE, multiColumn = TRUE
+  , iType = 0, object_name = "SV8", firstPeriod = 1, lastPeriod = 5*86400, 
+  vIndex = 0
+))
+identical(result, result2)
+#, firstPeriod = 1, lastPeriod = 100)
 
 swmmr::run_swmm(inp_file, out = out_file, exec = exec)
 
