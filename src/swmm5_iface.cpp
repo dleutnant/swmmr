@@ -172,9 +172,6 @@ List OpenSwmmOutFile(const char* outFile)
   // --- quit if errors found
   if (err > 0 ) {
     
-    fclose(Fout);
-    Fout = NULL;
-    
     return List::create(_["error"] = err);
   }
 
@@ -186,13 +183,22 @@ List OpenSwmmOutFile(const char* outFile)
   read_record(&SWMM_Nlinks, "SWMM_Nlinks");
   read_record(&SWMM_Npolluts, "SWMM_Npolluts");
 
-  // dummy variable to store arrays of chars
+  // dummy variable to store array of chars
   char buffer[80]; 
+
+  // --- define ID vectors
+  std::vector<int> IDsubcatch(SWMM_Nsubcatch);
+  std::vector<int> IDnodes(SWMM_Nnodes);
+  std::vector<int> IDlinks(SWMM_Nlinks);
+  std::vector<int> IDpolls(SWMM_Npolluts);
+
+  // --- define name vectors
+  std::vector<std::string> Namesubcatch(SWMM_Nsubcatch);
+  std::vector<std::string> Namenodes(SWMM_Nnodes);
+  std::vector<std::string> Namelinks(SWMM_Nlinks);
+  std::vector<std::string> Namepolls(SWMM_Npolluts);
   
   // --- extract subcatchment names
-  std::vector<int> IDsubcatch(SWMM_Nsubcatch);
-  std::vector<std::string> Namesubcatch(SWMM_Nsubcatch);
-  
   for (int i = 1; i <= SWMM_Nsubcatch; ++i) {
     
     read_record(&IDsubcatch[i - 1], "subcatchment");
@@ -201,11 +207,7 @@ List OpenSwmmOutFile(const char* outFile)
   
   printf("%d subcatchments read.\n", SWMM_Nsubcatch);
   
-  //return List::create(_["ok"] = 1);
-  
   // --- extract node names
-  std::vector<int>  IDnodes(SWMM_Nnodes);
-  std::vector<std::string> Namenodes(SWMM_Nnodes);
   for (int i = 1; i <= SWMM_Nnodes; ++i) 
   {
     read_record(&IDnodes[i - 1], "node");
@@ -215,8 +217,6 @@ List OpenSwmmOutFile(const char* outFile)
   printf("%d nodes read.\n", SWMM_Nnodes);
   
   // --- extract link names
-  std::vector<int> IDlinks(SWMM_Nlinks);
-  std::vector<std::string> Namelinks(SWMM_Nlinks);
   for (int i = 1; i <= SWMM_Nlinks; ++i) 
   {
     read_record(&IDlinks[i - 1], "link");
@@ -226,9 +226,6 @@ List OpenSwmmOutFile(const char* outFile)
   printf("%d links read.\n", SWMM_Nlinks);
   
   // --- extract pollutant names
-  std::vector<int> IDpolls(SWMM_Npolluts);
-  std::vector<std::string> Namepolls(SWMM_Npolluts);
-  
   for (int i = 1; i <= SWMM_Npolluts; ++i) 
   {
     read_record(&IDpolls[i - 1], "poll");
