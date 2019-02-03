@@ -142,7 +142,6 @@ int read_names(std::vector<std::string> &names, const char* type_name)
 //-----------------------------------------------------------------------------
 // [[Rcpp::export]]
 List OpenSwmmOutFile(const char* outFile)
-//-----------------------------------------------------------------------------
 {
   int magic1, magic2, errCode, offset0;
   off_t offset;
@@ -276,6 +275,7 @@ List OpenSwmmOutFile(const char* outFile)
   );
 }
 
+//-----------------------------------------------------------------------------
 int restrict_to_range(int i, int from, int to, const char* name) {
   
   if (i < from) {
@@ -293,7 +293,7 @@ int restrict_to_range(int i, int from, int to, const char* name) {
 //-----------------------------------------------------------------------------
 // [[Rcpp::export]]
 Rcpp::NumericVector GetSwmmResultPart(
-    int iType, int iIndex, int vIndex, int firstPeriod, int lastPeriod
+  int iType, int iIndex, int vIndex, int firstPeriod, int lastPeriod
 )
 {
   off_t offset;
@@ -349,7 +349,6 @@ Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex)
 //-----------------------------------------------------------------------------
 // [[Rcpp::export]]
 Rcpp::NumericVector GetSwmmTimes()
-//-----------------------------------------------------------------------------
 {
   // Initialise vector with all elements equal to start date in seconds 
   Rcpp::NumericVector timesvec(SWMM_Nperiods, SWMM_StartDate * 86400);
@@ -366,7 +365,6 @@ Rcpp::NumericVector GetSwmmTimes()
 //-----------------------------------------------------------------------------
 // [[Rcpp::export]]
 int CloseSwmmOutFile()
-  //-----------------------------------------------------------------------------
 {
   if (Fout != NULL) {
     fclose(Fout);
