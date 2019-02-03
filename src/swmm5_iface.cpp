@@ -36,7 +36,7 @@ static int LinkVars;                   // number of link reporting variables
 static int SysVars;                    // number of system reporting variables
 
 static FILE*  Fout;                    // file handle
-static int    StartPos;                // file position where results start
+static int    OutputStartPos;          // file position where results start
 static double BytesPerPeriod;          // bytes used for results in each period
 
 //-----------------------------------------------------------------------------
@@ -143,7 +143,7 @@ int read_names(std::vector<std::string> &names, const char* type_name)
 // [[Rcpp::export]]
 List OpenSwmmOutFile(const char* outFile)
 {
-  int magic1, magic2, errCode, offset0;
+  int magic1, magic2, errCode, InputStartPos;
   off_t offset;
 
   // --- open the output file
@@ -165,14 +165,14 @@ List OpenSwmmOutFile(const char* outFile)
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
 
-  read_record(&offset0, "offset0");
-  read_record(&StartPos, "StartPos");
+  read_record(&InputStartPos, "InputStartPos");
+  read_record(&OutputStartPos, "OutputStartPos");
   read_record(&SWMM_Nperiods, "SWMM_Nperiods");
   read_record(&errCode, "errCode");
   read_record(&magic2, "magic2");
 
-  printf("offset0: %d\n", offset0);
-  printf("StartPos: %d\n", StartPos);
+  printf("InputStartPos: %d\n", InputStartPos);   // in SWMM: InputStartPos
+  printf("OutputStartPos: %d\n", OutputStartPos); // in SWMM: OutputStartPos
   printf("SWMM_Nperiods: %d\n", SWMM_Nperiods);
   printf("errCode: %d\n", errCode);
   printf("magic2: %d\n", magic2);
@@ -210,8 +210,9 @@ List OpenSwmmOutFile(const char* outFile)
   read_names(Namepolls, "pollutant");
   
   // Skip over saved subcatch/node/link input values
-  offset = (off_t) offset0 + (off_t) RECORDSIZE * (
-    (2 + 1 * SWMM_Nsubcatch) +  // Subcatchment area
+  offset = (off_t) InputStartPos + (off_t) RECORDSIZE * (
+    (0 + 1 * SWMM_Npolluts) + // Pollutant unit
+    (2 + 1 * SWMM_Nsubcatch) + // Subcatchment area
     (4 + 3 * SWMM_Nnodes) + // Node type, invert & max depth
     (6 + 5 * SWMM_Nlinks) // Link type, z1, z2, max depth & length
   );
@@ -242,7 +243,7 @@ List OpenSwmmOutFile(const char* outFile)
   read_record(&SysVars, "SysVars"); // # System variables
   
   // --- read data just before start of output results
-  if (! file_seek(StartPos - 3 * RECORDSIZE, SEEK_SET)) {
+  if (! file_seek(OutputStartPos - 3 * RECORDSIZE, SEEK_SET)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
 
@@ -297,43 +298,59 @@ Rcpp::NumericVector GetSwmmResultPart(
 )
 {
   off_t offset;
-  int skip;
-  int vars;
-
-  firstPeriod = restrict_to_range(firstPeriod, 1, SWMM_Nperiods, "firstPeriod");
-  lastPeriod = restrict_to_range(lastPeriod, firstPeriod, SWMM_Nperiods, "lastPeriod");
+  int skip, vars;
+  int n = SWMM_Nperiods;
+  
+  firstPeriod = restrict_to_range(firstPeriod, 1, n, "firstPeriod");
+  lastPeriod = restrict_to_range(lastPeriod, firstPeriod, n, "lastPeriod");
   
   std::vector<float> resultvec(lastPeriod - firstPeriod + 1);
-  size_t size;
-  
+
   if (iType != SUBCATCH && iType != NODE && iType != LINK && iType != SYS) {
+    printf("Unknown iType: %d\n", iType);
     return wrap(resultvec);
   }
   
   // --- compute offset into output file
+  skip = 0 +
+    (iType > SUBCATCH ? SWMM_Nsubcatch * SubcatchVars : 0) +
+    (iType > NODE ? SWMM_Nnodes * NodeVars : 0) +
+    (iType > LINK ? SWMM_Nlinks * LinkVars : 0);
+  
+  vars = 
+    iType == SUBCATCH ? SubcatchVars : 
+    iType == NODE ? NodeVars :
+    iType == LINK ? LinkVars :
+    iType == SYS ? SysVars: -1;
+
+  offset = (off_t) OutputStartPos + RECORDSIZE * (
+    2 + // = 8 bytes timestamp
+      skip + 
+      iIndex * vars + 
+      vIndex
+  );
+
+  if (! file_seek(offset, SEEK_SET)) {
+    return wrap(resultvec);
+  }
   
   for (int i = firstPeriod; i <= lastPeriod; ++i) {
-    
-    skip = 0 +
-      ((iType > SUBCATCH) ? SWMM_Nsubcatch * SubcatchVars : 0) +
-      ((iType > NODE)     ? SWMM_Nnodes    * NodeVars     : 0) +
-      ((iType > LINK)     ? SWMM_Nlinks    * LinkVars     : 0);
-    
-    vars = (iType == SUBCATCH)? SubcatchVars : 
-      (iType == NODE) ? NodeVars :
-      (iType == LINK) ? LinkVars :
-      (iType == SYS) ? SysVars : -1;
 
-    offset = (off_t) StartPos;
-    offset += (off_t) (i - 1) * (off_t) BytesPerPeriod + 2 * RECORDSIZE;
-    offset += (off_t) (RECORDSIZE * (skip + iIndex * vars + vIndex));
-    
     // --- re-position the file and read the result
-    if (! file_seek(offset, SEEK_SET)) {
+    if (! file_seek(offset + (off_t) (i - 1) * BytesPerPeriod, SEEK_SET)) {
       return wrap(resultvec);
     }
-
+    
     read_record(&resultvec[i - firstPeriod], "resultvec");
+
+    // --- if this is not the last period
+    /*if (i < lastPeriod) {
+
+      // --- move the file pointer "BytesPerPeriod" bytes forward 
+      if (! file_seek((off_t) BytesPerPeriod, SEEK_CUR)) {
+        return wrap(resultvec);
+      }
+    }*/
   }
   
   return wrap(resultvec);
