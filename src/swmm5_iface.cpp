@@ -5,15 +5,14 @@ using namespace Rcpp;
 #define ERROR_FILE_SEEK 2
 #define ERROR_FILE_TELL 3
 
+#define N_INPUT_RECORDS(x, n) (1 + n * (x + 1))
+
 // dummy variable to store array of chars
 char buffer[80]; 
 
 int    SWMM_version;                   // SWMM version
 int    SWMM_Nperiods;                  // number of reporting periods
 int    SWMM_FlowUnits;                 // flow units code
-int    SWMM_Nsubcatch;                 // number of subcatchments
-int    SWMM_Nnodes;                    // number of drainage system nodes
-int    SWMM_Nlinks;                    // number of drainage system links
 int    SWMM_Npolluts;                  // number of pollutants tracked
 double SWMM_StartDate;                 // start date of simulation
 int    SWMM_ReportStep;                // reporting time step (seconds)
@@ -30,10 +29,12 @@ static const int LINK     = 2;
 static const int SYS      = 3;
 static const int RECORDSIZE = 4;       // number of bytes per file record
 
-static int SubcatchVars;               // number of subcatch reporting variables
-static int NodeVars;                   // number of node reporting variables
-static int LinkVars;                   // number of link reporting variables
-static int SysVars;                    // number of system reporting variables
+static int n_objects[3]; // SUBCATCH, NODE, LINK
+static int n_records[3]; // SUBCATCH, NODE, LINK
+static int n_records_skip[4]; // SUBCATCH, NODE, LINK, SYS
+
+// number of reporting variables for subcatchments, nodes, links and system
+static int n_variables[SYS];
 
 static FILE*  Fout;                    // file handle
 static int    OutputStartPos;          // file position where results start
@@ -192,15 +193,17 @@ List OpenSwmmOutFile(const char* outFile)
   // --- otherwise read additional parameters from start of file
   read_record(&SWMM_version, "SWMM_version");
   read_record(&SWMM_FlowUnits, "SWMM_FlowUnits");
-  read_record(&SWMM_Nsubcatch, "SWMM_Nsubcatch");
-  read_record(&SWMM_Nnodes, "SWMM_Nnodes");
-  read_record(&SWMM_Nlinks, "SWMM_Nlinks");
+  
+  read_record(&(n_objects[SUBCATCH]), "n_objects[SUBCATCH]");
+  read_record(&(n_objects[NODE]), "n_objects[NODE]");
+  read_record(&(n_objects[LINK]), "n_objects[LINK]");
+  
   read_record(&SWMM_Npolluts, "SWMM_Npolluts");
 
   // --- define name vectors
-  std::vector<std::string> Namesubcatch(SWMM_Nsubcatch);
-  std::vector<std::string> Namenodes(SWMM_Nnodes);
-  std::vector<std::string> Namelinks(SWMM_Nlinks);
+  std::vector<std::string> Namesubcatch(n_objects[SUBCATCH]);
+  std::vector<std::string> Namenodes(n_objects[NODE]);
+  std::vector<std::string> Namelinks(n_objects[LINK]);
   std::vector<std::string> Namepolls(SWMM_Npolluts);
   
   // --- read object names from file
@@ -211,10 +214,9 @@ List OpenSwmmOutFile(const char* outFile)
   
   // Skip over saved subcatch/node/link input values
   offset = (off_t) InputStartPos + (off_t) RECORDSIZE * (
-    (0 + 1 * SWMM_Npolluts) + // Pollutant unit
-    (2 + 1 * SWMM_Nsubcatch) + // Subcatchment area
-    (4 + 3 * SWMM_Nnodes) + // Node type, invert & max depth
-    (6 + 5 * SWMM_Nlinks) // Link type, z1, z2, max depth & length
+    N_INPUT_RECORDS(n_objects[SUBCATCH], 1) + // Subcatchment area
+    N_INPUT_RECORDS(n_objects[NODE], 3) + // Node type, invert & max depth
+    N_INPUT_RECORDS(n_objects[LINK], 5) // Link type, z1, z2, max depth & length
   );
   
   if (! file_seek(offset, SEEK_SET)) {
@@ -222,25 +224,26 @@ List OpenSwmmOutFile(const char* outFile)
   }
   
   // Read number & codes of computed variables
-  read_record(&SubcatchVars, "SubcatchVars"); // # Subcatch variables
-  
-  if (! file_seek(SubcatchVars * RECORDSIZE, SEEK_CUR)) {
+  //read_record(&SubcatchVars, "SubcatchVars"); // # Subcatch variables
+  read_record(&(n_variables[SUBCATCH]), "n_variables[SUBCATCH]"); // # Subcatch variables
+
+  if (! file_seek(n_variables[SUBCATCH] * RECORDSIZE, SEEK_CUR)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
   
-  read_record(&NodeVars, "NodeVars"); // # Node variables
+  read_record(&(n_variables[NODE]), "n_variables[NODE]"); // # Node variables
   
-  if (! file_seek(NodeVars * RECORDSIZE, SEEK_CUR)) {
+  if (! file_seek(n_variables[NODE] * RECORDSIZE, SEEK_CUR)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
   
-  read_record(&LinkVars, "LinkVars"); // # Link variables
+  read_record(&(n_variables[LINK]), "n_variables[LINK]"); // # Link variables
   
-  if (! file_seek(LinkVars * RECORDSIZE, SEEK_CUR)) {
+  if (! file_seek(n_variables[LINK] * RECORDSIZE, SEEK_CUR)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
   
-  read_record(&SysVars, "SysVars"); // # System variables
+  read_record(&(n_variables[SYS]), "n_variables[SYS]"); // # System variables
   
   // --- read data just before start of output results
   if (! file_seek(OutputStartPos - 3 * RECORDSIZE, SEEK_SET)) {
@@ -250,22 +253,35 @@ List OpenSwmmOutFile(const char* outFile)
   read_record_double(&SWMM_StartDate, "SWMM_StartDate");
   read_record(&SWMM_ReportStep, "SWMM_ReportStep");
 
-  printf("SubcatchVars: %d\n", SubcatchVars);
-  printf("NodeVars: %d\n", NodeVars);
-  printf("LinkVars: %d\n", LinkVars);
-  printf("SysVars: %d\n", SysVars);
+  printf("n_variables[SUBCATCH]: %d\n", n_variables[SUBCATCH]);
+  printf("n_variables[NODE]: %d\n", n_variables[NODE]);
+  printf("n_variables[LINK]: %d\n", n_variables[LINK]);
+  printf("n_variables[SYS]: %d\n", n_variables[SYS]);
+  
   printf("SWMM_StartDate: %f\n", SWMM_StartDate);
   printf("SWMM_ReportStep: %d\n", SWMM_ReportStep);
+
+  // calculate helper variables that will be used to determine the position
+  // of result data in the output file 
+  int n_record_sum = 0;
+  
+  for (int i = SUBCATCH; i < SYS; i++) {
+    
+    n_records[i] = n_objects[i] * n_variables[i];
+    n_record_sum += n_records[i];
+    
+    if (i > SUBCATCH) {
+      n_records_skip[i] = n_records_skip[i - 1] + n_records[i - 1];      
+    } 
+    else {
+      n_records_skip[i] = 0;
+    }
+  }
   
   // --- compute number of bytes of results values used per time period
   // date value (a double)
-  BytesPerPeriod = RECORDSIZE * (
-    SWMM_Nsubcatch * SubcatchVars +
-      SWMM_Nnodes * NodeVars +
-      SWMM_Nlinks * LinkVars +
-      SysVars + 2
-  );
-  
+  BytesPerPeriod = RECORDSIZE * (2 + n_record_sum + n_variables[SYS]);
+ 
   // --- return with file left open
   return List::create(
     _["meta"] = List::create(_["version"] = SWMM_version),
@@ -298,7 +314,6 @@ Rcpp::NumericVector GetSwmmResultPart(
 )
 {
   off_t offset;
-  int skip, vars;
   int n = SWMM_Nperiods;
   
   firstPeriod = restrict_to_range(firstPeriod, 1, n, "firstPeriod");
@@ -312,22 +327,8 @@ Rcpp::NumericVector GetSwmmResultPart(
   }
   
   // --- compute offset into output file
-  skip = 0 +
-    (iType > SUBCATCH ? SWMM_Nsubcatch * SubcatchVars : 0) +
-    (iType > NODE ? SWMM_Nnodes * NodeVars : 0) +
-    (iType > LINK ? SWMM_Nlinks * LinkVars : 0);
-  
-  vars = 
-    iType == SUBCATCH ? SubcatchVars : 
-    iType == NODE ? NodeVars :
-    iType == LINK ? LinkVars :
-    iType == SYS ? SysVars: -1;
-
   offset = (off_t) OutputStartPos + RECORDSIZE * (
-    2 + // = 8 bytes timestamp
-      skip + 
-      iIndex * vars + 
-      vIndex
+    2 + n_records_skip[iType] + iIndex * n_variables[iType] + vIndex
   );
 
   if (! file_seek(offset, SEEK_SET)) {
@@ -342,15 +343,6 @@ Rcpp::NumericVector GetSwmmResultPart(
     }
     
     read_record(&resultvec[i - firstPeriod], "resultvec");
-
-    // --- if this is not the last period
-    /*if (i < lastPeriod) {
-
-      // --- move the file pointer "BytesPerPeriod" bytes forward 
-      if (! file_seek((off_t) BytesPerPeriod, SEEK_CUR)) {
-        return wrap(resultvec);
-      }
-    }*/
   }
   
   return wrap(resultvec);
