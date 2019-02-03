@@ -142,11 +142,10 @@ int read_names(std::vector<std::string> &names, const char* type_name)
 //-----------------------------------------------------------------------------
 // [[Rcpp::export]]
 List OpenSwmmOutFile(const char* outFile)
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 {
   int magic1, magic2, errCode, offset0, err;
-  off_t return_value, offset;
-  size_t size;
+  off_t offset;
 
   // --- open the output file
   if (! open_output_file(outFile)) {
@@ -154,18 +153,16 @@ List OpenSwmmOutFile(const char* outFile)
   }
   
   // --- check that file contains at least 14 records
-  if (! file_seek((off_t) 0, SEEK_END)) {
+  if (! file_seek(0, SEEK_END)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
   
-  if (! file_tell((off_t) 14 * RECORDSIZE)) {
+  if (! file_tell(14 * RECORDSIZE)) {
     return List::create(_["error"] = ERROR_FILE_TELL);
   }
 
-  printf("File has at least 14 records.\n");
-  
   // --- read parameters from end of file
-  if (! file_seek((off_t) -5 * RECORDSIZE, SEEK_END)) {
+  if (! file_seek(-5 * RECORDSIZE, SEEK_END)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
 
@@ -182,7 +179,7 @@ List OpenSwmmOutFile(const char* outFile)
   printf("magic2: %d\n", magic2);
   
   // --- read magic number from beginning of file
-  if (! file_seek((off_t) 0, SEEK_SET)) {
+  if (! file_seek(0, SEEK_SET)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
   
@@ -231,26 +228,26 @@ List OpenSwmmOutFile(const char* outFile)
   // Read number & codes of computed variables
   read_record(&SubcatchVars, "SubcatchVars"); // # Subcatch variables
   
-  if (! file_seek((off_t) (SubcatchVars * RECORDSIZE), SEEK_CUR)) {
+  if (! file_seek(SubcatchVars * RECORDSIZE, SEEK_CUR)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
   
   read_record(&NodeVars, "NodeVars"); // # Node variables
   
-  if (! file_seek((off_t) (NodeVars) * RECORDSIZE, SEEK_CUR)) {
+  if (! file_seek(NodeVars * RECORDSIZE, SEEK_CUR)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
   
   read_record(&LinkVars, "LinkVars"); // # Link variables
   
-  if (! file_seek((off_t) (LinkVars * RECORDSIZE), SEEK_CUR)) {
+  if (! file_seek(LinkVars * RECORDSIZE, SEEK_CUR)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
   
   read_record(&SysVars, "SysVars"); // # System variables
   
   // --- read data just before start of output results
-  if (! file_seek((off_t) (StartPos - 3 * RECORDSIZE), SEEK_SET)) {
+  if (! file_seek(StartPos - 3 * RECORDSIZE, SEEK_SET)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
 
