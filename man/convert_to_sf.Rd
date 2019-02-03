@@ -56,7 +56,7 @@ sections: \code{outfalls} and \code{coordinates})
 \code{conduits} and \code{coordinates})
 \item \code{subcatchments_to_sf()}: converts subcatchments to simple features (required
 sections: \code{subcatchments}, \code{subareas}, \code{infiltration} and \code{polygons})
-\item \code{raingages_to_sf() }: converts raingages to simple features (required
+\item \code{raingages_to_sf()}: converts raingages to simple features (required
 sections: \code{raingages} and \code{symbols})
 \item \code{storages_to_sf()}: converts storages to simple features (required sections:
 \code{storage} and \code{coordinates})
