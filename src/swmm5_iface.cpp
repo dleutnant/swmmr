@@ -144,7 +144,7 @@ int read_names(std::vector<std::string> &names, const char* type_name)
 List OpenSwmmOutFile(const char* outFile)
 //-----------------------------------------------------------------------------
 {
-  int magic1, magic2, errCode, offset0, err;
+  int magic1, magic2, errCode, offset0;
   off_t offset;
 
   // --- open the output file
@@ -185,13 +185,9 @@ List OpenSwmmOutFile(const char* outFile)
   
   read_record(&magic1, "magic1");
 
-  // --- perform error checks
-  err = (magic1 != magic2 || errCode != 0 || SWMM_Nperiods == 0)? 1:0;
-  
   // --- quit if errors found
-  if (err > 0 ) {
-    
-    return List::create(_["error"] = err);
+  if (int error = (magic1 != magic2 || errCode != 0 || SWMM_Nperiods == 0)) {
+    return List::create(_["error"] = error);
   }
 
   // --- otherwise read additional parameters from start of file
