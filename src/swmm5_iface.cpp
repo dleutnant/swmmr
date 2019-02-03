@@ -378,8 +378,10 @@ Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex)
 Rcpp::NumericVector GetSwmmTimes()
 //-----------------------------------------------------------------------------
 {
+  // Initialise vector with all elements equal to start date in seconds 
   Rcpp::NumericVector timesvec(SWMM_Nperiods, SWMM_StartDate * 86400);
 
+  // Add a multiple of the report time step to each element
   for (int i = 0; i < SWMM_Nperiods; i++) {
     
     timesvec[i] += (double) SWMM_ReportStep * (i + 1);
