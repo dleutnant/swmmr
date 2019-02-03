@@ -5,6 +5,9 @@ using namespace Rcpp;
 #define ERROR_FILE_SEEK 2
 #define ERROR_FILE_TELL 3
 
+// dummy variable to store array of chars
+char buffer[80]; 
+
 int    SWMM_version;                   // SWMM version
 int    SWMM_Nperiods;                  // number of reporting periods
 int    SWMM_FlowUnits;                 // flow units code
@@ -118,6 +121,25 @@ int file_tell(off_t least_expected)
 }
 
 //-----------------------------------------------------------------------------
+int read_names(std::vector<std::string> &names, const char* type_name)
+{
+  int n_chars;
+  
+  for (int i = 0; i < names.size(); i++) {
+
+    if (! read_record(&n_chars, type_name)) {
+      return 0;
+    }
+
+    names[i] = fgets(buffer, n_chars + 1, Fout);
+  }
+  
+  printf("%d %ss read.\n", names.size(), type_name);
+  
+  return 1;
+}
+
+//-----------------------------------------------------------------------------
 // [[Rcpp::export]]
 List OpenSwmmOutFile(const char* outFile)
   //-----------------------------------------------------------------------------
@@ -183,56 +205,17 @@ List OpenSwmmOutFile(const char* outFile)
   read_record(&SWMM_Nlinks, "SWMM_Nlinks");
   read_record(&SWMM_Npolluts, "SWMM_Npolluts");
 
-  // dummy variable to store array of chars
-  char buffer[80]; 
-
-  // --- define ID vectors
-  std::vector<int> IDsubcatch(SWMM_Nsubcatch);
-  std::vector<int> IDnodes(SWMM_Nnodes);
-  std::vector<int> IDlinks(SWMM_Nlinks);
-  std::vector<int> IDpolls(SWMM_Npolluts);
-
   // --- define name vectors
   std::vector<std::string> Namesubcatch(SWMM_Nsubcatch);
   std::vector<std::string> Namenodes(SWMM_Nnodes);
   std::vector<std::string> Namelinks(SWMM_Nlinks);
   std::vector<std::string> Namepolls(SWMM_Npolluts);
   
-  // --- extract subcatchment names
-  for (int i = 1; i <= SWMM_Nsubcatch; ++i) {
-    
-    read_record(&IDsubcatch[i - 1], "subcatchment");
-    Namesubcatch[i - 1] = fgets(buffer, IDsubcatch[i - 1] + 1, Fout);
-  }
-  
-  printf("%d subcatchments read.\n", SWMM_Nsubcatch);
-  
-  // --- extract node names
-  for (int i = 1; i <= SWMM_Nnodes; ++i) 
-  {
-    read_record(&IDnodes[i - 1], "node");
-    Namenodes[i - 1] = fgets(buffer, IDnodes[i - 1] + 1, Fout); 
-  }
-  
-  printf("%d nodes read.\n", SWMM_Nnodes);
-  
-  // --- extract link names
-  for (int i = 1; i <= SWMM_Nlinks; ++i) 
-  {
-    read_record(&IDlinks[i - 1], "link");
-    Namelinks[i - 1] = fgets(buffer, IDlinks[i - 1] + 1, Fout); 
-  }
-  
-  printf("%d links read.\n", SWMM_Nlinks);
-  
-  // --- extract pollutant names
-  for (int i = 1; i <= SWMM_Npolluts; ++i) 
-  {
-    read_record(&IDpolls[i - 1], "poll");
-    Namepolls[i - 1] = fgets(buffer, IDpolls[i - 1] + 1, Fout); 
-  }
-  
-  printf("%d pollutants read.\n", SWMM_Npolluts);
+  // --- read object names from file
+  read_names(Namesubcatch, "subcatchment");
+  read_names(Namenodes, "node");
+  read_names(Namelinks, "link");
+  read_names(Namepolls, "pollutant");
   
   // Skip over saved subcatch/node/link input values
   offset = (off_t) offset0 + (off_t) RECORDSIZE * (
