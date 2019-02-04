@@ -6,7 +6,7 @@
 \usage{
 read_out(file = "", iType = NULL, object_name = NULL,
   vIndex = NULL, firstPeriod = NULL, lastPeriod = NULL,
-  multiColumn = FALSE, byObject = TRUE)
+  multiColumn = FALSE, byObject = TRUE, method = 1)
 }
 \arguments{
 \item{file}{The file to be read.}
