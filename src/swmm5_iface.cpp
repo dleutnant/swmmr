@@ -29,12 +29,13 @@ static const int LINK     = 2;
 static const int SYS      = 3;
 static const int RECORDSIZE = 4;       // number of bytes per file record
 
-static int n_objects[3]; // SUBCATCH, NODE, LINK
-static int n_records[3]; // SUBCATCH, NODE, LINK
+static int n_objects[4]; // SUBCATCH, NODE, LINK, SYS
+static int n_records[4]; // SUBCATCH, NODE, LINK, SYS
+
 static int n_records_skip[4]; // SUBCATCH, NODE, LINK, SYS
 
-// number of reporting variables for subcatchments, nodes, links and system
-static int n_variables[SYS];
+// number of reporting variables
+static int n_variables[4]; // SUBCATCH, NODE, LINK, SYS
 
 static FILE*  Fout;                    // file handle
 static int    OutputStartPos;          // file position where results start
@@ -264,8 +265,12 @@ List OpenSwmmOutFile(const char* outFile)
   // calculate helper variables that will be used to determine the position
   // of result data in the output file 
   int n_record_sum = 0;
+
+  // Set the number of system "objects" to 1, just to be consistent and to be 
+  // able to let the following loop go from 0 (SUBCATCH) to 3 (SYS)
+  n_objects[SYS] = 1;
   
-  for (int i = SUBCATCH; i < SYS; i++) {
+  for (int i = SUBCATCH; i <= SYS; i++) {
     
     n_records[i] = n_objects[i] * n_variables[i];
     n_record_sum += n_records[i];
@@ -280,7 +285,7 @@ List OpenSwmmOutFile(const char* outFile)
   
   // --- compute number of bytes of results values used per time period
   // date value (a double)
-  BytesPerPeriod = RECORDSIZE * (2 + n_record_sum + n_variables[SYS]);
+  BytesPerPeriod = RECORDSIZE * (2 + n_record_sum);
  
   // --- return with file left open
   return List::create(
