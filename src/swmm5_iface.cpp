@@ -331,11 +331,21 @@ Rcpp::NumericVector GetSwmmResultPart(
     return wrap(resultvec);
   }
   
+  if (iType == SYS) {
+    if (iIndex != 777) {
+      printf(
+        "iIndex is not 777 as expected but: %d. Anyway using iIndex = 0.",
+        iIndex
+      );
+    }
+    iIndex = 0;
+  }
+  
   // --- compute offset into output file
   offset = (off_t) OutputStartPos + RECORDSIZE * (
     2 + n_records_skip[iType] + iIndex * n_variables[iType] + vIndex
   );
-
+  
   if (! file_seek(offset, SEEK_SET)) {
     return wrap(resultvec);
   }
