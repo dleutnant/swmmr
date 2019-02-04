@@ -99,7 +99,7 @@ read_out <- function(
   
   # close swmm out file
   on.exit(CloseSwmmOutFile())
-  
+
   if (exists("error", list_of_results)) {
     warning("error reading out file")
     return(list_of_results)
@@ -122,7 +122,19 @@ read_out <- function(
   iType <- .get_iType(iType = iType)$iType
   
   # retrieve times --> will probably move to Rcpp in near future
-  time <- as.POSIXct(GetSwmmTimes(), tz = "GMT", origin = "1899-12-30")
+  times_seconds <- GetSwmmTimes()
+  
+  is_zero <- times_seconds == 0
+  
+  if (any(is_zero)) {
+    
+    stop(
+      sprintf("GetSwmmTimes() returned %d-times zero", sum(is_zero)), 
+      call. = FALSE
+    )
+  }
+  
+  time <- as.POSIXct(times_seconds, tz = "GMT", origin = "1899-12-30")
 
   maxPeriod <- length(time)
   
