@@ -52,7 +52,6 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL) 
   return(x)
 }
 
-
 # generic parser ----------------------------------------------------------
 
 #' import helper
@@ -70,10 +69,19 @@ parse_section.default <- function(x, ...) {
 
 #' helper function using defaults for arguments to tidyr::separate()
 #' @keywords internal
-separate_into <- function(x, into) {
+separate_into <- function(x, into, fill = "left", sep = "\\s+", col = "value") {
+  
   tidyr::separate(
-    data = x, col = "value", into = into, sep = "\\s+", extra = "merge", 
-    fill = "left", convert = TRUE)
+    x, col = col, into = into, sep = sep, extra = "merge", fill = fill, 
+    convert = TRUE
+  )
+}
+
+#' helper function using defaults for arguments to tidyr::separate()
+#' @keywords internal
+separate_into_value <- function(x, ...) {
+
+  tidyr::separate(x, col = "value", convert = TRUE, ...)
 }
 
 # input sections ----------------------------------------------------------
@@ -112,12 +120,10 @@ parse_section.hydrographs <- function(x, ...) {
 #' import helper
 #' @keywords internal
 parse_section.temperature <- function(x, ...) {
-
-  tidyr::separate(data = x, 
-                  col = "value", 
-                  into = c("Data Element", "tab1", "Values"),
-                  sep = base::cumsum(c(18, 1)), 
-                  convert = TRUE)
+  
+  separate_into_value(x, sep = base::cumsum(c(18, 1)), into = c(
+    "Data Element", "tab1", "Values"
+  ))
 }
 
 #' import helper
@@ -131,28 +137,17 @@ parse_section.evaporation <- function(x, ...) {
 #' @keywords internal
 parse_section.events <- function(x, ...) {
   
-  tidyr::separate(data = x, 
-                  col = "value", 
-                  into = c("Start Date", "End Date"),
-                  sep = 19, 
-                  convert = TRUE)
+  separate_into_value(x, sep = 19, into = c("Start Date", "End Date"))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.subcatchments <- function(x, ...) {
   
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Name",
-                           "Rain Gage", 
-                           "Outlet", "Area",
-                           "Perc_Imperv", "Width",
-                           "Perc_Slope", "CurbLen", 
-                           "Snowpack"),
-                  sep = "\\s+", 
-                  convert = TRUE)
-  
+  separate_into_value(x, sep = "\\s+", into = c(
+    "Name", "Rain Gage", "Outlet", "Area","Perc_Imperv", "Width", 
+    "Perc_Slope", "CurbLen", "Snowpack"
+  ))
 }
 
 #' import helper
@@ -160,45 +155,37 @@ parse_section.subcatchments <- function(x, ...) {
 parse_section.subareas <- function(x, ...) {
   
   separate_into(x, c("Subcatchment", "value")) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("N-Imperv", 
-                           "N-Perv", "S-Imperv",
-                           "S-Perv", "PctZero", "RouteTo", 
-                           "PctRouted"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+    separate_into(fill = "right", c(
+      "N-Imperv", "N-Perv", "S-Imperv", "S-Perv", "PctZero", "RouteTo", 
+      "PctRouted"
+    ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.infiltration <- function(x, ...) {
   
-  header <- switch(unlist(list(...)), 
-                   "horton" = c("Subcatchment","MaxRate", 
-                                "MinRate", "Decay",
-                                "DryTime", "MaxInfil"), 
-                   "green_ampt" = c("Subcatchment", "Suction", 
-                                    "Ksat", "IMD"), 
-                   "curve_number" = c("Subcatchment", "CurveNum", 
-                                      "empty", "DryTime"))
-
+  header <- switch(
+    unlist(list(...)), 
+    "horton" = c(
+      "Subcatchment","MaxRate", "MinRate", "Decay", "DryTime", "MaxInfil"
+    ), 
+    "green_ampt" = c(
+      "Subcatchment", "Suction", "Ksat", "IMD"
+    ), 
+    "curve_number" = c(
+      "Subcatchment", "CurveNum", "empty", "DryTime"
+    )
+  )
+  
   separate_into(x, header)
 }
 
 #' import helper
 #' @keywords internal
 parse_section.aquifers <- function(x, ...) {
-
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Name", "value"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE) %>% 
+  
+  separate_into(x, c("Name", "value"), fill = "right") %>% 
     separate_into(c(
       "Por", "WP", "FC", "Ksat", "Kslope", "Tslope", "ETu", "ETs", "Seep", 
       "Ebot", "Egw", "Umc", "ETupat"
@@ -216,13 +203,9 @@ parse_section.snowpacks <- function(x, ...) {
 #' @keywords internal
 parse_section.junctions <- function(x, ...) {
 
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Name", "Elevation", 
-                           "MaxDepth", "InitDepth", 
-                           "SurDepth", "Aponded"),
-                  sep = "\\s+",
-                  convert = TRUE)
+  separate_into_value(x, sep = "\\s+", into = c(
+    "Name", "Elevation", "MaxDepth", "InitDepth", "SurDepth", "Aponded"
+  ))
 }
 
 #' import helper
@@ -230,12 +213,11 @@ parse_section.junctions <- function(x, ...) {
 parse_section.outfalls <- function(x, ...) {
   
   separate_into(x, c("Name", "value")) %>% 
-    tidyr::separate(col = "value", 
-                    into = c("Elevation", "tab2",
-                             "Type", "tab3", "Stage Data", "tab4",
-                             "Gated", "tab5", "Route To"),
-                    sep = base::cumsum(c(10, 1, 10, 1, 10, 1, 10, 1)), 
-                    convert = TRUE)
+    separate_into_value(
+      sep = base::cumsum(c(10, 1, 10, 1, 10, 1, 10, 1)), into = c(
+        "Elevation", "tab2", "Type", "tab3", "Stage Data", "tab4", "Gated", 
+        "tab5", "Route To"
+      ))
 }
 
 #' import helper
@@ -250,40 +232,22 @@ parse_section.dividers <- function(x, ...) {
 #' import helper
 #' @keywords internal
 parse_section.storage <- function(x, ...) {
-
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Name", "value"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE) %>% 
-    tidyr::separate(col = "value",
-                    into = c("Elev.", 
-                             "MaxDepth", "InitDepth", 
-                             "Shape", "Curve Name/Params", 
-                             "N/A", "Fevap", 
-                             "Psi", "Ksat", "IMD"),
-                    sep = "\\s+",
-                    extra = "merge",
-                    fill = "right",
-                    convert = TRUE)
   
+  separate_into(x, fill = "right", c("Name", "value")) %>% 
+    separate_into(fill = "right", c(
+      "Elev.", "MaxDepth", "InitDepth", "Shape", "Curve Name/Params", "N/A", 
+      "Fevap", "Psi", "Ksat", "IMD"
+    ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.conduits <- function(x, ...) {
   
-  tidyr::separate(data = x, 
-                  col = "value", 
-                  into = c("Name", "From Node", 
-                           "To Node", "Length", 
-                           "Roughness", "InOffset", 
-                           "OutOffset", "InitFlow", 
-                           "MaxFlow"),
-                  sep = "\\s+",
-                  convert = TRUE)
+  separate_into_value(x, sep = "\\s+", into = c(
+    "Name", "From Node", "To Node", "Length", "Roughness", "InOffset", 
+    "OutOffset", "InitFlow", "MaxFlow"
+  ))
 }
 
 #' import helper
@@ -308,26 +272,12 @@ parse_section.orifices <- function(x, ...) {
 #' import helper
 #' @keywords internal
 parse_section.weirs <- function(x, ...) {
-
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Name", "value"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("From Node", 
-                           "To Node", "Type", 
-                           "CrestHt", "Qcoeff", 
-                           "Gated", "EndCon", 
-                           "EndCoeff", "Surcharge",
-                           "RoadWidth", "RoadSurf"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
   
+  separate_into(x, fill = "right", c("Name", "value")) %>% 
+    separate_into(fill = "right", c(
+      "From Node", "To Node", "Type", "CrestHt", "Qcoeff", "Gated", "EndCon", 
+      "EndCoeff", "Surcharge", "RoadWidth", "RoadSurf"
+    ))
 }
 
 #' import helper
@@ -344,23 +294,10 @@ parse_section.outlets <- function(x, ...) {
 #' @keywords internal
 parse_section.xsections <- function(x, ...) {
   
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Link", "value"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE) %>% 
-    tidyr::separate(col = "value",
-                    into = c("Shape", 
-                             "Geom1", "Geom2", 
-                             "Geom3", "Geom4", 
-                             "Barrels", "Culvert"),
-                    sep = "\\s+",
-                    extra = "merge",
-                    fill = "right",
-                    convert = TRUE)
-  
+  separate_into(x, fill = "right", c("Link", "value")) %>% 
+    separate_into(fill = "right", c(
+      "Shape", "Geom1", "Geom2", "Geom3", "Geom4", "Barrels", "Culvert"
+    ))
 }
 
 #' import helper
@@ -381,39 +318,20 @@ parse_section.controls <- function(x, ...) {
 #' @keywords internal
 parse_section.pollutants <- function(x, ...) {
   
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Name", "Units", 
-                           "Crain", "Cgw", 
-                           "Crdii", "Kdecay", 
-                           "SnowOnly", "Co-Pollutant", 
-                           "Co-Frac", "Cdwf", "Cinit"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x, fill = "right", c(
+    "Name", "Units", "Crain", "Cgw", "Crdii", "Kdecay", "SnowOnly", 
+    "Co-Pollutant", "Co-Frac", "Cdwf", "Cinit"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.landuses <- function(x, ...) {
   
-  tidyr::separate(data = x, 
-                  col = "value", 
-                  into = c("Name", "value"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE) %>% 
-    tidyr::separate(col = "value", 
-                    into = c("Sweeping_Interval", 
-                             "Fraction_Available", "Last_Swept"),
-                    sep = "\\s+",
-                    extra = "merge",
-                    fill = "right",
-                    convert = TRUE)
-  
+  separate_into(x, fill = "right", c("Name", "value")) %>% 
+    separate_into(fill = "right", c(
+      "Sweeping_Interval", "Fraction_Available", "Last_Swept"
+    ))
 }
 
 #' import helper
@@ -460,21 +378,11 @@ parse_section.treatment <- function(x, ...) {
 #' @keywords internal
 parse_section.inflows <- function(x, ...) {
   
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Node", "value"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE) %>% 
-    tidyr::separate(col = "value", 
-                    into = c("Constituent", "Time Series", "Type",
-                             "Mfactor", "Sfactor", "BaseLine", "Pattern"),
-                    sep = "\\s+",
-                    extra = "merge",
-                    fill = "right",
-                    convert = TRUE)
-  
+  separate_into(x, fill = "right", c("Node", "value")) %>% 
+    separate_into(fill = "right", c(
+      "Constituent", "Time Series", "Type", "Mfactor", "Sfactor", "BaseLine", 
+      "Pattern"
+    ))
 }
 
 #' import helper
@@ -509,15 +417,9 @@ parse_section.timeseries <- function(x, ...) {
 #' import helper
 #' @keywords internal
 parse_section.curves <- function(x, ...) {
-  
-  x %>% 
-    dplyr::mutate(value = trimws(value, which = "right")) %>% 
-    tidyr::separate(col = "value", 
-                    into = c("Name", "value"),
-                    sep = "\\s+",
-                    extra = "merge",
-                    fill = "right",
-                    convert = TRUE) %>% 
+
+  dplyr::mutate(x, value = trimws(value, which = "right")) %>% 
+    separate_into(fill = "right", c("Name", "value")) %>% 
     separate_into(c("Type", "X-Value", "Y-Value"))
 }
 
@@ -539,13 +441,7 @@ parse_section.files <- function(x, ...) {
 #' @keywords internal
 parse_section.profiles <- function(x, ...) {
   
-  tidyr::separate(data = x, 
-                  col = "value", 
-                  into = c("Name", "Links"),
-                  sep = "\" ",
-                  extra = "merge",
-                  fill = "left",
-                  convert = TRUE) %>% 
+  separate_into(x, sep = "\" ", c("Name", "Links")) %>% 
     dplyr::mutate(Name = paste0(Name, "\""))
 }
 
@@ -562,12 +458,7 @@ parse_section.tags <- function(x, ...) {
 #' @keywords internal
 parse_section.map <- function(x, ...) {
   
-  tidyr::separate(data = x, 
-                  col = "value", 
-                  into = c("key", "value"),
-                  extra = "merge",
-                  convert = TRUE)
-  
+  separate_into_value(x, extra = "merge", into = c("key", "value"))
 }
 
 #' import helper
@@ -609,61 +500,29 @@ parse_section.labels <- function(x, ...) {
 #' @keywords internal
 parse_section.lid_controls <- function(x, ...) {
   
-  tidyr::separate(data = x, 
-                  col = "value", 
-                  into = c("Name", "Type/Layer", "Parameters"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE) %>% 
-    tidyr::separate(col = "Parameters", 
-                    into = paste0("Par", 1:7),
-                    sep = "\\s+",
-                    extra = "merge",
-                    fill = "right",
-                    convert = TRUE)
-  
+  separate_into(x, fill = "right", c("Name", "Type/Layer", "Parameters")) %>% 
+    separate_into(fill = "right", col = "Parameters", into = paste0("Par", 1:7))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.lid_usage <- function(x, ...) {
   
-  tidyr::separate(data = x, 
-                  col = "value", 
-                  into = c("Subcatchment", "LID Process", 
-                           "Number", "Area", 
-                           "Width", "InitSat", 
-                           "FromImp", "ToPerv", 
-                           "RptFile", "DrainTo"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x, fill = "right", c(
+    "Subcatchment", "LID Process", "Number", "Area", "Width", "InitSat", 
+    "FromImp", "ToPerv", "RptFile", "DrainTo"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.groundwater <- function(x, ...) {
   
-  tidyr::separate(data = x,
-                  col = "value", 
-                  into = c("Subcatchment", "value"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE) %>% 
-  tidyr::separate(col = "value", 
-                  into = c("Aquifer", "Node", 
-                           "Esurf", "A1", "B1", "A2", 
-                           "B2", "A3", "Dsw", "Egwt",
-                           "Ebot", "Wgr", "Umc"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x, fill = "right", c("Subcatchment", "value")) %>% 
+    separate_into(fill = "right", c(
+      "Aquifer", "Node", "Esurf", "A1", "B1", "A2", "B2", "A3", "Dsw", "Egwt",
+      "Ebot", "Wgr", "Umc"
+    ))
 }
 
 #' import helper
@@ -679,152 +538,89 @@ parse_section.backdrop <- function(x, ...) {
 #' @keywords internal
 parse_section.element_count <- function(x, ...) {
   
-  tidyr::separate(data = x[-(1:3), ],
-                  col = "value",
-                  into = c("Element", "Count"),
-                  sep = "\\.{3,}",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x[-(1:3), ], fill = "right", sep = "\\.{3,}", c(
+    "Element", "Count"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.pollutant_summary <- function(x, ...) {
   
-  tidyr::separate(data = x[-(1:5), ],
-                  col = "value",
-                  into = c("Name", "Units", "Ppt_Concen", 
-                           "GW_Concen", "Kdecay_per_day", 
-                           "CoPollutant"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x[-(1:5), ], fill = "right", c(
+    "Name", "Units", "Ppt_Concen", "GW_Concen", "Kdecay_per_day", "CoPollutant"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.landuse_summary <- function(x, ...) {
   
-  tidyr::separate(data = x[-(1:5), ],
-                  col = "value",
-                  into = c("Name", "Sweeping_Interval", 
-                           "Maximum_Removal", "Last_Swept"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x[-(1:5), ], fill = "right", c(
+    "Name", "Sweeping_Interval", "Maximum_Removal", "Last_Swept"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.raingage_summary <- function(x, ...) {
   
-  tidyr::separate(data = x[-(1:5), ],
-                  col = "value",
-                  into = c("Name", "Data_Source", 
-                           "Data_Type", "Recording_Interval"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x[-(1:5), ], fill = "right", c(
+    "Name", "Data_Source", "Data_Type", "Recording_Interval"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.subcatchment_summary <- function(x, ...) {
   
-  tidyr::separate(data = x[-(1:5), ],
-                  col = "value",
-                  into = c("Name", "Area", "Width", 
-                           "Perc_Imperv", "Perc_Slope", 
-                           "Rain_Gage", "Outlet"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x[-(1:5), ], fill = "right", c(
+    "Name", "Area", "Width", "Perc_Imperv", "Perc_Slope", "Rain_Gage", "Outlet"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.node_summary <- function(x, ...) {
   
-  tidyr::separate(data = x[-(1:5), ],
-                  col = "value",
-                  into = c("Name", "Type", "Invert_Elev", 
-                           "Max_Depth", "Ponded_Area", 
-                           "External_Inflow"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x[-(1:5), ], fill = "right", c(
+    "Name", "Type", "Invert_Elev", "Max_Depth", "Ponded_Area", "External_Inflow"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.link_summary <- function(x, ...) {
   
-  tidyr::separate(data = x[-(1:5), ],
-                  col = "value",
-                  into = c("Name", "From Node", "To Node", 
-                           "Type", "Length", 
-                           "Perc_Slope", "Roughness"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x[-(1:5), ], fill = "right", c(
+    "Name", "From Node", "To Node", "Type", "Length", "Perc_Slope", "Roughness"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.cross_section_summary <- function(x, ...) {
   
-  tidyr::separate(data = x[-(1:5), ],
-                  col = "value",
-                  into = c("Conduit", "Shape", "Full_Depth", 
-                           "Full_Area", "Hyd_Rad", 
-                           "Max_Width", "No_of_Barrels", 
-                           "Full_Flow"),
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x[-(1:5), ], fill = "right", c(
+    "Conduit", "Shape", "Full_Depth", "Full_Area", "Hyd_Rad", "Max_Width", 
+    "No_of_Barrels", "Full_Flow"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.analysis_options <- function(x, ...) {
   
-  tidyr::separate(data = x[-(1:3), ],
-                  col = "value",
-                  into = c("Option", "Value"),
-                  sep = "\\.{5,}",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
-  
+  separate_into(x[-(1:3), ], fill = "right", sep = "\\.{5,}", c(
+    "Option", "Value"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.runoff_quantity_continuity <- function(x, ...) {
   
-  tidyr::separate(data = x[-c(1:2), ],
-                  col = "value",
-                  into = c("Component", "value"),
-                  sep = "\\.{5,}",
-                  extra = "merge",
-                  fill = "left",
-                  convert = TRUE) %>% 
+  separate_into(x[-c(1:2), ], sep = "\\.{5,}", c("Component", "value")) %>% 
     dplyr::mutate_all(trimws) %>% 
     separate_into(c("Volume", "Depth"))
 }
@@ -839,13 +635,7 @@ parse_section.runoff_quality_continuity <- function(x, ...) {
     strsplit(split = "\\s+", x = .) %>%
     unlist(.)
   
-  tidyr::separate(data = x[-c(1:2), ],
-                  col = "value",
-                  into = c("Component", "value"),
-                  sep = "\\.{5,}",
-                  extra = "merge",
-                  fill = "left",
-                  convert = TRUE) %>% 
+  separate_into(x[-c(1:2), ], sep = "\\.{5,}", c("Component", "value")) %>% 
     dplyr::mutate_all(trimws) %>% 
     separate_into(pollutants)
 }
@@ -854,13 +644,7 @@ parse_section.runoff_quality_continuity <- function(x, ...) {
 #' @keywords internal
 parse_section.flow_routing_continuity <- function(x, ...) {
   
-  tidyr::separate(data = x[-c(1:2), ],
-                  col = "value",
-                  into = c("Component", "value"),
-                  sep = "\\.{4,}",
-                  extra = "merge",
-                  fill = "left",
-                  convert = TRUE) %>% 
+  separate_into(x[-c(1:2), ], sep = "\\.{4,}", c("Component", "value")) %>% 
     dplyr::mutate_all(trimws) %>% 
     separate_into(c("Volume_a", "Volume_b"))
 }
@@ -875,13 +659,7 @@ parse_section.quality_routing_continuity <- function(x, ...) {
     strsplit(split = "\\s+", x = .) %>%
     unlist(.)
   
-  tidyr::separate(data = x[-c(1:2), ],
-                  col = "value",
-                  into = c("Component", "value"),
-                  sep = "\\.{5,}",
-                  extra = "merge",
-                  fill = "left",
-                  convert = TRUE) %>% 
+  separate_into(x[-c(1:2), ], sep = "\\.{5,}", c("Component", "value")) %>% 
     dplyr::mutate_all(trimws) %>% 
     separate_into(pollutants)
 }
@@ -897,30 +675,19 @@ parse_section.highest_flow_instability_indexes <- function(x, ...) {
 #' @keywords internal
 parse_section.routing_time_step_summary <- function(x, ...) {
   
-  tidyr::separate(data = x[-c(1:3), ],
-                  col = "value",
-                  into = c("Component", "Value"),
-                  sep = ":",
-                  extra = "merge",
-                  fill = "left",
-                  convert = TRUE)
-  
+  separate_into(x[-c(1:3), ], sep = ":", c("Component", "Value"))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.subcatchment_runoff_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:6), ], c(
-    "Subcatchment", 
-    paste(
-      "Total", c(
-        "Precip", "Runon", "Evap", "Infil", "Runoff_Depth", "Runoff_Volume", 
-        "Peak_Runoff", "Runoff_Coeff"
-      ), 
-      sep = "_"
+  separate_into(x[-c(1:6), ], c("Subcatchment", paste(
+    sep = "_", "Total", c(
+      "Precip", "Runon", "Evap", "Infil", "Runoff_Depth", "Runoff_Volume", 
+      "Peak_Runoff", "Runoff_Coeff"
     )
-  ))
+  )))
 }
 
 #' import helper
@@ -961,8 +728,7 @@ parse_section.node_depth_summary <- function(x, ...) {
   
   separate_into(x[-c(1:6), ], c(
     "Node", "Type", "Average_Depth", "Maximum_Depth", "Maximum_HGL", 
-    "Time_of_Max_Occurance_d", "Time_of_Max_Occurance_hm", 
-    "Reported_Max_Depth"
+    "Time_of_Max_Occurance_d", "Time_of_Max_Occurance_hm", "Reported_Max_Depth"
   ))
 }
 
@@ -989,7 +755,7 @@ parse_section.node_flooding_summary <- function(x, ...) {
 
 #' import helper
 #' @keywords internal
-parse_section.outfall_loading_summary <- function(x, ...){
+parse_section.outfall_loading_summary <- function(x, ...) {
   
   # extract pollutants
   pollutants <- gsub("\\W", " ", x[5, ]) %>%
@@ -999,21 +765,13 @@ parse_section.outfall_loading_summary <- function(x, ...){
     .[-c(1:4)]
   
   #modify into vector if no pollutants 
-  if(length(pollutants)>0){
-    into = c("Outfall_Node", "Flow_Freq", "Avg_Flow", "Max_Flow", 
-             "Total_Volume", paste("Total", pollutants, sep = "_"))
-  } else {
-    into = c("Outfall_Node", "Flow_Freq", "Avg_Flow", "Max_Flow", 
-             "Total_Volume")
+  into <- c("Outfall_Node", "Flow_Freq", "Avg_Flow", "Max_Flow", "Total_Volume")
+  
+  if (length(pollutants) > 0) {
+    into <- c(into, paste("Total", pollutants, sep = "_"))
   }
   
-  tidyr::separate(data = x[-c(1:6), ],
-                  col = "value",
-                  into = into,
-                  sep = "\\s+",
-                  extra = "merge",
-                  fill = "right",
-                  convert = TRUE)
+  separate_into(x[-c(1:6), ], fill = "right", into)
 }
 
 #' import helper
