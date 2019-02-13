@@ -75,7 +75,7 @@ assign_parameters.subcatchments <- function(
   
   if (! all(names(defaults) %in% colnames(x))) {
     
-    if (is.null(subcatchment_typologies) == F) {
+    if (! is.null(subcatchment_typologies)) {
       
       #...take parameters defined in subcatchment_typologies
       x <- dplyr::full_join(x, subcatchment_typologies, by = "Type")
@@ -134,7 +134,7 @@ assign_parameters.subareas <- function(
   
   if (! all(names(defaults) %in% colnames(x))) {
     
-    if (is.null(subcatchment_typologies) == F) {
+    if (! is.null(subcatchment_typologies)) {
       
       #...take values defined in subcatchment_typologies
       x <- dplyr::full_join(x, subcatchment_typologies, by = "Type")
@@ -181,7 +181,7 @@ assign_parameters.infiltration <- function(
   model <- x[[1]]
   x <- x[[2]]
   
-  if (is.null(infiltration) == F) {
+  if (! is.null(infiltration)) {
     
     x$Subcatchment <- x$Name
     #...take values defined in infiltration
@@ -272,7 +272,7 @@ assign_parameters.coverages <- function(
     if ("Type" %in% colnames(subcatchment)) {
       
       x <- dplyr::full_join(subcatchment, x, by = c("Type" = "SurfaceType"))
-      x <- x[is.na(x$LandUse) == F, c("Name", "LandUse", "PercentCoverage")]
+      x <- x[! is.na(x$LandUse), c("Name", "LandUse", "PercentCoverage")]
       
       return(x) 
     }
@@ -304,7 +304,7 @@ assign_parameters.junction <- function(
   
   if (! all(names(defaults) %in% colnames(x))) {
     
-    if (is.null(junction_parameters) == F) {
+    if (! is.null(junction_parameters)) {
       #...merge with values defined in junction_parameters
       x <- dplyr::full_join(x, junction_parameters, by = "Name")
     } else {
@@ -367,7 +367,7 @@ assign_parameters.conduits <- function(
   
   if (! all(names(defaults) %in% colnames(x))) {
     
-    if (is.null(conduit_material) == F) {
+    if (! is.null(conduit_material)) {
       #... take values given in conduit_material
       x <- dplyr::full_join(conduit_material, x, by = "Material")
     } else {
