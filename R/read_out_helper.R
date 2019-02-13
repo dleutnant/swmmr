@@ -6,23 +6,20 @@
 
   # iType must be NULL or an integer vector of length one  
   if (! is.null(iType)) {
-    
     stop_on_bad_index(iType, choices)
   } 
 
-  iTypeStr <- if (is.null(iType)) {
-    utils::select.list(choices = choices, multiple = FALSE)  
-  } else {
-    choices[iType + 1] # to be consistent --> + 1
+  if (is.null(iType)) {
+    selection <- utils::select.list(choices = choices, multiple = FALSE)
+    if (selection == "") {
+      message("Nothing was selected.")
+      return(NULL)
+    }
+    iType <- match(selection, choices) -1
   }
   
   # create list with numeric vector with base 0 and var names
-  result <- list(iType = which(choices %in% iTypeStr) - 1,
-                 names = iTypeStr)
-  
-  if (identical(iType, numeric(0))) clean_stop("Unclear iType.")
-  
-  return(result)
+  list(iType = iType, names = choices[iType + 1])
 }
 
 #' Get the names of SWMM elements
