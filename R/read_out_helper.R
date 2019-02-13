@@ -44,50 +44,45 @@
       warning("no subcatchments ")
     }  
     
-  } else {
-    
     # nodes
-    if (iType == 1) {
-
-      object_names <- list_of_elements$nodes$names
+  } else if (iType == 1) {
+    
+    object_names <- list_of_elements$nodes$names
+    
+    if (length(object_names) > 0) {
       
-      if (length(object_names) > 0) {
-        
-        if (is.null(object_name)) {
-          object_name <- utils::select.list(object_names, multiple = TRUE)
-        }
-        
-        result <- list(iIndex = match(object_name, object_names) - 1,
-                       names = object_name)
-        
-      } else {
-        warning("no nodes")
+      if (is.null(object_name)) {
+        object_name <- utils::select.list(object_names, multiple = TRUE)
       }
+      
+      result <- list(iIndex = match(object_name, object_names) - 1,
+                     names = object_name)
       
     } else {
-
-      # links
-      if (iType == 2) {
-        
-        object_names <- list_of_elements$links$names
-        
-        if (length(object_names) > 0) {
-          if (is.null(object_name)) {
-            object_name <- utils::select.list(object_names, multiple = TRUE)
-          } 
-          
-          result <- list(iIndex = match(object_name, object_names) - 1,
-                         names = object_name)
-          
-        } else {
-          warning("no links")
-        }
-      } else {
-        
-        warning("Unclear iType.")
-        
-      }
+      warning("no nodes")
     }
+    
+    # links
+  } else if (iType == 2) {
+    
+    object_names <- list_of_elements$links$names
+    
+    if (length(object_names) > 0) {
+      if (is.null(object_name)) {
+        object_name <- utils::select.list(object_names, multiple = TRUE)
+      } 
+      
+      result <- list(iIndex = match(object_name, object_names) - 1,
+                     names = object_name)
+      
+    } else {
+      
+      warning("no links")
+    }
+    
+  } else {
+    
+    warning("Unclear iType.")
   }
   
   if (anyNA(result$iIndex)) clean_stop("Unclear iIndex.")
