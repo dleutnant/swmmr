@@ -84,87 +84,75 @@
     } else {
       vIndexStr <- choices[vIndex + 1]
     }
-      
+    
+    # nodes
+  } else if (iType == 1) {
+    
+    choices <- c("water depth (ft or m above the node invert elevation)",
+                 "hydraulic head (ft or m, absolute elevation per vertical datum)",
+                 "stored water volume (including ponded water, ft3 or m3)",
+                 "lateral inflow (runoff + all other external inflows, in flow units)",
+                 "total inflow (lateral inflow + upstream inflows, in flow units)",
+                 "surface flooding (excess overflow when the node is at full depth, in flow units)")
+    
+    if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
+                                                         PollNames, 
+                                                         "after any treatment (mass/liter)"))
+    
+    if (is.null(vIndex)) {
+      vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
+    } else {
+      vIndexStr <- choices[vIndex + 1]
+    }
+    
+    # links
+  } else if (iType == 2) {
+    
+    choices <- c("flow rate (flow units)",
+                 "average water depth (ft or m)",
+                 "flow velocity (ft/s or m/s)",
+                 "volume of water (ft3 or m3)",
+                 "capacity (fraction of full area filled by flow for conduits; control setting for pumps and regulators)")
+    
+    if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
+                                                         PollNames, 
+                                                         "(mass/liter)"))
+    
+    if (is.null(vIndex)) {
+      vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
+    } else {
+      vIndexStr <- choices[vIndex + 1]
+    }
+    
+    # system variables
+  } else if (iType == 3) {
+    
+    choices <- c("air temperature (deg. F or deg. C)",
+                 "total rainfall (in/hr or mm/hr)",
+                 "total snow depth (inches or millimeters)",
+                 "average losses (in/hr or mm/hr)",
+                 "total runoff (flow units)",
+                 "total dry weather inflow (flow units)",
+                 "total groundwater inflow (flow units)",
+                 "total RDII inflow (flow units)",
+                 "total external inflow (flow units)",
+                 "total direct inflow (flow units)",
+                 "total external flooding (flow units)",
+                 "total outflow from outfalls (flow units)",
+                 "total nodal storage volume (ft3 or m3)",
+                 "potential evaporation (in/day or mm/day)",
+                 "actual evaporation (in/day or mm/day)")
+    
+    if (is.null(vIndex)) {
+      vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
+    } else {
+      vIndexStr <- choices[vIndex + 1]
+    }
     
   } else {
     
-    # nodes
-    if (iType == 1) {
-      
-      choices <- c("water depth (ft or m above the node invert elevation)",
-                   "hydraulic head (ft or m, absolute elevation per vertical datum)",
-                   "stored water volume (including ponded water, ft3 or m3)",
-                   "lateral inflow (runoff + all other external inflows, in flow units)",
-                   "total inflow (lateral inflow + upstream inflows, in flow units)",
-                   "surface flooding (excess overflow when the node is at full depth, in flow units)")
-      
-      if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
-                                                           PollNames, 
-                                                           "after any treatment (mass/liter)"))
-      
-      if (is.null(vIndex)) {
-        vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
-      } else {
-        vIndexStr <- choices[vIndex + 1]
-      }
-      
-    } else { 
+    clean_stop("bad iType")
     
-      # links
-      if (iType == 2) {
-        
-        choices <- c("flow rate (flow units)",
-                     "average water depth (ft or m)",
-                     "flow velocity (ft/s or m/s)",
-                     "volume of water (ft3 or m3)",
-                     "capacity (fraction of full area filled by flow for conduits; control setting for pumps and regulators)")
-        
-        if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
-                                                             PollNames, 
-                                                             "(mass/liter)"))
-        
-        if (is.null(vIndex)) {
-          vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
-        } else {
-          vIndexStr <- choices[vIndex + 1]
-        }
-        
-      } else {
-        
-        # system variables
-        if (iType == 3) {
-          
-          choices <- c("air temperature (deg. F or deg. C)",
-                       "total rainfall (in/hr or mm/hr)",
-                       "total snow depth (inches or millimeters)",
-                       "average losses (in/hr or mm/hr)",
-                       "total runoff (flow units)",
-                       "total dry weather inflow (flow units)",
-                       "total groundwater inflow (flow units)",
-                       "total RDII inflow (flow units)",
-                       "total external inflow (flow units)",
-                       "total direct inflow (flow units)",
-                       "total external flooding (flow units)",
-                       "total outflow from outfalls (flow units)",
-                       "total nodal storage volume (ft3 or m3)",
-                       "potential evaporation (in/day or mm/day)",
-                       "actual evaporation (in/day or mm/day)")
-          
-          if (is.null(vIndex)) {
-            vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
-          } else {
-            vIndexStr <- choices[vIndex + 1]
-          }
-
-        } else {
-          
-          clean_stop("bad iType")
-          
-        }
-        
-      }
-    
-    }
   }
   
   # create list with numeric vector with base 0 and var names
