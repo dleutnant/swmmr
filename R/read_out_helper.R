@@ -24,19 +24,20 @@
 
 #' Get the names of SWMM elements
 #' @keywords internal
-.get_iIndex <- function(list_of_elements, iType=NULL, object_name=NULL) {
+.get_iIndex <- function(list_of_elements, iType = NULL, object_name = NULL) {
 
   # subcatchments
   if (iType == 0) {
     
-    if (length(list_of_elements$subcatchments$names) > 0) {
+    object_names <- list_of_elements$subcatchments$names
+    
+    if (length(object_names) > 0) {
       
       if (is.null(object_name)) {
-        object_name <- utils::select.list(list_of_elements$subcatchments$names, 
-                                   multiple = TRUE)
+        object_name <- utils::select.list(object_names, multiple = TRUE)
       }
       
-      result <- list(iIndex = match(object_name, list_of_elements$subcatchments$names) - 1,
+      result <- list(iIndex = match(object_name, object_names) - 1,
                      names = object_name)
       
     } else {
@@ -47,15 +48,16 @@
     
     # nodes
     if (iType == 1) {
+
+      object_names <- list_of_elements$nodes$names
       
-      if (length(list_of_elements$nodes$names) > 0) {
+      if (length(object_names) > 0) {
         
         if (is.null(object_name)) {
-          object_name <- utils::select.list(list_of_elements$nodes$names, 
-                                            multiple = TRUE)
+          object_name <- utils::select.list(object_names, multiple = TRUE)
         }
         
-        result <- list(iIndex = match(object_name, list_of_elements$nodes$names) - 1,
+        result <- list(iIndex = match(object_name, object_names) - 1,
                        names = object_name)
         
       } else {
@@ -66,13 +68,15 @@
 
       # links
       if (iType == 2) {
-        if (length(list_of_elements$links$names) > 0) {
+        
+        object_names <- list_of_elements$links$names
+        
+        if (length(object_names) > 0) {
           if (is.null(object_name)) {
-            object_name <- utils::select.list(list_of_elements$links$names, 
-                                              multiple = TRUE)
+            object_name <- utils::select.list(object_names, multiple = TRUE)
           } 
           
-          result <- list(iIndex = match(object_name, list_of_elements$links$names) - 1,
+          result <- list(iIndex = match(object_name, object_names) - 1,
                          names = object_name)
           
         } else {
@@ -85,10 +89,12 @@
       }
     }
   }
+  
   if (anyNA(result$iIndex)) clean_stop("Unclear iIndex.")
+  
   if (identical(result$iIndex, numeric(0))) clean_stop("Unclear iIndex.")
   
-  return(result)
+  result
 }
 
 #' Get the simulated values
