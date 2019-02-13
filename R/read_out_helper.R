@@ -63,17 +63,59 @@
 #' @keywords internal
 .get_vIndex <- function(iType, vIndex=NULL, PollNames = NULL) {
   
+  type_choices <- list(
+    
+    subcatchments = c(
+      "rainfall rate (in/hr or mm/hr)",
+      "snow depth (inches or millimeters)",
+      "evaporation loss (in/day or mm/day)",
+      "infiltration loss (in/hr or mm/hr)",
+      "runoff flow (flow units)",
+      "groundwater flow into the drainage network (flow units)",
+      "groundwater elevation (ft or m)",
+      "soil moisture in the unsaturated groundwater zone (volume fraction)"
+    ),
+    
+    nodes = c(
+      "water depth (ft or m above the node invert elevation)",
+      "hydraulic head (ft or m, absolute elevation per vertical datum)",
+      "stored water volume (including ponded water, ft3 or m3)",
+      "lateral inflow (runoff + all other external inflows, in flow units)",
+      "total inflow (lateral inflow + upstream inflows, in flow units)",
+      "surface flooding (excess overflow when the node is at full depth, in flow units)"
+    ),
+    
+    links = c(
+      "flow rate (flow units)",
+      "average water depth (ft or m)",
+      "flow velocity (ft/s or m/s)",
+      "volume of water (ft3 or m3)",
+      "capacity (fraction of full area filled by flow for conduits; control setting for pumps and regulators)"
+    ),
+    
+    system = c(
+      "air temperature (deg. F or deg. C)",
+      "total rainfall (in/hr or mm/hr)",
+      "total snow depth (inches or millimeters)",
+      "average losses (in/hr or mm/hr)",
+      "total runoff (flow units)",
+      "total dry weather inflow (flow units)",
+      "total groundwater inflow (flow units)",
+      "total RDII inflow (flow units)",
+      "total external inflow (flow units)",
+      "total direct inflow (flow units)",
+      "total external flooding (flow units)",
+      "total outflow from outfalls (flow units)",
+      "total nodal storage volume (ft3 or m3)",
+      "potential evaporation (in/day or mm/day)",
+      "actual evaporation (in/day or mm/day)"
+    )
+  )
+  
   # subcatchments
   if (iType == 0) {
     
-    choices <- c("rainfall rate (in/hr or mm/hr)",
-                 "snow depth (inches or millimeters)",
-                 "evaporation loss (in/day or mm/day)",
-                 "infiltration loss (in/hr or mm/hr)",
-                 "runoff flow (flow units)",
-                 "groundwater flow into the drainage network (flow units)",
-                 "groundwater elevation (ft or m)",
-                 "soil moisture in the unsaturated groundwater zone (volume fraction)")
+    choices <- type_choices[["subcatchments"]]
     
     if (!is.null(PollNames)) choices <- c(choices, paste("washoff concentration of pollutant", 
                                                          PollNames, 
@@ -88,12 +130,7 @@
     # nodes
   } else if (iType == 1) {
     
-    choices <- c("water depth (ft or m above the node invert elevation)",
-                 "hydraulic head (ft or m, absolute elevation per vertical datum)",
-                 "stored water volume (including ponded water, ft3 or m3)",
-                 "lateral inflow (runoff + all other external inflows, in flow units)",
-                 "total inflow (lateral inflow + upstream inflows, in flow units)",
-                 "surface flooding (excess overflow when the node is at full depth, in flow units)")
+    choices <- type_choices[["nodes"]]
     
     if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
                                                          PollNames, 
@@ -108,12 +145,8 @@
     # links
   } else if (iType == 2) {
     
-    choices <- c("flow rate (flow units)",
-                 "average water depth (ft or m)",
-                 "flow velocity (ft/s or m/s)",
-                 "volume of water (ft3 or m3)",
-                 "capacity (fraction of full area filled by flow for conduits; control setting for pumps and regulators)")
-    
+    choices <- type_choices[["links"]]
+
     if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
                                                          PollNames, 
                                                          "(mass/liter)"))
@@ -127,22 +160,8 @@
     # system variables
   } else if (iType == 3) {
     
-    choices <- c("air temperature (deg. F or deg. C)",
-                 "total rainfall (in/hr or mm/hr)",
-                 "total snow depth (inches or millimeters)",
-                 "average losses (in/hr or mm/hr)",
-                 "total runoff (flow units)",
-                 "total dry weather inflow (flow units)",
-                 "total groundwater inflow (flow units)",
-                 "total RDII inflow (flow units)",
-                 "total external inflow (flow units)",
-                 "total direct inflow (flow units)",
-                 "total external flooding (flow units)",
-                 "total outflow from outfalls (flow units)",
-                 "total nodal storage volume (ft3 or m3)",
-                 "potential evaporation (in/day or mm/day)",
-                 "actual evaporation (in/day or mm/day)")
-    
+    choices <- type_choices[["system"]]
+
     if (is.null(vIndex)) {
       vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
     } else {
