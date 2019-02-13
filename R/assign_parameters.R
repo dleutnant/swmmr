@@ -64,11 +64,16 @@ assign_parameters.subcatchments <- function(
   conduit_material = NULL, junction_parameters = NULL
 ) {
 
-  main_columns <- c(
-    "Rain_Gage", "CurbLen", "Snowpack", "PercImperv", "Slope", "Width"
+  defaults <- list(
+    Rain_Gage = "default", 
+    CurbLen = 0, 
+    Snowpack = " ", 
+    PercImperv = 25, 
+    Slope = 0.5,
+    Width = 500
   )
   
-  if (! all(main_columns %in% colnames(x))) {
+  if (! all(names(defaults) %in% colnames(x))) {
     
     if (is.null(subcatchment_typologies) == F) {
       
@@ -78,12 +83,7 @@ assign_parameters.subcatchments <- function(
     } else {
       
       #... take default values for missing columns
-      x <- add_column_if_missing(x, "Rain_Gage", "default")
-      x <- add_column_if_missing(x, "CurbLen", 0)
-      x <- add_column_if_missing(x, "Snowpack", ' ')
-      x <- add_column_if_missing(x, "PercImperv", 25)
-      x <- add_column_if_missing(x, "Slope", 0.5)
-      x <- add_column_if_missing(x, "Width", 500)
+      x <- add_columns_if_missing(x, defaults)
     }
   }
 
@@ -91,11 +91,22 @@ assign_parameters.subcatchments <- function(
         "CurbLen", "Snowpack")]
 }
 
+#' Add Columns With Default Values if Not in Data Frame
+#' @keywords internal
+add_columns_if_missing <- function(df, defaults, force = FALSE)
+{
+  for (column in names(defaults)) {
+    df <- add_column_if_missing(df, column, defaults[[column]], force)
+  }
+  
+  df
+}
+    
 #' Add Column With Default Value if Not in Data Frame
 #' @keywords internal
-add_column_if_missing <- function(df, column, default) {
+add_column_if_missing <- function(df, column, default, force = FALSE) {
   
-  if (! column %in% colnames(df)) {
+  if (force || ! column %in% colnames(df)) {
     df[[column]] <- default
   }
   
@@ -111,12 +122,17 @@ assign_parameters.subareas <- function(
   
   x$Subcatchment <- x$Name
   
-  main_columns <- c(
-    "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero", "RouteTo", 
-    "PctRouted"
+  defaults <- list(
+    N_Imperv = 0.01, 
+    N_Perv = 0.1, 
+    S_Imperv = 0.05, 
+    S_Perv = 0.05, 
+    Pct_Zero = 25, 
+    RouteTo = "OUTLET", 
+    PctRouted = 100
   )
   
-  if (! all(main_columns %in% colnames(x))) {
+  if (! all(names(defaults) %in% colnames(x))) {
     
     if (is.null(subcatchment_typologies) == F) {
       
@@ -126,13 +142,7 @@ assign_parameters.subareas <- function(
     } else {
       
       #...take default values for missing columns
-      x <- add_column_if_missing(x, "N_Imperv", 0.01)
-      x <- add_column_if_missing(x, "N_Perv", 0.1)
-      x <- add_column_if_missing(x, "S_Imperv", 0.05)
-      x <- add_column_if_missing(x, "S_Perv", 0.05)
-      x <- add_column_if_missing(x, "Pct_Zero", 25)
-      x <- add_column_if_missing(x, "RouteTo", "OUTLET")
-      x <- add_column_if_missing(x, "PctRouted", 100)
+      x <- add_columns_if_missing(x, defaults)
     }
   }
   
@@ -179,28 +189,35 @@ assign_parameters.infiltration <- function(
     
     #... fill missing columns with default and select infiltration columns
     if (model == "Horton") {
-      
+
       #...take default values
-      x <- add_column_if_missing(x, 'MaxRate', 3)
-      x <- add_column_if_missing(x, 'MinRate', 0.5)
-      x <- add_column_if_missing(x, 'Decay', 4)
-      x <- add_column_if_missing(x, 'DryTime', 7)
-      x <- add_column_if_missing(x, 'MaxInfl', 0)
+      defaults <- list(
+        MaxRate = 3,
+        MinRate = 0.5,
+        Decay = 4,
+        DryTime = 7,
+        MaxInfl = 0
+      )
       
+      x <- add_columns_if_missing(x, defaults)
+
       #... select infiltration columns
-      x <- x[, c('Subcatchment', 'MaxRate', 'MinRate', 'Decay', 'DryTime', 
-                 'MaxInfl')]
+      x <- x[, c('Subcatchment', names(defaults))]
     }
     
     if (model == "Green_Ampt") {
       
       #...take default values
-      x <- add_column_if_missing(x, 'Suction', 3)
-      x <- add_column_if_missing(x, 'HydCon', 0.5)
-      x <- add_column_if_missing(x, 'IMDMax', 4)
+      defaults <- list(
+        Suction = 3,
+        HydCon = 0.5,
+        IMDMax = 4
+      )
       
+      x <- add_columns_if_missing(x, defaults)
+
       #... select infiltration columns
-      x <- x[, c('Subcatchment', 'Suction', 'HydCon', 'IMDMax')]
+      x <- x[, c('Subcatchment', names(defaults))]
     }
     
   } else {
@@ -210,14 +227,17 @@ assign_parameters.infiltration <- function(
         x$Subcatchment <- x$Name
     
         #...take default values
-        x <- add_column_if_missing(x, 'MaxRate', 3)
-        x <- add_column_if_missing(x, 'MinRate', 0.5)
-        x <- add_column_if_missing(x, 'Decay', 4)
-        x <- add_column_if_missing(x, 'DryTime', 7)
-        x <- add_column_if_missing(x, 'MaxInfl', 0)
+        defaults <- list(
+          MaxRate = 3,
+          MinRate = 0.5,
+          Decay = 4,
+          DryTime = 7,
+          MaxInfl = 0
+        )
         
-        x <- x[, c( 'Subcatchment', 'MaxRate', 'MinRate', 'Decay', 'DryTime', 
-                    'MaxInfl')]
+        x <- add_columns_if_missing(x, defaults)
+
+        x <- x[, c( 'Subcatchment', names(defaults))]
     }
     
     if (model == "Green_Ampt") {
@@ -225,11 +245,15 @@ assign_parameters.infiltration <- function(
       x$Subcatchment <- x$Name
       
       #...take default values
-      x <- add_column_if_missing(x, 'Suction', 3)
-      x <- add_column_if_missing(x, 'HydCon', 0.5)
-      x <- add_column_if_missing(x, 'IMDMax', 4)
+      defaults <- list(
+        Suction = 3,
+        HydCon = 0.5,
+        IMDMax = 4
+      )
       
-      x <- x[, c('Subcatchment', 'Suction', 'HydCon', 'IMDMax')]
+      x <- add_columns_if_missing(x, defaults)
+
+      x <- x[, c('Subcatchment', names(defaults))]
     }
   }
 
@@ -272,26 +296,24 @@ assign_parameters.junction <- function(
   #... set invert elevation
   x$Elevation <- x$Bottom
   
-  main_columns <- c(
-    "!('Y' %in% colnames(x))",    # this is an error, isn't it? 
-    "!('Ysur' %in% colnames(x))", # this is an error, isn't it?
-    "Apond"
+  defaults <- c(
+    Y = 0, 
+    Ysur = 0,
+    Apond = 0
   )
   
-  if (! all(main_columns %in% colnames(x))) {
+  if (! all(names(defaults) %in% colnames(x))) {
     
     if (is.null(junction_parameters) == F) {
       #...merge with values defined in junction_parameters
       x <- dplyr::full_join(x, junction_parameters, by = "Name")
     } else {
       #...take default values
-     x$Y <- 0
-     x$Ysur <- 0
-     x$Apond <- 0
+      x <- add_columns_if_missing(x, defaults, force = TRUE)
     }
   }
   
-  x[, c("Name", "Elevation", "Ymax", "Y", "Ysur", "Apond")]
+  x[, c("Name", "Elevation", "Ymax", names(defaults))]
 }
 
 #' conversion helper
@@ -320,11 +342,15 @@ assign_parameters.outfalls <- function(
 ) {
 
   x$Elevation <- x$Bottom
+
+  defaults <- list(
+    Gated = "NO",
+    StageData = " ",
+    RouteTo = " "
+  )
   
-  x <- add_column_if_missing(x, "Gated", "NO")
-  x <- add_column_if_missing(x, "StageData", ' ')
-  x <- add_column_if_missing(x, "RouteTo", ' ')
-  
+  x <- add_columns_if_missing(x, defaults)
+
   x[, c("Name", "Elevation", "Type", "StageData", "Gated", "RouteTo")]
 }
 
@@ -334,15 +360,19 @@ assign_parameters.conduits <- function(
   x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
   conduit_material, junction_parameters = NULL
 ) {
+
+  defaults <- list(
+    Roughness = 0.018
+  ) 
   
-  if (!("Roughness" %in% colnames(x))) {
+  if (! all(names(defaults) %in% colnames(x))) {
     
     if (is.null(conduit_material) == F) {
       #... take values given in conduit_material
       x <- dplyr::full_join(conduit_material, x, by = "Material")
     } else {
       #...take default value
-      x$Roughness = 0.018
+      x <- add_columns_if_missing(x, defaults, force = TRUE)
     }
   }
   
@@ -360,15 +390,19 @@ assign_parameters.xsections <- function(
   #... rename Name of conduit to Link
   x$Link <- x$Name
   
-  #... default is circular shape
-  x <- add_column_if_missing(x, "Shape", "CIRCULAR")
-  x <- add_column_if_missing(x, "Geom1", 3)
-  x <- add_column_if_missing(x, "Geom2", 0)
-  x <- add_column_if_missing(x, "Geom3", 0)
-  x <- add_column_if_missing(x, "Geom4", 0)
-  x <- add_column_if_missing(x, "Barrels", 1)
+  defaults <- list(
+    Shape = "CIRCULAR",
+    Geom1 = 3,
+    Geom2 = 0,
+    Geom3 = 0,
+    Geom4 = 0,
+    Barrels = 1
+  )
   
-  x[, c("Link", "Shape", "Geom1", "Geom2", "Geom3", "Geom4", "Barrels")]
+  #... default is circular shape
+  x <- add_columns_if_missing(x, defaults)
+
+  x[, c("Link", names(defaults))]
 }
 
 #' conversion helper
