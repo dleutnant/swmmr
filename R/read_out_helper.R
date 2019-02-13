@@ -61,7 +61,7 @@
 
 #' Get the simulated values
 #' @keywords internal
-.get_vIndex <- function(iType, vIndex=NULL, PollNames = NULL) {
+.get_vIndex <- function(iType, vIndex = NULL, PollNames = NULL) {
   
   type_choices <- list(
     
@@ -144,14 +144,7 @@
   # create list with numeric vector with base 0 and var names
   result <- list(
     vIndex = match(vIndexStr, choices) - 1,
-    names = sapply(
-      X = strsplit(
-        x = substr(vIndexStr, 1, as.numeric(gregexpr(" \\(", vIndexStr)) - 1), 
-        split = " "
-      ), 
-      FUN = paste0, 
-      collapse = "_"
-    )
+    names = gsub(" ", "_", gsub(" \\(.*$", "", vIndexStr))
   )
 
   # final check if selection is OK.
