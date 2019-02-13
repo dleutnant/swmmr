@@ -214,7 +214,7 @@ assign_parameters.polygons <- function(
   
   colnames(y) <- c("X", "Y", "index")
   
-  x$index <- 1:length(x$Name)
+  x$index <- seq_along(x$Name)
   z <- x[, c("index", "Name")]
   
   merge(z, y, by.x = "index", by.y = "index") %>% 
@@ -353,8 +353,8 @@ assign_parameters.coordinates <- function(
   y <- sf::st_coordinates(x$geometry) %>% 
     tibble::as_tibble(.)
   
-  x$index <- 1:length(x$Name)
-  y$index <- 1:length(y$X)
+  x$index <- seq_along(x$Name)
+  y$index <- seq_along(y$X)
   
   z <- x[, c("index", "Name")]
   
