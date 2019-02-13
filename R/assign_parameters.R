@@ -66,14 +66,11 @@ assign_parameters.subcatchments <- function(
 
   columns <- colnames(x)
   
-  if (
-    !("Rain_Gage" %in% columns) | 
-    !("CurbLen" %in% columns) | 
-    !("Snowpack" %in% columns) | 
-    !("PercImperv" %in% columns) | 
-    !("Slope" %in% columns) | 
-    !("Width" %in% columns)
-  ) {
+  main_columns <- c(
+    "Rain_Gage", "CurbLen", "Snowpack", "PercImperv", "Slope", "Width"
+  )
+  
+  if (! all(main_columns %in% columns)) {
     
     if (is.null(subcatchment_typologies) == F) {
       
@@ -123,16 +120,13 @@ assign_parameters.subareas <- function(
   x$Subcatchment <- x$Name
   
   columns <- colnames(x)
+
+  main_columns <- c(
+    "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero", "RouteTo", 
+    "PctRouted"
+  )
   
-  if(
-    !("N_Imperv" %in% columns)| 
-    !("N_Perv" %in% columns) | 
-    !("S_Imperv" %in% columns) | 
-    !("S_Perv" %in% columns) | 
-    !("Pct_Zero" %in% columns) | 
-    !("RouteTo" %in% columns) | 
-    !("PctRouted" %in% columns)
-  ) {
+  if (! all(main_columns %in% columns)) {
     
     if (is.null(subcatchment_typologies) == F) {
       
@@ -356,11 +350,13 @@ assign_parameters.junction <- function(
   #... set invert elevation
   x$Elevation <- x$Bottom
   
-  if (
-    !("!('Y' %in% colnames(x))" %in% columns) | 
-    !("!('Ysur' %in% colnames(x))" %in% columns) | 
-    !("Apond" %in% columns)
-  ) {
+  main_columns <- c(
+    "!('Y' %in% colnames(x))",    # this is an error, isn't it? 
+    "!('Ysur' %in% colnames(x))", # this is an error, isn't it?
+    "Apond"
+  )
+  
+  if (! all(main_columns %in% columns)) {
     
     if (is.null(junction_parameters) == F) {
       #...merge with values defined in junction_parameters
