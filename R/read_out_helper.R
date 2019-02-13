@@ -130,10 +130,10 @@
       choices <- c(choices, sprintf(type_pollutants[[element]] , PollNames))
     }
     
-    if (is.null(vIndex)) {
-      vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
+    vIndexStr <- if (is.null(vIndex)) {
+      utils::select.list(choices = choices, multiple = TRUE)  
     } else {
-      vIndexStr <- choices[vIndex + 1]
+      choices[vIndex + 1]
     }    
 
   } else {
@@ -142,18 +142,20 @@
   }
   
   # create list with numeric vector with base 0 and var names
-  result <- list(vIndex = which(choices %in% vIndexStr) - 1,
-                 names = sapply(strsplit(substr(vIndexStr,
-                                                1,
-                                                as.numeric(gregexpr(" \\(",
-                                                                    vIndexStr)) - 1),
-                                         split = " "),
-                                paste0, 
-                                collapse = "_"))
+  result <- list(
+    vIndex = which(choices %in% vIndexStr) - 1,
+    names = sapply(
+      X = strsplit(
+        x = substr(vIndexStr, 1, as.numeric(gregexpr(" \\(", vIndexStr)) - 1), 
+        split = " "
+      ), 
+      FUN = paste0, 
+      collapse = "_"
+    )
+  )
 
   # final check if selection is OK.
   if (identical(result$vIndex, numeric(0))) clean_stop("Unclear vIndex.")
   
-  return(result)
-  
+  result
 }
