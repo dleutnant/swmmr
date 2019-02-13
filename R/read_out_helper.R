@@ -111,67 +111,34 @@
       "actual evaporation (in/day or mm/day)"
     )
   )
+
+  type_pollutants <- list(
+    subcatchments = "washoff concentration of pollutant %s (mass/liter)",
+    nodes = "concentration of pollutant %s after any treatment (mass/liter)",
+    links = "concentration of pollutant %s (mass/liter)"
+  )
   
-  # subcatchments
-  if (iType == 0) {
+  # 0: subcatchments, 1: nodes, 2: links, 3: system variables
+  if (iType %in% 0:3) {
     
-    choices <- type_choices[["subcatchments"]]
+    element <- c("subcatchments", "nodes", "links", "system")[iType + 1]
     
-    if (!is.null(PollNames)) choices <- c(choices, paste("washoff concentration of pollutant", 
-                                                         PollNames, 
-                                                         "(mass/liter)"))
-    
-    if (is.null(vIndex)) {
-      vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
-    } else {
-      vIndexStr <- choices[vIndex + 1]
-    }
-    
-    # nodes
-  } else if (iType == 1) {
-    
-    choices <- type_choices[["nodes"]]
-    
-    if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
-                                                         PollNames, 
-                                                         "after any treatment (mass/liter)"))
-    
-    if (is.null(vIndex)) {
-      vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
-    } else {
-      vIndexStr <- choices[vIndex + 1]
-    }
-    
-    # links
-  } else if (iType == 2) {
-    
-    choices <- type_choices[["links"]]
+    choices <- type_choices[[element]]
 
-    if (!is.null(PollNames)) choices <- c(choices, paste("concentration of pollutant", 
-                                                         PollNames, 
-                                                         "(mass/liter)"))
+    # Add pollutants if any but not for system variables (iType == 3)
+    if (iType != 3 && ! is.null(PollNames)) {
+      choices <- c(choices, sprintf(type_pollutants[[element]] , PollNames))
+    }
     
     if (is.null(vIndex)) {
       vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
     } else {
       vIndexStr <- choices[vIndex + 1]
-    }
-    
-    # system variables
-  } else if (iType == 3) {
-    
-    choices <- type_choices[["system"]]
+    }    
 
-    if (is.null(vIndex)) {
-      vIndexStr <- utils::select.list(choices = choices, multiple = TRUE)  
-    } else {
-      vIndexStr <- choices[vIndex + 1]
-    }
-    
   } else {
     
     clean_stop("bad iType")
-    
   }
   
   # create list with numeric vector with base 0 and var names
