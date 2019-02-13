@@ -15,7 +15,7 @@
   result <- list(iType = which(choices %in% iTypeStr) - 1,
                  names = iTypeStr)
   
-  if (identical(iType, numeric(0))) stop("Unclear iType.",call. = FALSE)
+  if (identical(iType, numeric(0))) clean_stop("Unclear iType.")
   
   return(result)
   
@@ -84,8 +84,8 @@
       }
     }
   }
-  if (anyNA(result$iIndex)) stop("Unclear iIndex.", call. = FALSE)
-  if (identical(result$iIndex, numeric(0))) stop("Unclear iIndex.", call. = FALSE)
+  if (anyNA(result$iIndex)) clean_stop("Unclear iIndex.")
+  if (identical(result$iIndex, numeric(0))) clean_stop("Unclear iIndex.")
   
   return(result)
 }
@@ -189,7 +189,7 @@
 
         } else {
           
-          stop("bad iType", call. = FALSE)
+          clean_stop("bad iType")
           
         }
         
@@ -209,7 +209,7 @@
                                 collapse = "_"))
 
   # final check if selection is OK.
-  if (identical(result$vIndex, numeric(0))) stop("Unclear vIndex.",call. = FALSE)
+  if (identical(result$vIndex, numeric(0))) clean_stop("Unclear vIndex.")
   
   return(result)
   
