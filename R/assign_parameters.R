@@ -1,3 +1,69 @@
+#' Get List of Default Values for Columns for Different Objects
+#' @keywords internal
+get_column_defaults <- function() {
+  
+  list(
+    
+    subcatchments = list(
+      Rain_Gage = "default", 
+      CurbLen = 0, 
+      Snowpack = " ", 
+      PercImperv = 25, 
+      Slope = 0.5,
+      Width = 500
+    ),
+    
+    subareas =list(
+      N_Imperv = 0.01, 
+      N_Perv = 0.1, 
+      S_Imperv = 0.05, 
+      S_Perv = 0.05, 
+      Pct_Zero = 25, 
+      RouteTo = "OUTLET", 
+      PctRouted = 100
+    ),
+    
+    infiltration_horton = list(
+      MaxRate = 3,
+      MinRate = 0.5,
+      Decay = 4,
+      DryTime = 7,
+      MaxInfl = 0
+    ),
+
+    infiltration_green_ampt = list(
+      Suction = 3,
+      HydCon = 0.5,
+      IMDMax = 4
+    ),
+    
+    junction = list(
+      Y = 0, 
+      Ysur = 0,
+      Apond = 0
+    ),
+    
+    outfalls = list(
+      Gated = "NO",
+      StageData = " ",
+      RouteTo = " "
+    ),
+    
+    conduits = list(
+      Roughness = 0.018
+    ),
+    
+    xsections = list(
+      Shape = "CIRCULAR",
+      Geom1 = 3,
+      Geom2 = 0,
+      Geom3 = 0,
+      Geom4 = 0,
+      Barrels = 1
+    )
+  )
+}
+
 #' conversion helper
 #' @keywords internal
 assign_parameters <- function(
@@ -64,15 +130,8 @@ assign_parameters.subcatchments <- function(
   conduit_material = NULL, junction_parameters = NULL
 ) {
 
-  defaults <- list(
-    Rain_Gage = "default", 
-    CurbLen = 0, 
-    Snowpack = " ", 
-    PercImperv = 25, 
-    Slope = 0.5,
-    Width = 500
-  )
-  
+  defaults <- get_column_defaults()$subcatchments
+
   if (! all(names(defaults) %in% colnames(x))) {
     
     if (! is.null(subcatchment_typologies)) {
@@ -122,16 +181,8 @@ assign_parameters.subareas <- function(
   
   x$Subcatchment <- x$Name
   
-  defaults <- list(
-    N_Imperv = 0.01, 
-    N_Perv = 0.1, 
-    S_Imperv = 0.05, 
-    S_Perv = 0.05, 
-    Pct_Zero = 25, 
-    RouteTo = "OUTLET", 
-    PctRouted = 100
-  )
-  
+  get_column_defaults()$subareas
+
   if (! all(names(defaults) %in% colnames(x))) {
     
     if (! is.null(subcatchment_typologies)) {
@@ -191,13 +242,7 @@ assign_parameters.infiltration <- function(
     if (model == "Horton") {
 
       #...take default values
-      defaults <- list(
-        MaxRate = 3,
-        MinRate = 0.5,
-        Decay = 4,
-        DryTime = 7,
-        MaxInfl = 0
-      )
+      defaults <- get_column_defaults()$infiltration_horton
       
       x <- add_columns_if_missing(x, defaults)
 
@@ -208,11 +253,7 @@ assign_parameters.infiltration <- function(
     if (model == "Green_Ampt") {
       
       #...take default values
-      defaults <- list(
-        Suction = 3,
-        HydCon = 0.5,
-        IMDMax = 4
-      )
+      defaults <- get_column_defaults()$infiltration_green_ampt
       
       x <- add_columns_if_missing(x, defaults)
 
@@ -227,17 +268,11 @@ assign_parameters.infiltration <- function(
         x$Subcatchment <- x$Name
     
         #...take default values
-        defaults <- list(
-          MaxRate = 3,
-          MinRate = 0.5,
-          Decay = 4,
-          DryTime = 7,
-          MaxInfl = 0
-        )
-        
+        defaults <- get_column_defaults()$infiltration_horton
+
         x <- add_columns_if_missing(x, defaults)
 
-        x <- x[, c( 'Subcatchment', names(defaults))]
+        x <- x[, c('Subcatchment', names(defaults))]
     }
     
     if (model == "Green_Ampt") {
@@ -245,12 +280,8 @@ assign_parameters.infiltration <- function(
       x$Subcatchment <- x$Name
       
       #...take default values
-      defaults <- list(
-        Suction = 3,
-        HydCon = 0.5,
-        IMDMax = 4
-      )
-      
+      defaults <- get_column_defaults()$infiltration_green_ampt
+
       x <- add_columns_if_missing(x, defaults)
 
       x <- x[, c('Subcatchment', names(defaults))]
@@ -296,12 +327,8 @@ assign_parameters.junction <- function(
   #... set invert elevation
   x$Elevation <- x$Bottom
   
-  defaults <- c(
-    Y = 0, 
-    Ysur = 0,
-    Apond = 0
-  )
-  
+  defaults <- get_column_defaults()$junction
+
   if (! all(names(defaults) %in% colnames(x))) {
     
     if (! is.null(junction_parameters)) {
@@ -343,12 +370,8 @@ assign_parameters.outfalls <- function(
 
   x$Elevation <- x$Bottom
 
-  defaults <- list(
-    Gated = "NO",
-    StageData = " ",
-    RouteTo = " "
-  )
-  
+  defaults <- get_column_defaults()$outfalls
+
   x <- add_columns_if_missing(x, defaults)
 
   x[, c("Name", "Elevation", "Type", "StageData", "Gated", "RouteTo")]
@@ -361,10 +384,8 @@ assign_parameters.conduits <- function(
   conduit_material, junction_parameters = NULL
 ) {
 
-  defaults <- list(
-    Roughness = 0.018
-  ) 
-  
+  defaults <- get_column_defaults()$conduits
+
   if (! all(names(defaults) %in% colnames(x))) {
     
     if (! is.null(conduit_material)) {
@@ -390,15 +411,8 @@ assign_parameters.xsections <- function(
   #... rename Name of conduit to Link
   x$Link <- x$Name
   
-  defaults <- list(
-    Shape = "CIRCULAR",
-    Geom1 = 3,
-    Geom2 = 0,
-    Geom3 = 0,
-    Geom4 = 0,
-    Barrels = 1
-  )
-  
+  defaults <- get_column_defaults()$xsections
+
   #... default is circular shape
   x <- add_columns_if_missing(x, defaults)
 
