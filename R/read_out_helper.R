@@ -143,7 +143,7 @@
   
   # create list with numeric vector with base 0 and var names
   result <- list(
-    vIndex = which(choices %in% vIndexStr) - 1,
+    vIndex = match(vIndexStr, choices) - 1,
     names = sapply(
       X = strsplit(
         x = substr(vIndexStr, 1, as.numeric(gregexpr(" \\(", vIndexStr)) - 1), 
