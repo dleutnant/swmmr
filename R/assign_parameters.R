@@ -63,14 +63,16 @@ assign_parameters.subcatchments <- function(
   x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies, 
   conduit_material = NULL, junction_parameters = NULL
 ) {
+
+  columns <- colnames(x)
   
   if (
-    !("Rain_Gage" %in% colnames(x)) | 
-    !("CurbLen" %in% colnames(x)) | 
-    !("Snowpack" %in% colnames(x)) | 
-    !("PercImperv" %in% colnames(x)) | 
-    !("Slope" %in% colnames(x)) | 
-    !("Width" %in% colnames(x))
+    !("Rain_Gage" %in% columns) | 
+    !("CurbLen" %in% columns) | 
+    !("Snowpack" %in% columns) | 
+    !("PercImperv" %in% columns) | 
+    !("Slope" %in% columns) | 
+    !("Width" %in% columns)
   ) {
     
     if (is.null(subcatchment_typologies) == F) {
@@ -81,27 +83,27 @@ assign_parameters.subcatchments <- function(
     } else {
       
       #... take default values for missing columns
-      if (!("Rain_Gage" %in% colnames(x))) {
+      if (!("Rain_Gage" %in% columns)) {
         x$Rain_Gage <- "default"
       }
       
-      if (!("CurbLen" %in% colnames(x))) {
+      if (!("CurbLen" %in% columns)) {
         x$CurbLen <- 0
       }
       
-      if (!("Snowpack" %in% colnames(x))) {
+      if (!("Snowpack" %in% columns)) {
         x$Snowpack <- ' '
       }
       
-      if (!("PercImperv" %in% colnames(x))) {
+      if (!("PercImperv" %in% columns)) {
         x$PercImperv <- 25
       }
       
-      if (!("Slope" %in% colnames(x))) {
+      if (!("Slope" %in% columns)) {
         x$Slope <- 0.5
       }
       
-      if (!("Width" %in% colnames(x))) {
+      if (!("Width" %in% columns)) {
         x$Width <- 500
       }
     }
@@ -120,14 +122,16 @@ assign_parameters.subareas <- function(
   
   x$Subcatchment <- x$Name
   
+  columns <- colnames(x)
+  
   if(
-    !("N_Imperv" %in% colnames(x))| 
-    !("N_Perv" %in% colnames(x)) | 
-    !("S_Imperv" %in% colnames(x)) | 
-    !("S_Perv" %in% colnames(x)) | 
-    !("Pct_Zero" %in% colnames(x)) | 
-    !("RouteTo" %in% colnames(x)) | 
-    !("PctRouted" %in% colnames(x))
+    !("N_Imperv" %in% columns)| 
+    !("N_Perv" %in% columns) | 
+    !("S_Imperv" %in% columns) | 
+    !("S_Perv" %in% columns) | 
+    !("Pct_Zero" %in% columns) | 
+    !("RouteTo" %in% columns) | 
+    !("PctRouted" %in% columns)
   ) {
     
     if (is.null(subcatchment_typologies) == F) {
@@ -138,31 +142,31 @@ assign_parameters.subareas <- function(
     } else {
       
       #...take default values for missing columns
-      if (!("N_Imperv" %in% colnames(x))) {
+      if (!("N_Imperv" %in% columns)) {
         x$N_Imperv <- 0.01
       }
       
-      if (!("N_Perv" %in% colnames(x))) {
+      if (!("N_Perv" %in% columns)) {
         x$N_Perv <- 0.1
       }
       
-      if (!("S_Imperv" %in% colnames(x))) {
+      if (!("S_Imperv" %in% columns)) {
         x$S_Imperv <- 0.05
       }
       
-      if (!("S_Perv" %in% colnames(x))) {
+      if (!("S_Perv" %in% columns)) {
         x$S_Perv <- 0.05
       }
       
-      if (!("Pct_Zero" %in% colnames(x))) {
+      if (!("Pct_Zero" %in% columns)) {
         x$Pct_Zero <- 25
       }
       
-      if (!("RouteTo" %in% colnames(x))) {
+      if (!("RouteTo" %in% columns)) {
         x$RouteTo <- "OUTLET"
       }
       
-      if (!("PctRouted" %in% colnames(x))) {
+      if (!("PctRouted" %in% columns)) {
         x$PctRouted <- 100
       }
     }
@@ -209,27 +213,29 @@ assign_parameters.infiltration <- function(
     #...take values defined in infiltration
     x <- dplyr::full_join(x, infiltration, by = "Soil")
     
+    columns <- colnames(x)
+    
     #... fill missing columns with default and select infiltration columns
     if (model == "Horton") {
       
       #...take default values
-      if (!('MaxRate' %in% colnames(x))) {
+      if (!('MaxRate' %in% columns)) {
         x$MaxRate <- 3 
       }
       
-      if (!('MinRate' %in% colnames(x))) {
+      if (!('MinRate' %in% columns)) {
         x$MinRate <- 0.5 
       }
       
-      if (!('Decay' %in% colnames(x))) {
+      if (!('Decay' %in% columns)) {
         x$Decay <- 4
       }
       
-      if (!('DryTime' %in% colnames(x))) {
+      if (!('DryTime' %in% columns)) {
         x$DryTime <- 7
       }
       
-      if (!('MaxInfl' %in% colnames(x))) {
+      if (!('MaxInfl' %in% columns)) {
         x$MaxInfl <- 0
       }
       
@@ -238,18 +244,18 @@ assign_parameters.infiltration <- function(
                  'MaxInfl')]
     }
     
-    if(model == "Green_Ampt"){
+    if (model == "Green_Ampt") {
       
       #...take default values
-      if (!('Suction' %in% colnames(x))) {
+      if (!('Suction' %in% columns)) {
         x$Suction <- 3 
       }
       
-      if (!('HydCon' %in% colnames(x))) {
+      if (!('HydCon' %in% columns)) {
         x$HydCon <- 0.5 
       }
       
-      if (!('IMDMax' %in% colnames(x))) {
+      if (!('IMDMax' %in% columns)) {
         x$IMDMax <- 4
       }
       
@@ -259,28 +265,30 @@ assign_parameters.infiltration <- function(
     
   } else {
     
+    columns <- colnames(x)
+    
     if (model == "Horton") {
       
         x$Subcatchment <- x$Name
     
         #...take default values
-        if (!('MaxRate' %in% colnames(x))) {
+        if (!('MaxRate' %in% columns)) {
           x$MaxRate <- 3 
         }
         
-        if (!('MinRate' %in% colnames(x))) {
+        if (!('MinRate' %in% columns)) {
           x$MinRate <- 0.5 
         }
         
-        if (!('Decay' %in% colnames(x))) {
+        if (!('Decay' %in% columns)) {
           x$Decay <- 4
         }
         
-        if (!('DryTime' %in% colnames(x))) {
+        if (!('DryTime' %in% columns)) {
           x$DryTime <- 7
         }
         
-        if (!('MaxInfl' %in% colnames(x))) {
+        if (!('MaxInfl' %in% columns)) {
           x$MaxInfl <- 0
         }
         
@@ -292,15 +300,15 @@ assign_parameters.infiltration <- function(
       x$Subcatchment <- x$Name
       
       #...take default values
-      if (!('Suction' %in% colnames(x))) {
+      if (!('Suction' %in% columns)) {
         x$Suction <- 3 
       }
       
-      if (!('HydCon' %in% colnames(x))) {
+      if (!('HydCon' %in% columns)) {
         x$HydCon <- 0.5 
       }
       
-      if (!('IMDMax' %in% colnames(x))) {
+      if (!('IMDMax' %in% columns)) {
         x$IMDMax <- 4
       }
 	  x <- x[, c('Subcatchment', 'Suction', 'HydCon', 'IMDMax')]
@@ -338,7 +346,9 @@ assign_parameters.junction <- function(
   conduit_material = NULL, junction_parameters
 ) {
   
-  if("Top" %in% colnames(x)){
+  columns <- colnames(x)
+  
+  if ("Top" %in% columns) {
     #... calculate maximum depth
     x$Ymax <- x$Top-x$Bottom
   }
@@ -347,9 +357,9 @@ assign_parameters.junction <- function(
   x$Elevation <- x$Bottom
   
   if (
-    !("!('Y' %in% colnames(x))" %in% colnames(x)) | 
-    !("!('Ysur' %in% colnames(x))" %in% colnames(x)) | 
-    !("Apond" %in% colnames(x))
+    !("!('Y' %in% colnames(x))" %in% columns) | 
+    !("!('Ysur' %in% colnames(x))" %in% columns) | 
+    !("Apond" %in% columns)
   ) {
     
     if (is.null(junction_parameters) == F) {
@@ -393,15 +403,17 @@ assign_parameters.outfalls <- function(
 
   x$Elevation <- x$Bottom
   
-  if (!("Gated" %in% colnames(x))) {
+  columns <- colnames(x)
+  
+  if (!("Gated" %in% columns)) {
     x$Gated <- "NO"
   }
   
-  if (!("StageData" %in% colnames(x))) {
+  if (!("StageData" %in% columns)) {
     x$StageData <- ' '
   }
   
-  if (!("RouteTo" %in% colnames(x))) {
+  if (!("RouteTo" %in% columns)) {
     x$RouteTo <- ' '
   }
   
@@ -440,28 +452,30 @@ assign_parameters.xsections <- function(
   #... rename Name of conduit to Link
   x$Link <- x$Name
   
+  columns <- colnames(x)
+  
   #... default is circular shape
-  if (!("Shape" %in% colnames(x))){
+  if (!("Shape" %in% columns)){
     x$Shape <- "CIRCULAR"
   }
   
-  if (!("Geom1" %in% colnames(x))){
+  if (!("Geom1" %in% columns)){
     x$Geom1 <- 3
   }
   
-  if (!("Geom2" %in% colnames(x))){
+  if (!("Geom2" %in% columns)){
     x$Geom2 <- 0
   }
   
-  if (!("Geom3" %in% colnames(x))){
+  if (!("Geom3" %in% columns)){
     x$Geom3 <- 0
   }
   
-  if (!("Geom4" %in% colnames(x))){
+  if (!("Geom4" %in% columns)){
     x$Geom4 <- 0
   }
   
-  if (!("Barrels" %in% colnames(x))){
+  if (!("Barrels" %in% columns)){
     x$Barrels <- 1
   }
   
