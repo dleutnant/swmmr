@@ -27,59 +27,26 @@
 .get_iIndex <- function(list_of_elements, iType = NULL, object_name = NULL) {
 
   # subcatchments
-  if (iType == 0) {
+  if (iType == 0 || iType == 1 || iType == 2) {
     
-    object_names <- list_of_elements$subcatchments$names
+    element <- c("subcatchments", "nodes", "links")[iType + 1]
     
+    object_names <- list_of_elements[[element]]$names
+
     if (length(object_names) > 0) {
       
-      if (is.null(object_name)) {
-        object_name <- utils::select.list(object_names, multiple = TRUE)
-      }
-      
-      result <- list(iIndex = match(object_name, object_names) - 1,
-                     names = object_name)
-      
-    } else {
-      warning("no subcatchments ")
-    }  
-    
-    # nodes
-  } else if (iType == 1) {
-    
-    object_names <- list_of_elements$nodes$names
-    
-    if (length(object_names) > 0) {
-      
-      if (is.null(object_name)) {
-        object_name <- utils::select.list(object_names, multiple = TRUE)
-      }
-      
-      result <- list(iIndex = match(object_name, object_names) - 1,
-                     names = object_name)
-      
-    } else {
-      warning("no nodes")
-    }
-    
-    # links
-  } else if (iType == 2) {
-    
-    object_names <- list_of_elements$links$names
-    
-    if (length(object_names) > 0) {
       if (is.null(object_name)) {
         object_name <- utils::select.list(object_names, multiple = TRUE)
       } 
-      
+
       result <- list(iIndex = match(object_name, object_names) - 1,
                      names = object_name)
-      
+
     } else {
       
-      warning("no links")
-    }
-    
+      warning("no ", element)
+    }    
+
   } else {
     
     warning("Unclear iType.")
