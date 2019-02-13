@@ -2,17 +2,18 @@
 #' @keywords internal
 .get_iType <- function(iType = NULL) {
 
-  # iType must be NULL or an integer vector of length one  
-  if (! (is.null(iType) || (is.integer(iType) && length(iType) == 1L))) {
-    clean_stop("Please pass an integer of length one or NULL to .get_iType().")
-  }
-  
-  choices <- c("subcatchment","node","link", "system variable")
+  choices <- c("subcatchment", "node", "link", "system variable")
 
-  if (is.null(iType)) {
-    iTypeStr <- utils::select.list(choices = choices, multiple = FALSE)  
+  # iType must be NULL or an integer vector of length one  
+  if (! is.null(iType)) {
+    
+    stop_on_bad_index(iType, choices)
+  } 
+
+  iTypeStr <- if (is.null(iType)) {
+    utils::select.list(choices = choices, multiple = FALSE)  
   } else {
-    iTypeStr <- choices[iType + 1] # to be consistent --> + 1
+    choices[iType + 1] # to be consistent --> + 1
   }
   
   # create list with numeric vector with base 0 and var names
