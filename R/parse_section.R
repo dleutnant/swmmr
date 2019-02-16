@@ -69,19 +69,15 @@ parse_section.default <- function(x, ...) {
 
 #' helper function using defaults for arguments to tidyr::separate()
 #' @keywords internal
-separate_into <- function(x, into, fill = "left", sep = "\\s+", col = "value") {
+separate_into <- function(
+  x, into, fill = "left", sep = "\\s+", extra = "merge", col = "value", 
+  convert = TRUE, ...
+) {
   
   tidyr::separate(
-    x, col = col, into = into, sep = sep, extra = "merge", fill = fill, 
-    convert = TRUE
+    x, col = col, into = into, sep = sep, remove = TRUE, convert = convert, 
+    extra = extra, fill = fill, ...
   )
-}
-
-#' helper function using defaults for arguments to tidyr::separate()
-#' @keywords internal
-separate_into_value <- function(x, ...) {
-
-  tidyr::separate(x, col = "value", convert = TRUE, ...)
 }
 
 # input sections ----------------------------------------------------------
@@ -121,9 +117,10 @@ parse_section.hydrographs <- function(x, ...) {
 #' @keywords internal
 parse_section.temperature <- function(x, ...) {
   
-  separate_into_value(x, sep = base::cumsum(c(18, 1)), into = c(
-    "Data Element", "tab1", "Values"
-  ))
+  separate_into(
+    x, sep = base::cumsum(c(18, 1)), extra = "warn", fill = "warn",  
+    into = c("Data Element", "tab1", "Values")
+  )
 }
 
 #' import helper
@@ -137,14 +134,16 @@ parse_section.evaporation <- function(x, ...) {
 #' @keywords internal
 parse_section.events <- function(x, ...) {
   
-  separate_into_value(x, sep = 19, into = c("Start Date", "End Date"))
+  separate_into(x, sep = 19, extra = "warn", fill = "warn", into = c(
+    "Start Date", "End Date"
+  ))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.subcatchments <- function(x, ...) {
   
-  separate_into_value(x, sep = "\\s+", into = c(
+  separate_into(x, sep = "\\s+", extra = "warn", fill = "warn", into = c(
     "Name", "Rain Gage", "Outlet", "Area","Perc_Imperv", "Width", 
     "Perc_Slope", "CurbLen", "Snowpack"
   ))
@@ -185,7 +184,7 @@ parse_section.infiltration <- function(x, ...) {
 #' @keywords internal
 parse_section.aquifers <- function(x, ...) {
   
-  separate_into(x, c("Name", "value"), fill = "right") %>% 
+  separate_into(x, fill = "right", c("Name", "value")) %>% 
     separate_into(c(
       "Por", "WP", "FC", "Ksat", "Kslope", "Tslope", "ETu", "ETs", "Seep", 
       "Ebot", "Egw", "Umc", "ETupat"
@@ -203,7 +202,7 @@ parse_section.snowpacks <- function(x, ...) {
 #' @keywords internal
 parse_section.junctions <- function(x, ...) {
 
-  separate_into_value(x, sep = "\\s+", into = c(
+  separate_into(x, sep = "\\s+", extra = "warn", fill = "warn", into = c(
     "Name", "Elevation", "MaxDepth", "InitDepth", "SurDepth", "Aponded"
   ))
 }
@@ -213,8 +212,9 @@ parse_section.junctions <- function(x, ...) {
 parse_section.outfalls <- function(x, ...) {
   
   separate_into(x, c("Name", "value")) %>% 
-    separate_into_value(
-      sep = base::cumsum(c(10, 1, 10, 1, 10, 1, 10, 1)), into = c(
+    separate_into(
+      sep = base::cumsum(c(10, 1, 10, 1, 10, 1, 10, 1)), extra = "warn", 
+      fill = "warn", into = c(
         "Elevation", "tab2", "Type", "tab3", "Stage Data", "tab4", "Gated", 
         "tab5", "Route To"
       ))
@@ -244,7 +244,7 @@ parse_section.storage <- function(x, ...) {
 #' @keywords internal
 parse_section.conduits <- function(x, ...) {
   
-  separate_into_value(x, sep = "\\s+", into = c(
+  separate_into(x, sep = "\\s+", extra = "warn", fill = "warn", into = c(
     "Name", "From Node", "To Node", "Length", "Roughness", "InOffset", 
     "OutOffset", "InitFlow", "MaxFlow"
   ))
@@ -458,7 +458,7 @@ parse_section.tags <- function(x, ...) {
 #' @keywords internal
 parse_section.map <- function(x, ...) {
   
-  separate_into_value(x, extra = "merge", into = c("key", "value"))
+  separate_into(x, fill = "warn", c("key", "value"))
 }
 
 #' import helper
