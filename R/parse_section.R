@@ -80,6 +80,13 @@ separate_into <- function(
   )
 }
 
+#' helper function using defaults for arguments to tidyr::separate()
+#' @keywords internal
+skip_head <- function(df, n)
+{
+  df[- seq_len(n), ]
+}
+
 # input sections ----------------------------------------------------------
 
 #' import helper
@@ -538,7 +545,7 @@ parse_section.backdrop <- function(x, ...) {
 #' @keywords internal
 parse_section.element_count <- function(x, ...) {
   
-  separate_into(x[-(1:3), ], fill = "right", sep = "\\.{3,}", c(
+  separate_into(skip_head(x, 3), fill = "right", sep = "\\.{3,}", c(
     "Element", "Count"
   ))
 }
@@ -547,7 +554,7 @@ parse_section.element_count <- function(x, ...) {
 #' @keywords internal
 parse_section.pollutant_summary <- function(x, ...) {
   
-  separate_into(x[-(1:5), ], fill = "right", c(
+  separate_into(skip_head(x, 5), fill = "right", c(
     "Name", "Units", "Ppt_Concen", "GW_Concen", "Kdecay_per_day", "CoPollutant"
   ))
 }
@@ -556,7 +563,7 @@ parse_section.pollutant_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.landuse_summary <- function(x, ...) {
   
-  separate_into(x[-(1:5), ], fill = "right", c(
+  separate_into(skip_head(x, 5), fill = "right", c(
     "Name", "Sweeping_Interval", "Maximum_Removal", "Last_Swept"
   ))
 }
@@ -565,7 +572,7 @@ parse_section.landuse_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.raingage_summary <- function(x, ...) {
   
-  separate_into(x[-(1:5), ], fill = "right", c(
+  separate_into(skip_head(x, 5), fill = "right", c(
     "Name", "Data_Source", "Data_Type", "Recording_Interval"
   ))
 }
@@ -574,7 +581,7 @@ parse_section.raingage_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.subcatchment_summary <- function(x, ...) {
   
-  separate_into(x[-(1:5), ], fill = "right", c(
+  separate_into(skip_head(x, 5), fill = "right", c(
     "Name", "Area", "Width", "Perc_Imperv", "Perc_Slope", "Rain_Gage", "Outlet"
   ))
 }
@@ -582,8 +589,8 @@ parse_section.subcatchment_summary <- function(x, ...) {
 #' import helper
 #' @keywords internal
 parse_section.node_summary <- function(x, ...) {
-  
-  separate_into(x[-(1:5), ], fill = "right", c(
+
+  separate_into(skip_head(x, 5), fill = "right", c(
     "Name", "Type", "Invert_Elev", "Max_Depth", "Ponded_Area", "External_Inflow"
   ))
 }
@@ -592,7 +599,7 @@ parse_section.node_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.link_summary <- function(x, ...) {
   
-  separate_into(x[-(1:5), ], fill = "right", c(
+  separate_into(skip_head(x, 5), fill = "right", c(
     "Name", "From Node", "To Node", "Type", "Length", "Perc_Slope", "Roughness"
   ))
 }
@@ -601,7 +608,7 @@ parse_section.link_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.cross_section_summary <- function(x, ...) {
   
-  separate_into(x[-(1:5), ], fill = "right", c(
+  separate_into(skip_head(x, 5), fill = "right", c(
     "Conduit", "Shape", "Full_Depth", "Full_Area", "Hyd_Rad", "Max_Width", 
     "No_of_Barrels", "Full_Flow"
   ))
@@ -611,7 +618,7 @@ parse_section.cross_section_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.analysis_options <- function(x, ...) {
   
-  separate_into(x[-(1:3), ], fill = "right", sep = "\\.{5,}", c(
+  separate_into(skip_head(x, 3), fill = "right", sep = "\\.{5,}", c(
     "Option", "Value"
   ))
 }
@@ -620,7 +627,7 @@ parse_section.analysis_options <- function(x, ...) {
 #' @keywords internal
 parse_section.runoff_quantity_continuity <- function(x, ...) {
   
-  separate_into(x[-c(1:2), ], sep = "\\.{5,}", c("Component", "value")) %>% 
+  separate_into(skip_head(x, 2), sep = "\\.{5,}", c("Component", "value")) %>% 
     dplyr::mutate_all(trimws) %>% 
     separate_into(c("Volume", "Depth"))
 }
@@ -635,7 +642,7 @@ parse_section.runoff_quality_continuity <- function(x, ...) {
     strsplit(split = "\\s+", x = .) %>%
     unlist(.)
   
-  separate_into(x[-c(1:2), ], sep = "\\.{5,}", c("Component", "value")) %>% 
+  separate_into(skip_head(x, 2), sep = "\\.{5,}", c("Component", "value")) %>% 
     dplyr::mutate_all(trimws) %>% 
     separate_into(pollutants)
 }
@@ -644,7 +651,7 @@ parse_section.runoff_quality_continuity <- function(x, ...) {
 #' @keywords internal
 parse_section.flow_routing_continuity <- function(x, ...) {
   
-  separate_into(x[-c(1:2), ], sep = "\\.{4,}", c("Component", "value")) %>% 
+  separate_into(skip_head(x, 2), sep = "\\.{4,}", c("Component", "value")) %>% 
     dplyr::mutate_all(trimws) %>% 
     separate_into(c("Volume_a", "Volume_b"))
 }
@@ -659,7 +666,7 @@ parse_section.quality_routing_continuity <- function(x, ...) {
     strsplit(split = "\\s+", x = .) %>%
     unlist(.)
   
-  separate_into(x[-c(1:2), ], sep = "\\.{5,}", c("Component", "value")) %>% 
+  separate_into(skip_head(x, 2), sep = "\\.{5,}", c("Component", "value")) %>% 
     dplyr::mutate_all(trimws) %>% 
     separate_into(pollutants)
 }
@@ -668,21 +675,21 @@ parse_section.quality_routing_continuity <- function(x, ...) {
 #' @keywords internal
 parse_section.highest_flow_instability_indexes <- function(x, ...) {
   
-  separate_into(x[-c(1:3), ], c("Link", "Instability"))
+  separate_into(skip_head(x, 3), c("Link", "Instability"))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.routing_time_step_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:3), ], sep = ":", c("Component", "Value"))
+  separate_into(skip_head(x, 3), sep = ":", c("Component", "Value"))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.subcatchment_runoff_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:6), ], c("Subcatchment", paste(
+  separate_into(skip_head(x, 6), c("Subcatchment", paste(
     sep = "_", "Total", c(
       "Precip", "Runon", "Evap", "Infil", "Runoff_Depth", "Runoff_Volume", 
       "Peak_Runoff", "Runoff_Coeff"
@@ -697,7 +704,7 @@ parse_section.lid_performance_summary <- function(x, ...) {
   #c("Total","Evap","Infil","Surface","Drain","Initial","Final","Continuity")
   #c("Inflow","Loss","Loss","Outflow","Outflow","Storage","Storage","Error")
 
-  separate_into(x[-c(1:6), ], c(
+  separate_into(skip_head(x, 6), c(
     "Subcatchment","LID Control", 
     paste(
       c("Total", "Evap", "Infil", "Surface", "Drain", "Initial", "Final", 
@@ -719,14 +726,14 @@ parse_section.subcatchment_washoff_summary <- function(x, ...) {
     strsplit(split = "\\s+", x = .) %>%
     unlist(.)
   
-  separate_into(x[-c(1:5), ], c("Subcatchment", pollutants))
+  separate_into(skip_head(x, 5), c("Subcatchment", pollutants))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.node_depth_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:6), ], c(
+  separate_into(skip_head(x, 6), c(
     "Node", "Type", "Average_Depth", "Maximum_Depth", "Maximum_HGL", 
     "Time_of_Max_Occurance_d", "Time_of_Max_Occurance_hm", "Reported_Max_Depth"
   ))
@@ -736,7 +743,7 @@ parse_section.node_depth_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.node_inflow_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:7), ], c(
+  separate_into(skip_head(x, 7), c(
     "Node", "Type", "Maximum_Lateral_Inflow", "Maximum_Total_Inflow",
     "Time_of_Max_Occurance_d", "Time_of_Max_Occurance_hm", 
     "Lateral_Inflow_Volume", "Total_Inflow_Volume", "Flow_Balance_Error"
@@ -747,7 +754,7 @@ parse_section.node_inflow_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.node_flooding_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:8), ], c(
+  separate_into(skip_head(x, 8), c(
     "Node", "Hours_Flooded", "Maximum_Rate", "Time_of_Max_Occurance_d", 
     "Time_of_Max_Occurance_hm", "Total_Flood_Volume", "Maximum_Ponded_Volume"
   ))
@@ -771,14 +778,14 @@ parse_section.outfall_loading_summary <- function(x, ...) {
     into <- c(into, paste("Total", pollutants, sep = "_"))
   }
   
-  separate_into(x[-c(1:6), ], fill = "right", into)
+  separate_into(skip_head(x, 6), fill = "right", into)
 }
 
 #' import helper
 #' @keywords internal
 parse_section.link_flow_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:6), ], c(
+  separate_into(skip_head(x, 6), c(
     "Link", "Type", "Maximum_Flow", "Time_of_Max_Occurance_d", 
     "Time_of_Max_Occurance_hm", "Maximum_Veloc", "Maximum_Full_Flow", 
     "Maximum_Full_Depth"
@@ -789,7 +796,7 @@ parse_section.link_flow_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.conduit_surcharge_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:5), ], c(
+  separate_into(skip_head(x, 5), c(
     "Conduit", "Hours_Full_Both_Ends", "Hours_Full_Upstream", 
     "Hours_Full_Dnstream", "Hours_Above_Full_Normal_Flow", 
     "Hours_Capacity_Limited"
@@ -806,14 +813,14 @@ parse_section.link_pollutant_load_summary <- function(x, ...) {
     strsplit(split = "\\s+", x = .) %>%
     unlist(.)
   
-  separate_into(x[-c(1:5), ], c("Link", pollutants))
+  separate_into(skip_head(x, 5), c("Link", pollutants))
 }
 
 #' import helper
 #' @keywords internal
 parse_section.pumping_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:6), ], c(
+  separate_into(skip_head(x, 6), c(
     "Pump", "Percent_Utilized", "Number_of_StartUps", "Min_Flow", "Avg_Flow", 
     "Max_Flow", "Total_Volume", "Power_Usage", "Time_Off_Pump_Curve_Low", 
     "Time_Off_Pump_Curve_High"
@@ -824,7 +831,7 @@ parse_section.pumping_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.groundwater_summary <- function(x, ...) {
   
-  separate_into(x[-c(1:7), ], c(
+  separate_into(skip_head(x, 7), c(
     "Subcatchment", "Total_Infil", "Total_Evap", "Total_Lower_Seepage", 
     "Total_Lateral_Outflow", "Maximum_Lateral_Outflow", "Average_Upper_Moist", 
     "Average_Water_Table", "Final_Upper_Moist", "Final_Water_Table"
