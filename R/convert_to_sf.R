@@ -31,11 +31,7 @@ NULL
 #' @rdname convert_to_sf
 raingages_to_sf <- function(x) {
 
-  # checks if sf is available
-  check_pkg_avail("sf")
-    
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features(x, "raingages", c("raingages", "symbols"))) {
@@ -50,6 +46,18 @@ raingages_to_sf <- function(x) {
 }
 
 #' Helper function
+#' @keywords internal
+check_package_and_class <- function(x, package = "sf", class = "inp") {
+  
+  # checks if sf is available
+  check_pkg_avail(package)
+  
+  # check class and required elements
+  stopifnot(inherits(x, class))
+}
+
+#' Helper function
+#' @keywords internal
 has_incomplete_features <- function(x, subject, features) {
   
   incomplete <- ! all(features %in% names(x))
@@ -65,12 +73,8 @@ has_incomplete_features <- function(x, subject, features) {
 #' @rdname convert_to_sf
 junctions_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
+  check_package_and_class(x)
   
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
-
   # check sections
   if (has_incomplete_features(x, "junctions", c("junctions", "coordinates"))) {
     return(NULL)
@@ -88,11 +92,7 @@ junctions_to_sf <- function(x) {
 #' @rdname convert_to_sf
 outfalls_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features(x, "outfalls", c("outfalls", "coordinates"))) {
@@ -111,11 +111,7 @@ outfalls_to_sf <- function(x) {
 #' @rdname convert_to_sf
 storages_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features(x, "storage", c("storage", "coordinates"))) {
@@ -134,12 +130,8 @@ storages_to_sf <- function(x) {
 #' @rdname convert_to_sf
 subcatchments_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
-
+  check_package_and_class(x)
+  
   # check sections
   if (has_incomplete_features(x, "subcatchments", c(
     "subcatchments", "subareas", "infiltration", "polygons"
@@ -199,11 +191,7 @@ subcatchments_to_sf <- function(x) {
 #' @rdname convert_to_sf
 links_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features(x, "links", c("conduits", "coordinates"))) {
@@ -264,11 +252,7 @@ links_to_sf <- function(x) {
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features("weirs", c("weirs", "coordinates"))) {
@@ -315,11 +299,7 @@ weirs_to_sf <- function(x) {
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features(x, "orifices", c("orifices", "coordinates"))) {
@@ -366,11 +346,7 @@ orifices_to_sf <- function(x) {
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features(x, "pumps", c("pumps", "coordinates"))) {
@@ -417,11 +393,7 @@ pumps_to_sf <- function(x) {
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features(x, "weirs", c("weirs", "coordinates"))) {
@@ -492,11 +464,7 @@ weirs_to_sf <- function(x) {
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features(x, "orifices", c("orifices", "coordinates"))) {
@@ -567,11 +535,7 @@ orifices_to_sf <- function(x) {
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
   if (has_incomplete_features(x, "pumps", c("pumps", "coordinates"))) {
@@ -643,11 +607,7 @@ pumps_to_sf <- function(x) {
 #' @rdname convert_to_sf
 inp_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # return list with simple features of swmm objects
   sf <- list(subcatchments = subcatchments_to_sf(x), 
