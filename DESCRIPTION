@@ -17,6 +17,7 @@ Authors@R: c(
 URL: https://github.com/dleutnant/swmmr
 License: GPL-3
 LazyData: TRUE
+Encoding: UTF-8
 BugReports: https://github.com/dleutnant/swmmr/issues
 ByteCompile: TRUE
 Imports: 
@@ -39,6 +40,6 @@ Suggests:
     rmarkdown,
     testthat
 SystemRequirements: SWMM (>=5.1.012)
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 VignetteBuilder: knitr
