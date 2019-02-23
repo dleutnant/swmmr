@@ -1145,7 +1145,7 @@ parse_section.time_step_critical_elements <- function(x, ...){
                   into = c("Component", "Name", "Value"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
 }
 
