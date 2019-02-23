@@ -181,7 +181,7 @@ assign_parameters.subareas <- function(
   
   x$Subcatchment <- x$Name
   
-  get_column_defaults()$subareas
+  defaults <- get_column_defaults()$subareas
 
   if (! all(names(defaults) %in% colnames(x))) {
     
