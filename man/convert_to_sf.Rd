@@ -38,10 +38,12 @@ orifices_to_sf(x)
 
 pumps_to_sf(x)
 
-inp_to_sf(x)
+inp_to_sf(x, remove_invalid = TRUE)
 }
 \arguments{
 \item{x}{An object of class 'inp', created by \code{\link{read_inp}}.}
+
+\item{remove_invalid}{Should invalid sf geometries be removed?}
 }
 \value{
 A simple feature or a list of simple features
