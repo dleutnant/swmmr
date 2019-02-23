@@ -1105,19 +1105,48 @@ parse_section.runoff_quality_continuity <- function(x, ...){
 #' import helper
 #' @keywords internal
 parse_section.groundwater_continuity <- function(x, ...){
-  x
+
+  tidyr::separate(data = x[-c(1:2), ],
+                  col = "value",
+                  into = c("Component", "value"),
+                  sep = "\\.{4,}",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE) %>% 
+    dplyr::mutate_all(trimws) %>% 
+    tidyr::separate(col = "value",
+                    into = c("Volume", "Depth"),
+                    sep = "\\s+",
+                    extra = "merge",
+                    fill = "left",
+                    convert = TRUE)
 }
 
 #' import helper
 #' @keywords internal
 parse_section.highest_continuity_errors <- function(x, ...){
-  x
+  
+  tidyr::separate(data = x[-c(1:3), ],
+                  col = "value",
+                  into = c("Component", "Name", "Error"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "right",
+                  convert = TRUE)
+  
 }
 
 #' import helper
 #' @keywords internal
 parse_section.time_step_critical_elements <- function(x, ...){
-  x
+  
+  tidyr::separate(data = x[-c(1:3), ],
+                  col = "value",
+                  into = c("Component", "Name", "Value"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
 }
 
 #' import helper
@@ -1444,37 +1473,111 @@ parse_section.groundwater_summary <- function(x, ...){
 #' import helper
 #' @keywords internal
 parse_section.node_surcharge_summary <- function(x, ...){
-  x
+  
+  tidyr::separate(data = x[-c(1:7), ],
+                  col = "value",
+                  into = c("Node",
+                           "Type",
+                           "Hours_Surcharged", 
+                           "Max_Height_Above_Crown_Feet",
+                           "Min_Depth_Below_Rim_Feet"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
 }
 
 #' import helper
 #' @keywords internal
 parse_section.flow_classification_summary <- function(x, ...){
-  x
+  
+  tidyr::separate(data = x[-c(1:5), ],
+                  col = "value",
+                  into = c("Conduit",
+                           "Adjusted_Actual_Length",
+                           "Dry", "Up_Dry", "Down_Dry", 
+                           "Sub_Crit", "Sup_Crit", "Up_Crit", "Down_Crit",
+                           "Norm_Ltd", "Inlet_Ctrl"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
 #' import helper
 #' @keywords internal
 parse_section.storage_volume_summary <- function(x, ...){
-  x
+  
+  tidyr::separate(data = x[-c(1:6), ],
+                  col = "value",
+                  into = c("Storage_Unit",
+                           "Average_Volume",
+                           "Avg_Pcnt_Full", "Evap_Pcnt_Loss", "Exfil_Pcnt_Loss",
+                           "Maximum_Volume", "Max_Pcnt_Full", 
+                           "Time_of_Max_Occurence_days", "Time_of_Max_Occurence_hr_min",
+                           "Maximum_Outflow"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
 #' import helper
 #' @keywords internal
 parse_section.lid_control_summary <- function(x, ...){
-  x
+  
+  tidyr::separate(data = x[-c(1:5), ],
+                  col = "value",
+                  into = c("Subcatchment",
+                           "LID_Control",
+                           "No_of_Units", 
+                           "Unit_Area", "Unit_Width", "Percent_Area_Covered",
+                           "Percent_Imperv_Treated", "Percent_Treated"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
 #' import helper
 #' @keywords internal
 parse_section.pumping_summary <- function(x, ...){
-  x
+  
+  tidyr::separate(data = x[-c(1:6), ],
+                  col = "value",
+                  into = c("Pump",
+                           "Percent_Utilized",
+                           "Number_of_Start_Ups", 
+                           "Min_Flow", "Avg_Flow", "Max_Flow",
+                           "Total_Volume", "Power_Usage", 
+                           "Time_Off_Pump_Curve_Low", "Time_Off_Pump_Curve_High"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
 #' import helper
 #' @keywords internal
 parse_section.groundwater_summary <- function(x, ...){
-  x
+  
+  tidyr::separate(data = x[-c(1:7), ],
+                  col = "value",
+                  into = c("Subcatchment",
+                           "Total_Infil",
+                           "Total_Evap", 
+                           "Total_Lower_Seepage", "Total_Lateral_Outflow", "Maximum_Lateral_Outflow",
+                           "Average_Upper_Moist", "Average_Water_Table", "Final_Upper_Moist", 
+                           "Final_Water_Table"),
+                  sep = "\\s+",
+                  extra = "merge",
+                  fill = "left",
+                  convert = TRUE)
+  
 }
 
 
