@@ -14,11 +14,11 @@ report_sections <- c("Element Count",
                      #"Control Actions Taken",
                      "Runoff Quantity Continuity", 
                      "Runoff Quality Continuity",
-                     #"roundwater Continuity",
+                     "Groundwater Continuity",
                      "Flow Routing Continuity",
                      "Quality Routing Continuity",
-                     #"Highest Continuity Errors",
-                     #"Time-Step Critical Elements",
+                     "Highest Continuity Errors",
+                     "Time-Step Critical Elements",
                      "Highest Flow Instability Indexes", 
                      "Routing Time Step Summary", 
                      #"Subcatchment Results",
@@ -35,7 +35,11 @@ report_sections <- c("Element Count",
                      "Conduit Surcharge Summary",
                      "Link Pollutant Load Summary",
                      "Pumping Summary",
-                     "Groundwater Summary")
+                     "Groundwater Summary", # example? 
+                     "LID Control Summary",
+                     "Node Surcharge Summary",
+                     "Storage Volume Summary",
+                     "Flow Classification Summary")
 
 #' Read SWMM's .rpt file
 #'

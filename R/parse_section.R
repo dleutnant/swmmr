@@ -65,6 +65,7 @@ parse_section <- function(x, ...) {
 #' @keywords internal
 parse_section.default <- function(x, ...) {
   warning(paste("Unknown class:", tail(class(x), 1)))
+  #print(sloop::s3_dispatch(parse_section(x)))
   return(NULL)
 }
 
@@ -1103,6 +1104,24 @@ parse_section.runoff_quality_continuity <- function(x, ...){
 
 #' import helper
 #' @keywords internal
+parse_section.groundwater_continuity <- function(x, ...){
+  x
+}
+
+#' import helper
+#' @keywords internal
+parse_section.highest_continuity_errors <- function(x, ...){
+  x
+}
+
+#' import helper
+#' @keywords internal
+`parse_section.time-step_critical_elements` <- function(x, ...){
+  x
+}
+
+#' import helper
+#' @keywords internal
 parse_section.flow_routing_continuity <- function(x, ...){
   
   tidyr::separate(data = x[-c(1:2), ],
@@ -1333,7 +1352,7 @@ parse_section.link_flow_summary <- function(x, ...){
                            "Maximum_Full_Depth"),
                   sep = "\\s+",
                   extra = "merge",
-                  fill = "left",
+                  fill = "right",
                   convert = TRUE)
   
 }
@@ -1421,6 +1440,44 @@ parse_section.groundwater_summary <- function(x, ...){
                   convert = TRUE)
   
 }
+
+#' import helper
+#' @keywords internal
+parse_section.node_surcharge_summary <- function(x, ...){
+  x
+}
+
+#' import helper
+#' @keywords internal
+parse_section.flow_classification_summary <- function(x, ...){
+  x
+}
+
+#' import helper
+#' @keywords internal
+parse_section.storage_volume_summary <- function(x, ...){
+  x
+}
+
+#' import helper
+#' @keywords internal
+parse_section.lid_control_summary <- function(x, ...){
+  x
+}
+
+#' import helper
+#' @keywords internal
+parse_section.pumping_summary <- function(x, ...){
+  x
+}
+
+#' import helper
+#' @keywords internal
+parse_section.groundwater_summary <- function(x, ...){
+  x
+}
+
+
 
 #' import helper
 #' @keywords internal
