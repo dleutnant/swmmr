@@ -1116,7 +1116,7 @@ parse_section.highest_continuity_errors <- function(x, ...){
 
 #' import helper
 #' @keywords internal
-`parse_section.time-step_critical_elements` <- function(x, ...){
+parse_section.time_step_critical_elements <- function(x, ...){
   x
 }
 

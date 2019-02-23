@@ -114,7 +114,7 @@ read_rpt <- function(x, ...) {
   list_of_sections <- section %>% 
     purrr::transpose() %>% 
     purrr::map( ~ rpt_lines[.$start:.$end]) %>% 
-    purrr::set_names(gsub("\\s+", "_", base::tolower(section$name)))
+    purrr::set_names(gsub("\\s+|-", "_", base::tolower(section$name)))
   
   # parse sections individually
   res <- purrr::imap(list_of_sections, ~ section_to_tbl(.x, .y)) %>% 
