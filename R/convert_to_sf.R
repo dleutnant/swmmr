@@ -22,6 +22,7 @@
 #' orifices, pumps, subcatchments and raingages to a list of simple features
 #'
 #' @param x An object of class 'inp', created by \code{\link{read_inp}}.
+#' @param remove_invalid Should invalid sf geometries be removed?
 #' @return A simple feature or a list of simple features
 #' @name convert_to_sf
 #' @seealso \code{\link[sf]{sf}}
@@ -639,7 +640,7 @@ pumps_to_sf <- function(x) {
 
 #' @export
 #' @rdname convert_to_sf
-inp_to_sf <- function(x) {
+inp_to_sf <- function(x, remove_invalid = TRUE) {
   
   # checks if sf is available
   check_pkg_avail("sf")
@@ -658,15 +659,24 @@ inp_to_sf <- function(x) {
              pumps = pumps_to_sf(x),
              raingages = raingages_to_sf(x))
   
-  # discard NULLs
-  ## TODO: st_is_valid is called two times!?
-  sf <- purrr::discard(sf, is.null) %>% 
+  # discard nulls
+  sf <- purrr::discard(sf, is.null)
+  
+  # should invalid sf geometries be removed?
+  if (remove_invalid) {
+    
+    # get index of invalid sf geometries
+    list_of_idx <- purrr::map(sf, sf::st_is_valid)
+    
+    # raise warning in case of invalid geometries
+    purrr::iwalk(list_of_idx,  ~ {
+      if (anyNA(.x)) warning(paste("removing invalid geometries of", .y))
+    })
+    
     # remove invalid geometries
-    purrr::iwalk( ~ {
-    if (anyNA(sf::st_is_valid(.x))) {
-      warning(paste("removing invalid geometries of", .y))
-    }}) %>% 
-    purrr::map( ~ .[!is.na(sf::st_is_valid(.)), ])
+    sf <- purrr::map2(sf, list_of_idx,  ~ .x[!is.na(.y), ])
+    
+  }
   
   return(sf)
 }
