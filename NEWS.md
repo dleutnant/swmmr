@@ -2,11 +2,17 @@
 
 ## Bug fixes
 
+* `read_rpt` result contains a tibble containing analysis info (also for errors)
+
 * `subcatchments_to_sf` returned an error if a geometry was insufficient defined (3 points are now at least required)
 
 * LID performance summary from `*.rpt` file is now correctly read (@maltehenrichs)
 
 * `write_inp` and `read_inp` are more robust.
+
+## Internal
+
+* Cleaned code basis (@hsonne)
 
 # swmmr 0.8.1
 
