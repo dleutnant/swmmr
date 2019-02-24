@@ -37,10 +37,6 @@ sections_to_shp <- function(x, name, path_out) {
   #   purrr::iwalk(., ~ sf::st_write(.x, file.path(path_out, 
   #                                                paste0("shp/", .y, "_.shp"))))
 
-  shape_file_path <- function(type) file.path(
-    path_out, paste0("shp/", name, "_", type, ".shp")
-  )
-  
   # Configuration with:
   # - element names = section names
   # - each element is a list with one named element:
@@ -56,25 +52,28 @@ sections_to_shp <- function(x, name, path_out) {
     pumps = list(pumps = pumps_to_sf),
     storage = list(storages = storages_to_sf)
   )
+
+  shape_dir <- file.path(path_out, shp)
   
   for (section in names(config)) {
     
     section_config <- config[[section]]
-    
+    type <- names(section_config)[1]
+      
     # ... convert section to sf if contained in x
     write_section_if_in_list(
       x, 
       section = section, 
       conversion_function = section_config[[1]],
-      file = shape_file_path(names(section_config)[1]),
+      file = file.path(shape_dir, paste0(name, "_", type, ".shp")),
       delete_dsn = delete_dsn
     )
   }
   
-  print(paste0("*.shp files were written to: ", path_out, "/shp"))
+  print(paste0("*.shp files were written to: ", shape_dir))
 }
 
-#' Write one section
+#' Write one section if the section is contained in x
 #' @keywords internal
 write_section_if_in_list <- function(x, section, conversion_function, file, ...)
 {
