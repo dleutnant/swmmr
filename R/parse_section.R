@@ -652,7 +652,7 @@ parse_section.runoff_quality_continuity <- function(x, ...) {
 #' @keywords internal
 parse_section.groundwater_continuity <- function(x, ...) {
   
-  separate_into(drop_head(x, 2), sep = "\\.{4,}", c(
+  separate_into(skip_head(x, 2), sep = "\\.{4,}", c(
     "Component", "value"
   )) %>% 
     dplyr::mutate_all(trimws) %>% 
@@ -663,7 +663,7 @@ parse_section.groundwater_continuity <- function(x, ...) {
 #' @keywords internal
 parse_section.highest_continuity_errors <- function(x, ...) {
   
-  separate_into(drop_head(x, 3), fill = "right", c(
+  separate_into(skip_head(x, 3), fill = "right", c(
     "Component", "Name", "Error"
   ))
 }
@@ -672,7 +672,7 @@ parse_section.highest_continuity_errors <- function(x, ...) {
 #' @keywords internal
 parse_section.time_step_critical_elements <- function(x, ...) {
   
-  separate_into(drop_head(x, 3), fill = "right", c(
+  separate_into(skip_head(x, 3), fill = "right", c(
     "Component", "Name", "Value"
   ))
 }
@@ -872,7 +872,7 @@ parse_section.groundwater_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.node_surcharge_summary <- function(x, ...) {
   
-  separate_into(drop_head(x, 7), c(
+  separate_into(skip_head(x, 7), c(
     "Node", "Type", "Hours_Surcharged", "Max_Height_Above_Crown_Feet",
     "Min_Depth_Below_Rim_Feet"
   ))
@@ -882,7 +882,7 @@ parse_section.node_surcharge_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.flow_classification_summary <- function(x, ...) {
   
-  separate_into(drop_head(x, 5), c(
+  separate_into(skip_head(x, 5), c(
     "Conduit", "Adjusted_Actual_Length", "Dry", "Up_Dry", "Down_Dry", 
     "Sub_Crit", "Sup_Crit", "Up_Crit", "Down_Crit", "Norm_Ltd", "Inlet_Ctrl"
   ))
@@ -892,7 +892,7 @@ parse_section.flow_classification_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.storage_volume_summary <- function(x, ...) {
   
-  separate_into(drop_head(x, 6), c(
+  separate_into(skip_head(x, 6), c(
     "Storage_Unit", "Average_Volume", "Avg_Pcnt_Full", "Evap_Pcnt_Loss", 
     "Exfil_Pcnt_Loss", "Maximum_Volume", "Max_Pcnt_Full", 
     "Time_of_Max_Occurence_days", "Time_of_Max_Occurence_hr_min",
@@ -904,7 +904,7 @@ parse_section.storage_volume_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.lid_control_summary <- function(x, ...) {
   
-  separate_into(drop_head(x, 5), c(
+  separate_into(skip_head(x, 5), c(
     "Subcatchment", "LID_Control", "No_of_Units", "Unit_Area", "Unit_Width", 
     "Percent_Area_Covered","Percent_Imperv_Treated", "Percent_Treated"
   ))
@@ -914,7 +914,7 @@ parse_section.lid_control_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.pumping_summary <- function(x, ...) {
   
-  separate_into(drop_head(x, 6), c(
+  separate_into(skip_head(x, 6), c(
     "Pump", "Percent_Utilized", "Number_of_Start_Ups", "Min_Flow", "Avg_Flow", 
     "Max_Flow", "Total_Volume", "Power_Usage", "Time_Off_Pump_Curve_Low", 
     "Time_Off_Pump_Curve_High"
@@ -925,7 +925,7 @@ parse_section.pumping_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.groundwater_summary <- function(x, ...) {
   
-  separate_into(drop_head(x, 7), c(
+  separate_into(skip_head(x, 7), c(
     "Subcatchment", "Total_Infil", "Total_Evap", "Total_Lower_Seepage", 
     "Total_Lateral_Outflow", "Maximum_Lateral_Outflow", "Average_Upper_Moist", 
     "Average_Water_Table", "Final_Upper_Moist", "Final_Water_Table"
