@@ -53,7 +53,7 @@ sections_to_shp <- function(x, name, path_out) {
     storage = list(storages = storages_to_sf)
   )
 
-  shape_dir <- file.path(path_out, shp)
+  shape_dir <- file.path(path_out, "shp")
   
   for (section in names(config)) {
     
