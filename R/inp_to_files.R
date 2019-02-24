@@ -8,8 +8,10 @@ sections_to_shp <- function(x, name, path_out) {
   stopifnot(inherits(x, "inp"))
 
   # ... check if shp folder exists in path_out otherwise create new directory
-  if (!file.exists(file.path(path_out, "shp"))) {
-    dir.create(file.path(path_out, "shp"))
+  shape_folder <- file.path(path_out, "shp")
+  
+  if (!file.exists(shape_folder)) {
+    dir.create(shape_folder)
   }
 
   # dleutnant: 
