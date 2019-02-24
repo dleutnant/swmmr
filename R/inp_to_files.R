@@ -58,36 +58,28 @@ sections_to_shp <- function(x, name, path_out) {
   for (section in names(config)) {
     
     section_config <- config[[section]]
-    type <- names(section_config)[1]
-      
+    conversion_function <- section_config[[1]]
+    shape_name <- names(section_config)[1]
+
     # ... convert section to sf if contained in x
-    write_section_if_in_list(
-      x, 
-      section = section, 
-      conversion_function = section_config[[1]],
-      file = file.path(shape_dir, paste0(name, "_", type, ".shp")),
-      delete_dsn = delete_dsn
-    )
+    if (section %in% names(x)) {
+      
+      suppressMessages(sf::st_write(
+        conversion_function(x), 
+        file = file.path(shape_dir, paste0(name, "_", shape_name, ".shp")), 
+        delete_dsn = delete_dsn
+      ))
+      
+    } else {
+      
+      message("section %s is missing", section)
+    }
   }
   
   print(paste0("*.shp files were written to: ", shape_dir))
 }
 
-#' Write one section if the section is contained in x
-#' @keywords internal
-write_section_if_in_list <- function(x, section, conversion_function, file, ...)
-{
-  if (section %in% names(x)) {
-    
-    obj <- conversion_function(x)
-    
-    suppressMessages(sf::st_write(obj, file, ...))
-    
-  } else {
-    
-    print(sprintf("section %s is missing", section))
-  }
-}
+#write_section_if_in_list <- function(x, section, conversion_function, file, ...)
 
 #' conversion helper
 #' @keywords internal
