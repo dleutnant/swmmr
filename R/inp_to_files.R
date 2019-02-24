@@ -38,81 +38,87 @@ sections_to_shp <- function(x, name, path_out) {
   #                                                paste0("shp/", .y, "_.shp"))))
   
   # ... convert sections to sf
-  if ("subcatchments" %in% names(x)) {
-    polygon <- subcatchments_to_sf(x)
-    suppressMessages(sf::st_write(polygon,
-                                  file.path(path_out, 
-                                            paste0("shp/", name, "_polygon.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section subcatchments is missing")
-  }
+  write_section_if_in_list(
+    x, 
+    section = "subcatchments", 
+    conversion_function = subcatchments_to_sf,
+    file = file.path(path_out, paste0("shp/", name, "_polygon.shp")),
+    delete_dsn = delete_dsn
+  )
 
-  if ("conduits" %in% names(x)) {
-    link <- links_to_sf(x)
-    suppressMessages(sf::st_write(link, 
-                                  file.path(path_out, 
-                                            paste0("shp/", name, "_link.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section conduits is missing")
-  }
+  write_section_if_in_list(
+    x,
+    section = "conduits",
+    conversion_function = links_to_sf,
+    file = file.path(path_out, paste0("shp/", name, "_link.shp")),
+    delete_dsn = delete_dsn
+  )
 
-  if ("junctions" %in% names(x)) {
-    point <- junctions_to_sf(x)
-    suppressMessages(sf::st_write(point, file.path(path_out,
-                                                   paste0("shp/", name, "_point.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section junctions is missing")
-  }
+  write_section_if_in_list(
+    x,
+    section = "junctions",
+    conversion_function = junctions_to_sf,
+    file = file.path(path_out,paste0("shp/", name, "_point.shp")),
+    delete_dsn = delete_dsn
+  )
 
-  if ("outfalls" %in% names(x)) {
-    outfall <- outfalls_to_sf(x)
-    suppressMessages(sf::st_write(outfall, file.path(path_out, 
-                                                     paste0("shp/", name, "_outfall.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section outfalls is missing")
-  }
+  write_section_if_in_list(
+    x,
+    section = "outfalls",
+    conversion_function = outfalls_to_sf,
+    file = file.path(path_out, paste0("shp/", name, "_outfall.shp")),
+    delete_dsn = delete_dsn
+  ) 
 
-  if ("weirs" %in% names(x)) {
-    weirs <- weirs_to_sf(x)
-    suppressMessages(sf::st_write(weirs, file.path(path_out, 
-                                                   paste0("shp/", name, "_weir.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section weirs is missing")
-  }
+  write_section_if_in_list(
+    x, 
+    section = "weirs",
+    conversion_function = weirs_to_sf,
+    file = file.path(path_out, paste0("shp/", name, "_weir.shp")),
+    delete_dsn = delete_dsn
+  )  
 
-  if ("orifices" %in% names(x)) {
-    orifices <- orifices_to_sf(x)
-    suppressMessages(sf::st_write(orifices, file.path(path_out, 
-                                                      paste0("shp/", name, "_orifices.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section orifices is missing")
-  }
+  write_section_if_in_list(
+    x, 
+    section = "orifices",
+    conversion_function = orifices_to_sf,
+    file = file.path(path_out, paste0("shp/", name, "_orifices.shp")),
+    delete_dsn = delete_dsn
+  )
 
-  if ("pumps" %in% names(x)) {
-    pumps <- pumps_to_sf(x)
-    suppressMessages(sf::st_write(pumps, file.path(path_out, 
-                                                   paste0("shp/", name, "_pumps.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section pumps is missing")
-  }
-
-  if ("storage" %in% names(x)) {
-    storages <- storages_to_sf(x)
-    suppressMessages(sf::st_write(storages, file.path(path_out, 
-                                                      paste0("shp/", name, "_storages.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section storage is missing")
-  }
+  write_section_if_in_list(
+    x, 
+    section = "pumps",
+    conversion_function = pumps_to_sf,
+    file = file.path(path_out, paste0("shp/", name, "_pumps.shp")),
+    delete_dsn = delete_dsn
+  )
+  
+  write_section_if_in_list(
+    x, 
+    section = "storage",
+    conversion_function = storages_to_sf,
+    file = file.path(path_out, paste0("shp/", name, "_storages.shp")),
+    delete_dsn = delete_dsn
+  )
 
   print(paste0("*.shp files were written to: ", path_out, "/shp"))
+}
+
+#' Write one section
+#' @keywords internal
+write_section_if_in_list <- function(x, section, conversion_function, file, ...)
+{
+  if (section %in% names(x)) {
+    
+    obj <- conversion_function(x)
+    
+    suppressMessages(sf::st_write(obj, file, ...))
+    
+  } else {
+    
+    print(sprintf("section %s is missing", section_name))
+  }
 }
 
 #' conversion helper
