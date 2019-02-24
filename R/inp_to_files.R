@@ -86,7 +86,7 @@ write_section_if_in_list <- function(x, section, conversion_function, file, ...)
     
   } else {
     
-    print(sprintf("section %s is missing", section_name))
+    print(sprintf("section %s is missing", section))
   }
 }
 
