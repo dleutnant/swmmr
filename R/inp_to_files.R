@@ -41,71 +41,36 @@ sections_to_shp <- function(x, name, path_out) {
     path_out, paste0("shp/", name, "_", type, ".shp")
   )
   
-  # ... convert sections to sf
-  write_section_if_in_list(
-    x, 
-    section = "subcatchments", 
-    conversion_function = subcatchments_to_sf,
-    file = shape_file_path("polygon"),
-    delete_dsn = delete_dsn
-  )
-
-  write_section_if_in_list(
-    x,
-    section = "conduits",
-    conversion_function = links_to_sf,
-    file = shape_file_path("link"),
-    delete_dsn = delete_dsn
-  )
-
-  write_section_if_in_list(
-    x,
-    section = "junctions",
-    conversion_function = junctions_to_sf,
-    file = shape_file_path("point"),
-    delete_dsn = delete_dsn
-  )
-
-  write_section_if_in_list(
-    x,
-    section = "outfalls",
-    conversion_function = outfalls_to_sf,
-    file = shape_file_path("outfall"),
-    delete_dsn = delete_dsn
-  ) 
-
-  write_section_if_in_list(
-    x, 
-    section = "weirs",
-    conversion_function = weirs_to_sf,
-    file = shape_file_path("weir"),
-    delete_dsn = delete_dsn
-  )  
-
-  write_section_if_in_list(
-    x, 
-    section = "orifices",
-    conversion_function = orifices_to_sf,
-    file = shape_file_path("orifices"),
-    delete_dsn = delete_dsn
-  )
-
-  write_section_if_in_list(
-    x, 
-    section = "pumps",
-    conversion_function = pumps_to_sf,
-    file = shape_file_path("pumps"),
-    delete_dsn = delete_dsn
+  # Configuration with:
+  # - element names = section names
+  # - each element is a list with one named element:
+  #   - name = name of the shape file
+  #   - value = function that converts from section to shape
+  config <- list(
+    subcatchments = list(polygon = subcatchments_to_sf),
+    conduits = list(link = links_to_sf),
+    junctions = list(point = junctions_to_sf),
+    outfalls = list(outfall = outfalls_to_sf),
+    weirs = list(weir = weirs_to_sf),
+    orifices = list(orifices = orifices_to_sf),
+    pumps = list(pumps = pumps_to_sf),
+    storage = list(storages = storages_to_sf)
   )
   
-  write_section_if_in_list(
-    x, 
-    section = "storage",
-    conversion_function = storages_to_sf,
-    file = shape_file_path("storages"),
-    delete_dsn = delete_dsn
-  )
-
+  for (section in names(config)) {
+    
+    section_config <- config[[section]]
+    
+    # ... convert section to sf if contained in x
+    write_section_if_in_list(
+      x, 
+      section = section, 
+      conversion_function = section_config[[1]],
+      file = shape_file_path(names(section_config)[1]),
+      delete_dsn = delete_dsn
+    )
+  }
+  
   print(paste0("*.shp files were written to: ", path_out, "/shp"))
 }
 
