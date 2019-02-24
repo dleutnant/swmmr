@@ -36,13 +36,17 @@ sections_to_shp <- function(x, name, path_out) {
   # inp_to_sf(x) %>% 
   #   purrr::iwalk(., ~ sf::st_write(.x, file.path(path_out, 
   #                                                paste0("shp/", .y, "_.shp"))))
+
+  shape_file_path <- function(type) file.path(
+    path_out, paste0("shp/", name, "_", type, ".shp")
+  )
   
   # ... convert sections to sf
   write_section_if_in_list(
     x, 
     section = "subcatchments", 
     conversion_function = subcatchments_to_sf,
-    file = file.path(path_out, paste0("shp/", name, "_polygon.shp")),
+    file = shape_file_path("polygon"),
     delete_dsn = delete_dsn
   )
 
@@ -50,7 +54,7 @@ sections_to_shp <- function(x, name, path_out) {
     x,
     section = "conduits",
     conversion_function = links_to_sf,
-    file = file.path(path_out, paste0("shp/", name, "_link.shp")),
+    file = shape_file_path("link"),
     delete_dsn = delete_dsn
   )
 
@@ -58,7 +62,7 @@ sections_to_shp <- function(x, name, path_out) {
     x,
     section = "junctions",
     conversion_function = junctions_to_sf,
-    file = file.path(path_out,paste0("shp/", name, "_point.shp")),
+    file = shape_file_path("point"),
     delete_dsn = delete_dsn
   )
 
@@ -66,7 +70,7 @@ sections_to_shp <- function(x, name, path_out) {
     x,
     section = "outfalls",
     conversion_function = outfalls_to_sf,
-    file = file.path(path_out, paste0("shp/", name, "_outfall.shp")),
+    file = shape_file_path("outfall"),
     delete_dsn = delete_dsn
   ) 
 
@@ -74,7 +78,7 @@ sections_to_shp <- function(x, name, path_out) {
     x, 
     section = "weirs",
     conversion_function = weirs_to_sf,
-    file = file.path(path_out, paste0("shp/", name, "_weir.shp")),
+    file = shape_file_path("weir"),
     delete_dsn = delete_dsn
   )  
 
@@ -82,7 +86,7 @@ sections_to_shp <- function(x, name, path_out) {
     x, 
     section = "orifices",
     conversion_function = orifices_to_sf,
-    file = file.path(path_out, paste0("shp/", name, "_orifices.shp")),
+    file = shape_file_path("orifices"),
     delete_dsn = delete_dsn
   )
 
@@ -90,7 +94,7 @@ sections_to_shp <- function(x, name, path_out) {
     x, 
     section = "pumps",
     conversion_function = pumps_to_sf,
-    file = file.path(path_out, paste0("shp/", name, "_pumps.shp")),
+    file = shape_file_path("pumps"),
     delete_dsn = delete_dsn
   )
   
@@ -98,7 +102,7 @@ sections_to_shp <- function(x, name, path_out) {
     x, 
     section = "storage",
     conversion_function = storages_to_sf,
-    file = file.path(path_out, paste0("shp/", name, "_storages.shp")),
+    file = shape_file_path("storages"),
     delete_dsn = delete_dsn
   )
 
