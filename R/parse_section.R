@@ -9,6 +9,10 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL) 
   if (rm.comment) x <- x[!startsWith(x, ";")]
   
   # convert character vector to tibble
+  # todo:
+  #Calling `as_tibble()` on a vector is discouraged, 
+  #because the behavior is likely to change in the future. 
+  #Use `enframe(name = NULL)` instead.
   x <- tibble::as_tibble(x) %>% 
     # remove empty lines
     dplyr::filter(value != "")
@@ -85,7 +89,7 @@ separate_into <- function(
 #' @keywords internal
 skip_head <- function(df, n)
 {
-  df[- seq_len(n), ]
+  df[-seq_len(n), ]
 }
 
 # input sections ----------------------------------------------------------
@@ -936,11 +940,19 @@ parse_section.groundwater_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.rpt_error <- function(x, ...){
   
-  # ignore the first and last 4 lines (Version and timings)
-  tbl <- x[-c(1:4, (nrow(x) - 4):(nrow(x))), ] %>%
-    dplyr::filter(. != "") %>% 
-    unlist(use.names = FALSE)
+  # first line contains version string
+  # currently not used (evtl. message?)
+  version <- dplyr::slice(x, 1) %>% dplyr::pull(value)
   
-  tibble::tibble(Error = paste(tbl[seq(1, length(tbl), 2)], 
-                               tbl[seq(2, length(tbl), 2)]))
+  # remove version string
+  x <- dplyr::slice(x, -1)
+  
+  # each error has two rows: error type and section
+  odd <- dplyr::filter(x, dplyr::row_number() %% 2 == 1) %>% dplyr::pull(value)
+  even <- dplyr::filter(x, dplyr::row_number() %% 2 == 0) %>% dplyr::pull(value)
+  # we put all error in one row
+  error <- tibble::tibble(value = paste(odd, even))
+  
+  # return errror
+  return(error)
 }
