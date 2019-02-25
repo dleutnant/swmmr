@@ -13,7 +13,10 @@ get_out_version(file = "")
 A vector of type integer
 }
 \description{
-Get the swmm version the .out file was generated with
+This function opens an .out file and extract the swmm version the file was
+generated with. It belongs to a set of helper functions which aim to simplify
+the work with .out files. The lifecycle of this function is considered
+experimental.
 }
 \examples{
 \dontrun{

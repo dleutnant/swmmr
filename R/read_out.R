@@ -152,7 +152,12 @@ read_out <- function(file="",
 }
 
 #' Get the swmm version the .out file was generated with
-#'
+#' 
+#' This function opens an .out file and extract the swmm version the file was 
+#' generated with. It belongs to a set of helper functions which aim to simplify 
+#' the work with .out files. The lifecycle of this function is considered 
+#' experimental.
+#' 
 #' @inheritParams read_out
 #' @return A vector of type integer
 #' @examples
@@ -163,6 +168,34 @@ read_out <- function(file="",
 #' @export
 get_out_version <- function(file = "") {
   
+  # get the content
+  list_of_results <- get_out_content(file)
+  
+  # extract version information
+  version <- list_of_results$meta$version
+  
+  return(version)
+  
+}
+
+#' Get the content of an .out file.
+#' 
+#' This function opens an .out file and lists all available time series data.
+#' Currently, the list is returned 'as is' which might change in future. 
+#' It belongs to a set of helper functions which aim to simplify 
+#' the work with .out files. The lifecycle of this function is considered 
+#' experimental.
+#' 
+#' @inheritParams read_out
+#' @return A list showing the available content.
+#' @examples
+#' \dontrun{
+#' content <- get_out_content("model.out")
+#' } 
+#' @rdname get_out_content
+#' @export
+get_out_content <- function(file = "") {
+  
   # open swmm out file
   list_of_results <- OpenSwmmOutFile(outFile = file)
   
@@ -172,12 +205,7 @@ get_out_version <- function(file = "") {
   # check error
   if (exists("error", list_of_results)) {
     warning("error reading out file")
-    return(list_of_results)
   }
   
-  # extract version information
-  version <- list_of_results$meta$version
-  
-  return(version)
-  
+  return(list_of_results)
 }
