@@ -7,15 +7,17 @@
   os <- .get_os()
   
   # get path to executable
-  swmmr.exec <- ifelse(os == "windows",
-                       # case os is windows
-                       .get_exec_on_windows(path = "c:/Program Files (x86)/",
-                                            prefix = "EPA SWMM",
-                                            exe = "swmm5.exe"),
-                       # case os is not windows
-                       .get_exec_on_linux_or_mac(path = c("/usr/local/bin",
-                                                          "/usr/bin"),
-                                                 exe = "swmm5"))
+  if (os == "windows") {
+    # case os is windows
+    swmmr.exec <- .get_exec_on_windows(path = "c:/Program Files (x86)/",
+                                       prefix = "EPA SWMM",
+                                       exe = "swmm5.exe")
+  } else {
+    # case os is not windows
+    swmmr.exec <-  .get_exec_on_linux_or_mac(path = c("/usr/local/bin",
+                                                      "/usr/bin"),
+                                             exe = "swmm5")
+  }
   
   # set option
   op.swmmr <- list(
