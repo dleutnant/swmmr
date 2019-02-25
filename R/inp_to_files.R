@@ -66,7 +66,7 @@ sections_to_shp <- function(x, name, path_out) {
       
       suppressMessages(sf::st_write(
         conversion_function(x), 
-        file = file.path(shape_dir, paste0(name, "_", shape_name, ".shp")), 
+        dsn = file.path(shape_dir, paste0(name, "_", shape_name, ".shp")), 
         delete_dsn = delete_dsn
       ))
       
