@@ -1,8 +1,20 @@
 # swmmr 0.8.1.9000
 
+## Breaking changes
+
+* Mac OS users only: The default path for swmm exec is expected to be "/usr/local/bin" or "/usr/bin"
+
+## New features
+
+* `swwmr` detects and assigns the latest swmm5 version if multiple swmm versions are installed (Windows only) (#18)
+
+* `inp_to_sf` gets new paramter `remove_invalid` to increase conversion performance in case all geometries have already been checked beforehand.
+
+* `read_rpt` result contains a tibble containing analysis info (also for errors) (#26)
+
 ## Bug fixes
 
-* `read_rpt` result contains a tibble containing analysis info (also for errors)
+* `read_rpt` now respects all report sections (#21)
 
 * `subcatchments_to_sf` returned an error if a geometry was insufficient defined (3 points are now at least required)
 
@@ -12,7 +24,11 @@
 
 ## Internal
 
-* Cleaned code basis (@hsonne)
+* The path to swmm5 exec is now stored as package option 'swmmr.exec' when the package gets loaded
+
+* Substantially cleaned code basis (@hsonne)
+
+* `inp_to_sf` to convert swmm sections to sf geomtries is significantly faster
 
 # swmmr 0.8.1
 
