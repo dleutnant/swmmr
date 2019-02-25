@@ -150,3 +150,34 @@ read_out <- function(file="",
   return(list_of_xts)
 
 }
+
+#' Get the swmm version the .out file was generated with
+#'
+#' @inheritParams read_out
+#' @return A vector of type integer
+#' @examples
+#' \dontrun{
+#' version <- get_out_version("model.out")
+#' } 
+#' @rdname get_out_version
+#' @export
+get_out_version <- function(file = "") {
+  
+  # open swmm out file
+  list_of_results <- OpenSwmmOutFile(outFile = file)
+  
+  # close swmm out file
+  on.exit(CloseSwmmOutFile())
+  
+  # check error
+  if (exists("error", list_of_results)) {
+    warning("error reading out file")
+    return(list_of_results)
+  }
+  
+  # extract version information
+  version <- list_of_results$meta$version
+  
+  return(version)
+  
+}
