@@ -6,7 +6,7 @@
 
 ## New features
 
-* `swwmr` detects and assigns the latest swmm5 version if multiple swmm versions are installed (Windows only) (#18)
+* `swmmr` detects and assigns the latest swmm5 version if multiple swmm versions are installed (Windows only) (#18)
 
 * `inp_to_sf` gets new paramter `remove_invalid` to increase conversion performance in case all geometries have already been checked beforehand.
 
