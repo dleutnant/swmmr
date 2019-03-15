@@ -6,6 +6,8 @@
 
 ## New features
 
+* `autoplot` and `summary`generics added
+
 * `swmmr` detects and assigns the latest swmm5 version if multiple swmm versions are installed (Windows only) (#18)
 
 * `inp_to_sf` gets new paramter `remove_invalid` to increase conversion performance in case all geometries have already been checked beforehand.
@@ -24,11 +26,11 @@
 
 ## Internal
 
-* The path to swmm5 exec is now stored as package option 'swmmr.exec' when the package gets loaded
+* The path to swmm5 exec is now stored as package option `swmmr.exec` when the package gets loaded
 
 * Substantially cleaned code basis (@hsonne)
 
-* `inp_to_sf` to convert swmm sections to sf geomtries is significantly faster
+* `inp_to_sf` to convert swmm sections to sf geometries is significantly faster
 
 # swmmr 0.8.1
 
