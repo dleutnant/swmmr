@@ -56,47 +56,49 @@ inp <- read_inp(x = inp_path)
 #> Warning: Expected 9 pieces. Additional pieces discarded in 13 rows [1, 2,
 #> 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].
 
-# available SWMM sections
+# show swmm model summary
 summary(inp)
-#>               Length Class  Mode
-#> title          1     tbl_df list
-#> options        2     tbl_df list
-#> evaporation    2     tbl_df list
-#> raingages      5     tbl_df list
-#> subcatchments  9     tbl_df list
-#> subareas       8     tbl_df list
-#> infiltration   6     tbl_df list
-#> junctions      6     tbl_df list
-#> outfalls       6     tbl_df list
-#> conduits       9     tbl_df list
-#> xsections      8     tbl_df list
-#> pollutants    11     tbl_df list
-#> landuses       4     tbl_df list
-#> coverages      3     tbl_df list
-#> buildup        7     tbl_df list
-#> washoff        7     tbl_df list
-#> timeseries     4     tbl_df list
-#> report         2     tbl_df list
-#> map            2     tbl_df list
-#> coordinates    3     tbl_df list
-#> vertices       3     tbl_df list
-#> polygons       3     tbl_df list
-#> symbols        3     tbl_df list
+#> 
+#> ** summary of swmm model structure ** 
+#> infiltration   :     horton 
+#> flow_units     :        cfs 
+#> flow_routing   :    kinwave 
+#> start_date     : 01/01/1998 
+#> end_date       : 01/02/1998 
+#> raingages      :          1 
+#> subcatchments  :          8 
+#> aquifers       :          0 
+#> snowpacks      :          0 
+#> junctions      :         13 
+#> outfalls       :          1 
+#> dividers       :          0 
+#> storages       :          0 
+#> conduits       :         13 
+#> pumps          :          0 
+#> orifices       :          0 
+#> weirs          :          0 
+#> outlets        :          0 
+#> controls       :          0 
+#> pollutants     :          2 
+#> landuses       :          2 
+#> lid_controls   :          0 
+#> treatment      :          0 
+#> *************************************
 
 # for example, inspect section subcatchments
 inp$subcatchments
 #> # A tibble: 8 x 9
 #>   Name  `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen
 #>   <chr> <chr>       <chr>  <int>       <int> <int>      <dbl>   <int>
-#> 1 1     RG1         9         10          50   500     0.0100       0
-#> 2 2     RG1         10        10          50   500     0.0100       0
-#> 3 3     RG1         13         5          50   500     0.0100       0
-#> 4 4     RG1         22         5          50   500     0.0100       0
-#> 5 5     RG1         15        15          50   500     0.0100       0
-#> 6 6     RG1         23        12          10   500     0.0100       0
-#> 7 7     RG1         19         4          10   500     0.0100       0
-#> 8 8     RG1         18        10          10   500     0.0100       0
-#> # ... with 1 more variable: Snowpack <lgl>
+#> 1 1     RG1         9         10          50   500       0.01       0
+#> 2 2     RG1         10        10          50   500       0.01       0
+#> 3 3     RG1         13         5          50   500       0.01       0
+#> 4 4     RG1         22         5          50   500       0.01       0
+#> 5 5     RG1         15        15          50   500       0.01       0
+#> 6 6     RG1         23        12          10   500       0.01       0
+#> 7 7     RG1         19         4          10   500       0.01       0
+#> 8 8     RG1         18        10          10   500       0.01       0
+#> # … with 1 more variable: Snowpack <lgl>
 
 # run a simulation
 # the result is a named list of paths, directing
@@ -171,23 +173,24 @@ summary(report)
 #> link_flow_summary                8      tbl_df list
 #> conduit_surcharge_summary        6      tbl_df list
 #> link_pollutant_load_summary      3      tbl_df list
+#> analysis_info                    1      tbl_df list
 
 # convenient access to summaries through list structure
 report$subcatchment_runoff_summary
 #> # A tibble: 8 x 9
 #>   Subcatchment Total_Precip Total_Runon Total_Evap Total_Infil
 #>   <chr>               <dbl>       <dbl>      <dbl>       <dbl>
-#> 1 1                    2.65          0.         0.        1.16
-#> 2 2                    2.65          0.         0.        1.21
-#> 3 3                    2.65          0.         0.        1.16
-#> 4 4                    2.65          0.         0.        1.16
-#> 5 5                    2.65          0.         0.        1.24
-#> 6 6                    2.65          0.         0.        2.27
-#> 7 7                    2.65          0.         0.        2.14
-#> 8 8                    2.65          0.         0.        2.25
-#> # ... with 4 more variables: Total_Runoff_Depth <dbl>,
+#> 1 1                    2.65           0          0        1.16
+#> 2 2                    2.65           0          0        1.21
+#> 3 3                    2.65           0          0        1.16
+#> 4 4                    2.65           0          0        1.16
+#> 5 5                    2.65           0          0        1.24
+#> 6 6                    2.65           0          0        2.27
+#> 7 7                    2.65           0          0        2.14
+#> 8 8                    2.65           0          0        2.25
+#> # … with 4 more variables: Total_Runoff_Depth <dbl>,
 #> #   Total_Runoff_Volume <dbl>, Total_Peak_Runoff <dbl>,
-#> #   Total_Runoff_Coeff <dbl>
+#> #   Total_Runoff_Coeff <chr>
 ```
 
 ### Visualisation of model structure
@@ -211,6 +214,8 @@ lab_coord <- sub_sf %>%
   sf::st_centroid() %>%
   sf::st_coordinates() %>% 
   tibble::as_tibble()
+#> Warning in st_centroid.sf(.): st_centroid assumes attributes are constant
+#> over geometries of x
 
 # raingage label
 lab_rg_coord <- rg_sf %>% 
@@ -293,12 +298,12 @@ from the Interface Guide of
 
 To cite package ‘swmmr’ in publications use:
 
-Dominik Leutnant and Anneke Doering (2018). swmmr: R Interface for US
-EPA’s SWMM. R package version 0.8.0.
+Dominik Leutnant and Anneke Doering (NA). swmmr: R Interface for US
+EPA’s SWMM. R package version 0.8.1.9000.
 <https://github.com/dleutnant/swmmr>
 
 A BibTeX entry for LaTeX users is
 
 @Manual{, title = {swmmr: R Interface for US EPA’s SWMM}, author =
-{Dominik Leutnant and Anneke Doering}, year = {2018}, note = {R package
-version 0.8.0}, url = {<https://github.com/dleutnant/swmmr>}, }
+{Dominik Leutnant and Anneke Doering}, note = {R package version
+0.8.1.9000}, url = {<https://github.com/dleutnant/swmmr>}, }

@@ -56,7 +56,7 @@ inp_path <- system.file("extdata", "Example1.inp", package = "swmmr", mustWork =
 # glance model structure, the result is a list of data.frames with SWMM sections
 inp <- read_inp(x = inp_path)
 
-# available SWMM sections
+# show swmm model summary
 summary(inp)
 
 # for example, inspect section subcatchments
@@ -166,6 +166,6 @@ The development of the R package was inspired by the work of [Peter Steinberg](h
 
 ## Citation
 
-```{r citation, echo=FALSE, results='asis'}
+```{r citation, echo=FALSE, results='asis', warning=FALSE}
 citation("swmmr")
 ```
