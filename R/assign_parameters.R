@@ -92,7 +92,7 @@ assign_parameters.options <- function(
 ) {
   
   # transpose tibble of options
-  rbind(Report_Option = colnames(x), Values = x[1, ]) %>% 
+  rbind(Option = colnames(x), Value = x[1, ]) %>% 
     t(.) %>% 
     tibble::as_tibble(.)
 }
@@ -105,7 +105,7 @@ assign_parameters.report <- function(
 ) {
   
   # transpose tibble of report
-  rbind(Option = colnames(x), Values = x[1, ]) %>% 
+  rbind(Option = colnames(x), Value = x[1, ]) %>% 
     t(.) %>% 
     tibble::as_tibble(.)
 }
@@ -118,7 +118,7 @@ assign_parameters.evaporation <- function(
 ) {
   
   # transpose tibble of evaporation
-  rbind(Option = colnames(x), Values = x[1, ]) %>% 
+  rbind(Option = colnames(x), Value = x[1, ]) %>% 
     t(.) %>% 
     tibble::as_tibble(.)
 }
