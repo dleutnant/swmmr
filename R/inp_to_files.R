@@ -72,11 +72,11 @@ sections_to_shp <- function(x, name, path_out) {
       
     } else {
       
-      message("section %s is missing", section)
+      message(sprintf("section %s is missing", section))
     }
   }
   
-  print(paste0("*.shp files were written to: ", shape_dir))
+  message(sprintf("*.shp files were written to %s", shape_dir))
 }
 
 #write_section_if_in_list <- function(x, section, conversion_function, file, ...)
@@ -166,12 +166,11 @@ options_to_txt <- function(x, name, path_out) {
     # unlist and save txt file
     writeLines(unlist(options_txt), con = file.path(path_out, paste0("txt/", name, "_options.txt")))
 
-    print(paste0("*.txt file was written to: ", path_out, "/txt"))
+    message(sprintf("*.txt file was written to %s/txt", path_out))
   } else {
-    print("section options is missing")
+    message("section options is missing")
   }
 }
-
 
 #' conversion helper
 #' @keywords internal
@@ -206,10 +205,9 @@ curves_to_txt <- function(x, name, path_out) {
                          unlist(lapply(list_of_curves, "[[", 1, 1)), ".txt"), 
            sep = " ", dec = ".", col.names = F, row.names = F, quote = F)
 
-
-    print(paste0("curve.txt files were written to:", path_out, "/txt"))
+    message(sprintf("curve.txt files were written to %s/txt", path_out))
   } else {
-    print("section curves is missing")
+    message("section curves is missing")
   }
 }
 
@@ -246,10 +244,9 @@ timeseries_to_dat <- function(x, name, path_out) {
         }
       }
       
-    print(paste0("timeseries.dat files were written to: ", path_out, "/dat"))
-    
+    message(sprintf("timeseries.dat files were written to %s/dat", path_out))
   } else {
-    print("section timeseries is missing")
+    message("section timeseries is missing")
   }
 }
 
@@ -257,11 +254,13 @@ timeseries_to_dat <- function(x, name, path_out) {
 #'
 #' @param x An object of class inp.
 #' @param name Give a name for the current model, e.g. "Example1".
-#' @param path_out  Writeable directory name where to save the converted files. Folders: dat, shp and txt will be created if not existent.
+#' @param path_out  Writeable directory name where to save the converted files.
+#' Folders: dat, shp and txt will be created if not existent. Default is the 
+#' current working directory of the R process.
 #' @return .dat, .shp and/or .txt files.
 #' @rdname inp_to_files
 #' @export
-inp_to_files <- function(x, name, path_out) {
+inp_to_files <- function(x, name, path_out = getwd()) {
   # check class
   stopifnot(inherits(x, "inp"))
 
