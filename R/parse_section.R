@@ -214,7 +214,7 @@ parse_section.snowpacks <- function(x, ...) {
 #' @keywords internal
 parse_section.junctions <- function(x, ...) {
 
-  separate_into(x, sep = "\\s+", extra = "warn", fill = "warn", into = c(
+  separate_into(x, sep = "\\s+", fill = "warn", into = c(
     "Name", "Elevation", "MaxDepth", "InitDepth", "SurDepth", "Aponded"
   ))
 }
@@ -256,7 +256,7 @@ parse_section.storage <- function(x, ...) {
 #' @keywords internal
 parse_section.conduits <- function(x, ...) {
   
-  separate_into(x, sep = "\\s+", extra = "warn", fill = "warn", into = c(
+  separate_into(x, sep = "\\s+", fill = "warn", into = c(
     "Name", "From Node", "To Node", "Length", "Roughness", "InOffset", 
     "OutOffset", "InitFlow", "MaxFlow"
   ))
