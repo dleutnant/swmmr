@@ -1,8 +1,8 @@
-# swmmr 0.8.1.9000
+# swmmr 0.9.0
 
 ## Breaking changes
 
-* Mac OS users only: The default path for swmm exec is expected to be "/usr/local/bin" or "/usr/bin"
+* Mac OS and Linux users only: The default path for swmm exec is expected to be "/usr/local/bin" or "/usr/bin"
 
 ## New features
 
