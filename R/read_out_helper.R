@@ -1,14 +1,14 @@
 #' Get the type of SWMM element
 #' @keywords internal
 .get_iType <- function(iType = NULL) {
-
+  
   choices <- c("subcatchment", "node", "link", "system variable")
-
+  
   # iType must be NULL or an integer vector of length one  
   if (! is.null(iType)) {
     stop_on_bad_index(iType, choices)
   } 
-
+  
   if (is.null(iType)) {
     selection <- utils::select.list(choices = choices, multiple = FALSE)
     if (selection == "") {
@@ -25,28 +25,28 @@
 #' Get the names of SWMM elements
 #' @keywords internal
 .get_iIndex <- function(list_of_elements, iType = NULL, object_name = NULL) {
-
+  
   # subcatchments
   if (iType == 0 || iType == 1 || iType == 2) {
     
     element <- c("subcatchments", "nodes", "links")[iType + 1]
     
     object_names <- list_of_elements[[element]]$names
-
+    
     if (length(object_names) > 0) {
       
       if (is.null(object_name)) {
         object_name <- utils::select.list(object_names, multiple = TRUE)
       } 
-
+      
       result <- list(iIndex = match(object_name, object_names) - 1,
                      names = object_name)
-
+      
     } else {
       
       warning("no ", element)
     }    
-
+    
   } else {
     
     warning("Unclear iType.")
@@ -111,7 +111,7 @@
       "actual evaporation (in/day or mm/day)"
     )
   )
-
+  
   type_pollutants <- list(
     subcatchments = "washoff concentration of pollutant %s (mass/liter)",
     nodes = "concentration of pollutant %s after any treatment (mass/liter)",
@@ -124,7 +124,7 @@
     element <- c("subcatchments", "nodes", "links", "system")[iType + 1]
     
     choices <- type_choices[[element]]
-
+    
     # Add pollutants if any but not for system variables (iType == 3)
     if (iType != 3 && ! is.null(PollNames)) {
       choices <- c(choices, sprintf(type_pollutants[[element]] , PollNames))
@@ -135,7 +135,7 @@
     } else {
       choices[vIndex + 1]
     }    
-
+    
   } else {
     
     clean_stop("bad iType")
@@ -146,7 +146,7 @@
     vIndex = match(vIndexStr, choices) - 1,
     names = gsub(" ", "_", gsub(" \\(.*$", "", vIndexStr))
   )
-
+  
   # final check if selection is OK.
   if (identical(result$vIndex, numeric(0))) clean_stop("Unclear vIndex.")
   
