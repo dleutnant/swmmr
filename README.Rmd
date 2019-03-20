@@ -33,7 +33,7 @@ install.packages("swmmr")
 You can install the dev version from github with:
 ```{r gh-installation, eval = FALSE}
 # install.packages("remotes")
-remotes::install_github("dleutnant/swmmr@dev")
+remotes::install_github("dleutnant/swmmr")
 ```
 
 ## Example

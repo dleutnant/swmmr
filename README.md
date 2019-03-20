@@ -29,7 +29,7 @@ You can install the dev version from github with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("dleutnant/swmmr@dev")
+remotes::install_github("dleutnant/swmmr")
 ```
 
 ## Example
@@ -285,12 +285,12 @@ from the Interface Guide of
 
 To cite package ‘swmmr’ in publications use:
 
-Dominik Leutnant and Anneke Doering (NA). swmmr: R Interface for US
-EPA’s SWMM. R package version 0.8.1.9000.
+Dominik Leutnant and Anneke Doering (2019). swmmr: R Interface for US
+EPA’s SWMM. R package version 0.9.0.9000.
 <https://github.com/dleutnant/swmmr>
 
 A BibTeX entry for LaTeX users is
 
 @Manual{, title = {swmmr: R Interface for US EPA’s SWMM}, author =
-{Dominik Leutnant and Anneke Doering}, note = {R package version
-0.8.1.9000}, url = {<https://github.com/dleutnant/swmmr>}, }
+{Dominik Leutnant and Anneke Doering}, year = {2019}, note = {R package
+version 0.9.0.9000}, url = {<https://github.com/dleutnant/swmmr>}, }
