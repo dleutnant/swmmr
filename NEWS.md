@@ -1,5 +1,9 @@
 # swmmr 0.9.0.9000
 
+## Bug fixes
+
+* `shp_to_inp` correctly instantiate section 'junctions'
+
 # swmmr 0.9.0
 
 ## Breaking changes
