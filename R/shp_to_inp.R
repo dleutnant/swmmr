@@ -34,7 +34,7 @@ shp_to_inp <- function(path_options = NULL,
                        path_pump_curve = NULL, 
                        path_weirs = NULL, 
                        path_storage = NULL, 
-                       path_storage_curve = NULL) {  
+                       path_storage_curve = NULL) {
 
   # ... check missing arguments, add default or generate error messages, in some cases default values are added later...
 
@@ -248,6 +248,8 @@ shp_to_inp <- function(path_options = NULL,
     # check for completeness:
     if (all(c("Name", "Bottom", "Type") %in% colnames(outfalls))) {
       list_of_sections[["outfalls"]] <- outfalls
+      ### 20_01_27: BUG coordinates are ignored!
+      # to add list_of_section[["coordinates"]] <- outfalls
     } else {
       stop("The outfall point shape has to include at least the columns named: Name, Bottom, Type.")
     }
