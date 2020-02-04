@@ -156,8 +156,15 @@ shp_to_inp <- function(path_options = NULL,
       tibble::as_tibble() %>% 
       compare_to_dictionary()
     
+    # special case which should only occur if an inp has been exported using swmmr.
+    # in this case Area_subcatchment is Ar_sbct and Area_LID_usage is Ar_ld_s.
+    # Function was required to allow automatic tests with Example4.inp.
+    if ("Ar_sbct" %in% colnames(subcatchment)) {
+      colnames(subcatchment) <- gsub("Ar_sbct", "Area", colnames(subcatchment))
+    }
+    
     # check the structure of polygon file:
-    if (all(c("Name","Outlet","Area", "RouteTo") %in% colnames(subcatchment))) {
+    if (all(c("Name","Outlet","Area","RouteTo") %in% colnames(subcatchment))) {
       list_of_sections[['subcatchments']]  <- subcatchment # subcatchment_typologies
       list_of_sections[['subareas']] <- subcatchment # subcatchment_typologies
       list_of_sections[['polygons']] <- subcatchment
@@ -223,7 +230,7 @@ shp_to_inp <- function(path_options = NULL,
     if (all(c("Name", "Bottom") %in% colnames(junctions))) {
       if ("Top" %in% colnames(junctions) | "Ymax" %in% colnames(junctions)) {
         list_of_sections[["junctions"]] <- junctions
-        list_of_sections[["coordinates"]] <- junctions
+        list_of_sections[["coordinates"]] <- junctions[, c("Name", "geometry")]
       }
     } else {
       stop("The point file has to include at least the columns named: Name, Bottom and Top or Ymax.")
@@ -248,13 +255,11 @@ shp_to_inp <- function(path_options = NULL,
     # check for completeness:
     if (all(c("Name", "Bottom", "Type") %in% colnames(outfalls))) {
       list_of_sections[["outfalls"]] <- outfalls
-      ### 20_01_27: BUG coordinates are ignored!
-      # to add list_of_section[["coordinates"]] <- outfalls
+      list_of_sections[["coordinates"]] <- rbind(list_of_sections[["coordinates"]], outfalls[, c("Name", "geometry")])
     } else {
       stop("The outfall point shape has to include at least the columns named: Name, Bottom, Type.")
     }
   }
-
 
   # ... checking, reading or adding default values for optional function arguments:
 
@@ -307,9 +312,10 @@ shp_to_inp <- function(path_options = NULL,
     storage <- sf::st_read(path_storage, stringsAsFactors = F, quiet = TRUE) %>%
       tibble::as_tibble() %>%
       compare_to_dictionary()
-
+    
     # add section
     list_of_sections[["storage"]] <- storage
+    list_of_sections[["coordinates"]] <- rbind(list_of_sections[["coordinates"]], storage[, c("Name", "geometry")])
   }
   
   # ... add storage curve
