@@ -28,7 +28,7 @@ summary.inp <- function(object, ...) {
   
   # define sections which are of interest
   vec_sects <- c("raingages", "subcatchments", "aquifers", "snowpacks",
-                 "junctions", "outfalls", "dividers", "storages", "conduits",
+                 "junctions", "outfalls", "dividers", "storage", "conduits",
                  "pumps", "orifices", "weirs", "outlets",
                  "controls", "pollutants", "landuses",
                  # Inflows
