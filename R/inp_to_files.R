@@ -189,20 +189,13 @@ curves_to_txt <- function(x, name, path_out) {
     # ...replace NA with the most recent non-NA prior it
     x$curves <- zoo::na.locf(x$curves)
 
-    # add coulumn for grouping
-    x$curves$group <- x$curves$Name
-
-    # group and split tibble
-    list_of_curves <- x$curves %>%
-      dplyr::group_by(group) %>%
-      tidyr::nest() %>%
-      dplyr::select(data) %>%
-      unlist(recursive = F)
+    # ... split by curve name
+    list_of_curves <- split(x$curves, x$curves$Name)
 
     # write table for each curve
     mapply(utils::write.table, list_of_curves, 
            file = paste0(path_out, "/txt/", name, "_", 
-                         unlist(lapply(list_of_curves, "[[", 1, 1)), ".txt"), 
+                         unlist(lapply(lapply(list_of_curves, "[[", 1), "[[", 1)), ".txt"), 
            sep = " ", dec = ".", col.names = F, row.names = F, quote = F)
 
     message(sprintf("curve.txt files were written to %s/txt", path_out))
