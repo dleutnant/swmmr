@@ -1,6 +1,18 @@
-# swmmr 0.9.0.9000
+# swmmr 0.9.1.9000
 
 ## Bug fixes
+
+# swmmr 0.9.1
+
+## Bug fixes
+
+* coordinates of outfalls and storages are no longer ignored (#39)
+
+* curves are exported more robust
+
+* compilation warnings are eliminated to respect CRAN's policy
+
+* `summary` correctly identifies number of 'storage'
 
 * `shp_to_inp` correctly instantiate section 'junctions'
 

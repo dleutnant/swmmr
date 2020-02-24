@@ -34,7 +34,7 @@ testthat::test_that("shp conversion", {
   
   # helper function
   path_or_null <- function(x) {
-    if (length(x) > 0 && file.exists(x)) x else NULL
+    if (length(x[1]) > 0 && file.exists(x[1])) x else NULL
   }
   
   # shp_to_inp
