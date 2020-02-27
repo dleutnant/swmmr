@@ -68,7 +68,7 @@ summary(inp)
 #> junctions      :         13 
 #> outfalls       :          1 
 #> dividers       :          0 
-#> storages       :          0 
+#> storage        :          0 
 #> conduits       :         13 
 #> pumps          :          0 
 #> orifices       :          0 
@@ -84,17 +84,16 @@ summary(inp)
 # for example, inspect section subcatchments
 inp$subcatchments
 #> # A tibble: 8 x 9
-#>   Name  `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen
-#>   <chr> <chr>       <chr>  <int>       <int> <int>      <dbl>   <int>
-#> 1 1     RG1         9         10          50   500       0.01       0
-#> 2 2     RG1         10        10          50   500       0.01       0
-#> 3 3     RG1         13         5          50   500       0.01       0
-#> 4 4     RG1         22         5          50   500       0.01       0
-#> 5 5     RG1         15        15          50   500       0.01       0
-#> 6 6     RG1         23        12          10   500       0.01       0
-#> 7 7     RG1         19         4          10   500       0.01       0
-#> 8 8     RG1         18        10          10   500       0.01       0
-#> # … with 1 more variable: Snowpack <lgl>
+#>   Name  `Rain Gage` Outlet  Area Perc_Imperv Width Perc_Slope CurbLen Snowpack
+#>   <chr> <chr>       <chr>  <int>       <int> <int>      <dbl>   <int> <lgl>   
+#> 1 1     RG1         9         10          50   500       0.01       0 NA      
+#> 2 2     RG1         10        10          50   500       0.01       0 NA      
+#> 3 3     RG1         13         5          50   500       0.01       0 NA      
+#> 4 4     RG1         22         5          50   500       0.01       0 NA      
+#> 5 5     RG1         15        15          50   500       0.01       0 NA      
+#> 6 6     RG1         23        12          10   500       0.01       0 NA      
+#> 7 7     RG1         19         4          10   500       0.01       0 NA      
+#> 8 8     RG1         18        10          10   500       0.01       0 NA
 
 # run a simulation
 # the result is a named list of paths, directing
@@ -174,18 +173,17 @@ summary(report)
 # convenient access to summaries through list structure
 report$subcatchment_runoff_summary
 #> # A tibble: 8 x 9
-#>   Subcatchment Total_Precip Total_Runon Total_Evap Total_Infil
-#>   <chr>               <dbl>       <dbl>      <dbl>       <dbl>
-#> 1 1                    2.65           0          0        1.16
-#> 2 2                    2.65           0          0        1.21
-#> 3 3                    2.65           0          0        1.16
-#> 4 4                    2.65           0          0        1.16
-#> 5 5                    2.65           0          0        1.24
-#> 6 6                    2.65           0          0        2.27
-#> 7 7                    2.65           0          0        2.14
-#> 8 8                    2.65           0          0        2.25
-#> # … with 4 more variables: Total_Runoff_Depth <dbl>,
-#> #   Total_Runoff_Volume <dbl>, Total_Peak_Runoff <dbl>,
+#>   Subcatchment Total_Precip Total_Runon Total_Evap Total_Infil Total_Runoff_De…
+#>   <chr>               <dbl>       <dbl>      <dbl>       <dbl>            <dbl>
+#> 1 1                    2.65           0          0        1.16             1.32
+#> 2 2                    2.65           0          0        1.21             1.32
+#> 3 3                    2.65           0          0        1.16             1.32
+#> 4 4                    2.65           0          0        1.16             1.32
+#> 5 5                    2.65           0          0        1.24             1.31
+#> 6 6                    2.65           0          0        2.27             0.26
+#> 7 7                    2.65           0          0        2.14             0.26
+#> 8 8                    2.65           0          0        2.25             0.26
+#> # … with 3 more variables: Total_Runoff_Volume <dbl>, Total_Peak_Runoff <dbl>,
 #> #   Total_Runoff_Coeff <chr>
 ```
 
@@ -201,17 +199,25 @@ library(ggplot2)
 # initially, we convert the objects to be plotted as sf objects:
 # here: subcatchments, links, junctions, raingages
 sub_sf <- subcatchments_to_sf(inp)
+#> Warning: All elements of `...` must be named.
+#> Did you want `geometry = c(`X-Coord`, `Y-Coord`)`?
 lin_sf <- links_to_sf(inp)
+#> Warning: All elements of `...` must be named.
+#> Did you want `geometry = c(`X-Coord`, `Y-Coord`)`?
 jun_sf <- junctions_to_sf(inp)
+#> Warning: All elements of `...` must be named.
+#> Did you want `geometry = c(`X-Coord`, `Y-Coord`)`?
 rg_sf <- raingages_to_sf(inp)
+#> Warning: All elements of `...` must be named.
+#> Did you want `geometry = c(`X-Coord`, `Y-Coord`)`?
 
 # calculate coordinates (centroid of subcatchment) for label position
 lab_coord <- sub_sf %>% 
   sf::st_centroid() %>%
   sf::st_coordinates() %>% 
   tibble::as_tibble()
-#> Warning in st_centroid.sf(.): st_centroid assumes attributes are constant
-#> over geometries of x
+#> Warning in st_centroid.sf(.): st_centroid assumes attributes are constant over
+#> geometries of x
 
 # raingage label
 lab_rg_coord <- rg_sf %>% 
@@ -263,8 +269,8 @@ PR is submitted.
 ## Code of condcut
 
 Please note that this project is released with a [Contributor Code of
-Conduct](CONDUCT.md). By participating in this project you agree to
-abide by its terms.
+Conduct](https://github.com/dleutnant/swmmr/blob/master/CONDUCT.md). By
+participating in this project you agree to abide by its terms.
 
 ## Acknowledgments
 
@@ -283,14 +289,18 @@ from the Interface Guide of
 
 ## Citation
 
-To cite package ‘swmmr’ in publications use:
+To cite ‘swmmr’ in publications, please use:
 
-Dominik Leutnant and Anneke Doering (2019). swmmr: R Interface for US
-EPA’s SWMM. R package version 0.9.0.9000.
-<https://github.com/dleutnant/swmmr>
+Dominik Leutnant, Anneke Döring & Mathias Uhl (2019). swmmr - an R
+package to interface SWMM Urban Water Journal DOI:
+10.1080/1573062X.2019.1611889
 
 A BibTeX entry for LaTeX users is
 
-@Manual{, title = {swmmr: R Interface for US EPA’s SWMM}, author =
-{Dominik Leutnant and Anneke Doering}, year = {2019}, note = {R package
-version 0.9.0.9000}, url = {<https://github.com/dleutnant/swmmr>}, }
+@Article{, author = {Dominik Leutnant and Anneke Döring and Mathias
+Uhl}, title = {swmmr - an R package to interface SWMM}, journal = {Urban
+Water Journal}, volume = {16}, number = {1}, pages = {68-76}, year =
+{2019}, publisher = {Taylor & Francis}, doi =
+{10.1080/1573062X.2019.1611889}, url =
+{<https://doi.org/10.1080/1573062X.2019.1611889>}, eprint =
+{<https://doi.org/10.1080/1573062X.2019.1611889>}, }
