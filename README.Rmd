@@ -152,7 +152,7 @@ ggplot() +
 With the release of `swmmr` 0.9.0, the latest contributions and other code that will appear in the next CRAN release is contained in the [`master`](https://github.com/dleutnant/swmmr) branch. Thus, contributing to this package is easy. Just send a simple [pull request](https://help.github.com/articles/using-pull-requests/). Your PR should pass `R CMD check --as-cran`, which will also be checked by <a href="https://travis-ci.org/dleutnant/swmmr">Travis CI</a> when the PR is submitted.
 
 ## Code of condcut
-Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+Please note that this project is released with a [Contributor Code of Conduct](https://github.com/dleutnant/swmmr/blob/master/CONDUCT.md). By participating in this project you agree to abide by its terms.
 
 ## Acknowledgments
 This package has been mainly developed in the course of the project [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722), 
