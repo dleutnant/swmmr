@@ -31,7 +31,7 @@ Imports:
     readr (>= 1.1.1),
     Rcpp,
     tibble (>= 1.2.4),
-    tidyr (>= 0.8.0),
+    tidyr (>= 1.0.0),
     utils,
     xts (>= 0.10-1),
     zoo

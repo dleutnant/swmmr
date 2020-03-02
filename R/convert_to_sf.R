@@ -161,7 +161,7 @@ subcatchments_to_sf <- function(x) {
     
   subc_sf <- subc_sf %>% 
     # nest by coordinates
-    tidyr::nest(`X-Coord`,`Y-Coord`, .key = "geometry") %>%
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     # remove geometries with less than 3 points
     dplyr::filter(purrr::map_lgl(geometry, ~ nrow(.)>2)) %>% 
     # check if polygon is closed
@@ -444,7 +444,7 @@ weirs_to_sf <- function(x) {
   # create df with sf column
   sf <- weirs_df %>% 
     dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>%
                                           sf::st_linestring(.))) %>% 
@@ -515,7 +515,7 @@ orifices_to_sf <- function(x) {
   # create df with sf column
   sf <- orifices_df %>% 
     dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>%
                                           sf::st_linestring(.))) %>% 
@@ -586,7 +586,7 @@ pumps_to_sf <- function(x) {
   # create df with sf column
   sf <- pumps_df %>% 
     dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>%
                                           sf::st_linestring(.))) %>% 
@@ -651,7 +651,7 @@ inp_to_sf <- function(x, remove_invalid = TRUE) {
 create_sf_of_pt <- function(x) {
   
   # nest by coordinates
-  tidyr::nest(x, `X-Coord`,`Y-Coord`, .key = "geometry") %>% 
+  tidyr::nest(x, geometry = c(`X-Coord`, `Y-Coord`)) %>%
     # create points
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>% 
@@ -681,7 +681,7 @@ create_sf_of_linestring <- function(x) {
   # create df with sf column
   sf <- x %>% 
     dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>%
                                           sf::st_linestring(.))) %>% 

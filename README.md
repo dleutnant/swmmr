@@ -199,17 +199,9 @@ library(ggplot2)
 # initially, we convert the objects to be plotted as sf objects:
 # here: subcatchments, links, junctions, raingages
 sub_sf <- subcatchments_to_sf(inp)
-#> Warning: All elements of `...` must be named.
-#> Did you want `geometry = c(`X-Coord`, `Y-Coord`)`?
 lin_sf <- links_to_sf(inp)
-#> Warning: All elements of `...` must be named.
-#> Did you want `geometry = c(`X-Coord`, `Y-Coord`)`?
 jun_sf <- junctions_to_sf(inp)
-#> Warning: All elements of `...` must be named.
-#> Did you want `geometry = c(`X-Coord`, `Y-Coord`)`?
 rg_sf <- raingages_to_sf(inp)
-#> Warning: All elements of `...` must be named.
-#> Did you want `geometry = c(`X-Coord`, `Y-Coord`)`?
 
 # calculate coordinates (centroid of subcatchment) for label position
 lab_coord <- sub_sf %>% 
