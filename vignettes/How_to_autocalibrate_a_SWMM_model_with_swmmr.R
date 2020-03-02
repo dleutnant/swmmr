@@ -1,16 +1,17 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 calibration_res <- NULL
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", 
-  eval = !identical(Sys.getenv("NO_VIGNETTE_ON_CRAN"), "") # set to FALSE to prevent eval on CRAN!
+  # https://community.rstudio.com/t/precompiling-vignette-with-devtools/1583/6
+  eval = nzchar(Sys.getenv("BUILD_SWMM_VIGNETTE")) # to prevent eval on CRAN!
 )
 
-## ----load_libs-----------------------------------------------------------
+## ----load_libs----------------------------------------------------------------
 #  library(swmmr)
 #  library(DEoptim)
 
-## ----model_setup---------------------------------------------------------
+## ----model_setup--------------------------------------------------------------
 #  # set path to inp
 #  # If your operating system is Windows, the Example1.inp model is usually
 #  # located at "C:\Users\your user name\Documents\EPA SWMM Projects\Examples".
@@ -29,7 +30,7 @@ knitr::opts_chunk$set(
 #    out = tmp_out_file
 #  )
 
-## ----obs-----------------------------------------------------------------
+## ----obs----------------------------------------------------------------------
 #  obs <- read_out(
 #    file = swmm_files$out,
 #    iType = 1,
@@ -37,7 +38,7 @@ knitr::opts_chunk$set(
 #    vIndex = 4
 #  )[["18"]]$total_inflow
 
-## ----sim_and_read--------------------------------------------------------
+## ----sim_and_read-------------------------------------------------------------
 #  # read model structure
 #  inp <- read_inp(swmm_files$inp)
 #  
@@ -45,14 +46,14 @@ knitr::opts_chunk$set(
 #  inp$subcatchments[inp$subcatchments$Area > 10, ]
 #  
 
-## ----gof-----------------------------------------------------------------
+## ----gof----------------------------------------------------------------------
 #  # function calculates the goodness of fit value
 #  # input x is a two column xts object, col1: obs, col2: sim
 #  nse <- function(x) {
 #    1 - sum((x[, 1] - x[, 2]) ^ 2) / sum((x[, 1] - mean(x[, 1])) ^ 2)
 #  }
 
-## ----obj_fun-------------------------------------------------------------
+## ----obj_fun------------------------------------------------------------------
 #  obj_fun <- function(x, inp, obs) {
 #  
 #    # set new parameters and update inp object
@@ -85,7 +86,7 @@ knitr::opts_chunk$set(
 #  }
 #  
 
-## ----optim---------------------------------------------------------------
+## ----optim--------------------------------------------------------------------
 #    set.seed(84) # to get reproducible results
 #  
 #    calibration_res <- DEoptim(
