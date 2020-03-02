@@ -4,6 +4,10 @@
 
 # swmmr 0.9.1
 
+## Breaking changes
+
+* `{tidyr 1.0.0}` required
+
 ## Bug fixes
 
 * coordinates of outfalls and storages are no longer ignored (#39)
