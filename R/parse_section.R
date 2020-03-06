@@ -1186,6 +1186,7 @@ parse_section.subcatchment_runoff_summary <- function(x, ...){
                   col = "value",
                   into = c("Subcatchment", 
                            paste("Total", c("Precip", "Runon", "Evap", "Infil",
+                                            "Runoff_imperv_Depth", "Runoff_perv_Depth",
                                             "Runoff_Depth", "Runoff_Volume", 
                                             "Peak_Runoff", "Runoff_Coeff"), 
                                  sep = "_")),
@@ -1193,8 +1194,7 @@ parse_section.subcatchment_runoff_summary <- function(x, ...){
                   extra = "merge",
                   fill = "left",
                   convert = TRUE)
-  
-}
+ }
 
 #' import helper
 #' @keywords internal
