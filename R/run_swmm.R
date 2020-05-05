@@ -46,6 +46,16 @@ run_swmm <- function(inp,
     out <-  file.path(dirn, paste(filename, "out", sep = "."))
   }
   
+  # Current working directory 
+  cur <- getwd(); 
+  
+  # On exit, come back
+  on.exit(setwd(cur)); 
+  
+  # Change directory
+  setwd(dirn);
+  ####
+  
   # execute command
   base::system2(command = exec, 
                 args = c(inp, rpt, out), 
