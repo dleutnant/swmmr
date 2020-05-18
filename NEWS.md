@@ -2,6 +2,8 @@
 
 ## Bug fixes
 
+* junction parameters are correctly assigned by `shp_to_inp` (#44)
+
 # swmmr 0.9.1
 
 ## Breaking changes
