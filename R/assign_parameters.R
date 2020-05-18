@@ -314,7 +314,7 @@ assign_parameters.coverages <- function(
 
 #' conversion helper
 #' @keywords internal
-assign_parameters.junction <- function(
+assign_parameters.junctions <- function(
   x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
   conduit_material = NULL, junction_parameters
 ) {
