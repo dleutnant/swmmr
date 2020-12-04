@@ -4,36 +4,50 @@
 #'
 #' @param path_options Name (incl. path) to a .txt file with SWMM sections. Write section name in lower case and in squared brackets. The following sections are allowed: options, report, raingages, evaporation, pollutant, landuse, buildup, washoff, coverages.
 #' @param path_polygon Name (incl. path) to a .shp file with polygons features. At least the following subcatchment related columns must be specified: Name, Outlet, Area, RouteTo.
+#' @param polygon_sf Alternative to path_polygon: A sf object with polygons features. At least the following subcatchment related columns must be specified: Name, Outlet, Area, RouteTo.
 #' @param subcatchment_typologies R data.frame or tibble with further subcatchment related parameters. If subcatchment_typologies is given, polygon feature has to include a column named Type. Parameters defined in subcatchment_typologies parameters are merged to subcatchments by Type.
 #' @param path_point Name (incl. path) to a .shp file with point features. At least the following junction related columns must be specified: Name, Bottom and Top or Ymax.
+#' @param point_sf Alternative to path_point: A sf object with point features. At least the following junction related columns must be specified: Name, Bottom and Top or Ymax.
 #' @param junction_parameters R data.frame or tibble with further junction related parameters (e.g. Surcharge depth).
 #' @param path_outfall Name (incl. path) to a .shp file with point features. At least the following outfall related columns must be specified: Name, Bottom, Type, Gated.
+#' @param outfall_sf Alternative to path_outfall: A sf object with point features. At least the following outfall related columns must be specified: Name, Bottom, Type, Gated.
 #' @param path_line Name (incl. path) to a .shp file with line features. At least the following conduit related coulumns must be specified: Name, Length, Type, FromNode, ToNode, OutOffset, Geom1.
+#' @param line_sf Alternative to path_line: A sf object with line features. At least the following conduit related coulumns must be specified: Name, Length, Type, FromNode, ToNode, OutOffset, Geom1.
 #' @param conduit_material R data.frame or tibble with further conduit related parameters (e.g. roughness). If conduit_material is given, line feature has to include a column named Material. Parameters defined in conduit_material parameters are merged to conduits by Material.
 #' @param path_timeseries Name (incl. path) to a .dat file with a timeseries in SWMM format.
 #' @param infiltration R data.frame or tibble with infiltration parameters related to soil properties. If infiltration is given, polygon feature has to include a column named soil. Infiltration parameters are merged to subcatchments by soil name.
 #' @param path_pumps Name (incl. path) to a .shp file with line features. All parameters must be given: Name, FromNode, ToNode, Pcurve, status, Startup, Shutoff.
+#' @param pumps_sf Alternative to path_pumps: A sf object with line features. All parameters must be given: Name, FromNode, ToNode, Pcurve, status, Startup, Shutoff.
 #' @param path_pump_curve Name (incl. path) to a .txt file with pump curve information. Having the following structure: "Name of pump" "PUMP1-4" "x" "y", without header.
 #' @param path_weirs Name (incl. path) to a .shp file with line features. All parameters must be given: Name, FromNode, ToNode, Type, CrestHt, Cd, Gated, EC, Cd2, Sur.
-#' @param path_storage Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage" "Storage" "x" "y", without header.
+#' @param weirs_sf Alternative to path_weirs: A sf object with line features. All parameters must be given: Name, FromNode, ToNode, Type, CrestHt, Cd, Gated, EC, Cd2, Sur.
+#' @param path_storage Name (incl. path) to a .shp file with storage curve information. The following parameters must be given: Name, Elev, Ymax, Y0, Shape, Curve_Name, N_A, Fevap.
+#' @param storage_sf Alternative to path_storage: A sf object with point features including storage point information. The following parameters must be given: Name, Elev, Ymax, Y0, Shape, Curve_Name, N_A, Fevap.
 #' @param path_storage_curve Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage unit" "Storage" "x" "y", without header.
 #' @return A list of class inp.
 #' @export
 #' @rdname shp_to_inp
 shp_to_inp <- function(path_options = NULL, 
                        path_polygon = NULL, 
+                       polygon_sf = NULL,
                        subcatchment_typologies = NULL, 
                        path_point = NULL, 
+                       point_sf = NULL,
                        junction_parameters = NULL, 
                        path_outfall = NULL, 
+                       outfall_sf = NULL,
                        path_line = NULL, 
+                       line_sf = NULL,
                        conduit_material = NULL, 
                        path_timeseries = NULL, 
                        infiltration = NULL, 
                        path_pumps = NULL, 
+                       pumps_sf = NULL, 
                        path_pump_curve = NULL, 
                        path_weirs = NULL, 
+                       weirs_sf = NULL,
                        path_storage = NULL, 
+                       storage_sf = NULL,
                        path_storage_curve = NULL) {
 
   # ... check missing arguments, add default or generate error messages, in some cases default values are added later...
@@ -144,18 +158,27 @@ shp_to_inp <- function(path_options = NULL,
   }
 
   # check if polygon shape is available, return error message or read shape and add subcatchment to sections:
-  if (is.null(path_polygon)) {
-    warning("Define path to polygon file including filename and ending otherwise sections subcatchments, subareas, infiltration are missing.")
+  if (is.null(path_polygon) & is.null(polygon_sf)) {
+    warning("Define path to polygon file including filename and ending (or object polygon_sf alternatively) otherwise sections subcatchments, subareas, infiltration are missing.")
     
     # specify object subcatchment which is called when calling: assign_parameters.coverages
     subcatchment <- NULL
     
   } else {
-    # read the polygon file 
-    subcatchment <- sf::st_read(path_polygon, stringsAsFactors = F, quiet = TRUE) %>% 
-      tibble::as_tibble() %>% 
-      compare_to_dictionary()
     
+    if (!is.null(path_polygon)) {
+      # read the polygon file 
+      subcatchment <- sf::st_read(path_polygon, stringsAsFactors = F, quiet = TRUE) %>% 
+        tibble::as_tibble() %>% 
+        compare_to_dictionary()
+    }
+    
+    if (!is.null(polygon_sf)) {
+      # convert sf to tibble
+      subcatchment <- tibble::as_tibble(polygon_sf) %>%
+        compare_to_dictionary()
+    }
+
     # special case which should only occur if an inp has been exported using swmmr.
     # in this case Area_subcatchment is Ar_sbct and Area_LID_usage is Ar_ld_s.
     # Function was required to allow automatic tests with Example4.inp.
@@ -169,7 +192,7 @@ shp_to_inp <- function(path_options = NULL,
       list_of_sections[['subareas']] <- subcatchment # subcatchment_typologies
       list_of_sections[['polygons']] <- subcatchment
     } else {
-      stop("The polygon file has to include at least the columns named: Name, Outlet, Area, RouteTo. For optional column names ckeck the documentation.")
+      stop("The polygon shape has to include at least the columns named: Name, Outlet, Area, RouteTo. For optional column names check the documentation.")
     }
     
     # check infiltration model
@@ -198,33 +221,42 @@ shp_to_inp <- function(path_options = NULL,
     }
   } else {
     if (!("Soil" %in% colnames(subcatchment))) {
-      stop("column Soil is missing in polygon.shp")
+      stop("column Soil is missing in polygon shape")
     }
   }
 
   # ... check for optional subcatchment_typologies:
   if (is.null(subcatchment_typologies)) {
     if (!("N_Imperv" %in% colnames(subcatchment)) | !("N_Perv" %in% colnames(subcatchment)) | !("S_Imperv" %in% colnames(subcatchment)) | !("S_Perv" %in% colnames(subcatchment)) | !("Pct_Zero" %in% colnames(subcatchment)) | !("RouteTo" %in% colnames(subcatchment)) | !("PctRouted" %in% colnames(subcatchment)) | !("Rain_Gage" %in% colnames(subcatchment)) | !("CurbLen" %in% colnames(subcatchment)) | !("Snowpack" %in% colnames(subcatchment)) | !("PercImperv" %in% colnames(subcatchment)) | !("Slope" %in% colnames(subcatchment)) | !("Width" %in% colnames(subcatchment))) {
-      warning("N_Imperv, N_Perv, S_Imperv, S_Perv, Rain_Gage, CurbLen, Snowpack, PercImperv, Slope or Width are not defined in polygon.shp or Subcatchment_typologies. Check polygon.shp for completeness otherwise missing parameters in the sections subcatchment and subareas will be filled with default values.")
+      warning("N_Imperv, N_Perv, S_Imperv, S_Perv, Rain_Gage, CurbLen, Snowpack, PercImperv, Slope or Width are not defined in polygon.shp or Subcatchment_typologies. Check polygon shape for completeness otherwise missing parameters in the sections subcatchment and subareas will be filled with default values.")
     }
   }
   if (!(is.null(subcatchment_typologies))) {
     if (!("Type" %in% colnames(subcatchment))) {
-      stop("column Type is missing in polygon.shp")
+      stop("column Type is missing in polygon shape")
     }
   }
 
   # ... and for the junction point shape:
-  if (is.null(path_point) == T) {
-    warning("Define path to point file including filename and ending otherwise sections junctions and coordinates are missing.")
+  if (is.null(path_point) & is.null(point_sf)) {
+    warning("Define path to point file including filename and ending (or object point_sf alternatively) otherwise sections junctions and coordinates are missing.")
 
     # specify object junction which is called when testing column names for warn message in junction_parameters
     junctions <- NULL
   } else {
-    # read junction point file
-    junctions <- sf::st_read(path_point, stringsAsFactors = F, quiet = TRUE) %>%
-      tibble::as_tibble() %>%
-      compare_to_dictionary()
+    
+    if (!is.null(path_point)) {
+      # read junction point file
+      junctions <- sf::st_read(path_point, stringsAsFactors = F, quiet = TRUE) %>%
+        tibble::as_tibble() %>%
+        compare_to_dictionary()
+    }
+    
+    if(!is.null(point_sf)){
+      # convert sf to tibble
+      junctions <- tibble::as_tibble(point_sf) %>%
+        compare_to_dictionary()
+    }
 
     # check column names:
     if (all(c("Name", "Bottom") %in% colnames(junctions))) {
@@ -233,25 +265,36 @@ shp_to_inp <- function(path_options = NULL,
         list_of_sections[["coordinates"]] <- junctions[, c("Name", "geometry")]
       }
     } else {
-      stop("The point file has to include at least the columns named: Name, Bottom and Top or Ymax.")
+      stop("The point shape has to include at least the columns named: Name, Bottom and Top or Ymax.")
     }
   }
 
 
   if (is.null(junction_parameters)) {
     if (!("Y" %in% colnames(junctions)) | !("Ysur" %in% colnames(junctions)) | !("Apond" %in% colnames(junctions))) {
-      warning(" Y, Ysur or Apond are not defined in point.shp or junction_parameters. Check point.shp for completeness otherwise missing parameters in the section junctions will be filled with default values.")
+      warning(" Y, Ysur or Apond are not defined in point.shp (or point_sf) or junction_parameters. Check point shape for completeness otherwise missing parameters in the section junctions will be filled with default values.")
     }
   }
 
   # ... also do it for the outfall point shape:
-  if (is.null(path_outfall)) {
-    warning("Define path to outfall file including filename and ending otherwise section outfall is missing.")
+  if (is.null(path_outfall) & is.null(outfall_sf)) {
+    warning("Define path to outfall file including filename and ending (or object outfall_sf alternatively) otherwise section outfall is missing.")
   } else {
-    # outfalls
-    outfalls <- sf::st_read(path_outfall, stringsAsFactors = F, quiet = TRUE) %>%
-      tibble::as_tibble() %>%
-      compare_to_dictionary()
+    
+    if (!is.null(path_outfall)) {
+      # outfalls
+      outfalls <- sf::st_read(path_outfall, stringsAsFactors = F, quiet = TRUE) %>%
+        tibble::as_tibble() %>%
+        compare_to_dictionary()
+    }
+    
+    if (!is.null(outfall_sf)){
+      # convert sf to tibble
+      outfalls <- tibble::as_tibble(outfall_sf) %>%
+        compare_to_dictionary()
+    }
+
+    
     # check for completeness:
     if (all(c("Name", "Bottom", "Type") %in% colnames(outfalls))) {
       list_of_sections[["outfalls"]] <- outfalls
@@ -278,12 +321,21 @@ shp_to_inp <- function(path_options = NULL,
     list_of_sections[["timeseries"]] <- paste0(name_RG, " ", "FILE ", path_timeseries)
   }
 
-  # ...add Pumps section if path_pump exists
-  if (is.null(path_pumps) == F) {
-    # read shape
-    pumps <- sf::st_read(path_pumps, stringsAsFactors = F, quiet = TRUE) %>%
-      tibble::as_tibble() %>%
-      compare_to_dictionary()
+  # ...add Pumps section if path_pump or pumps_sf exists
+  if (!is.null(path_pumps) | !is.null(pumps_sf)) {
+    
+    if (!is.null(path_pumps)) {
+      # read shape
+      pumps <- sf::st_read(path_pumps, stringsAsFactors = F, quiet = TRUE) %>%
+        tibble::as_tibble() %>%
+        compare_to_dictionary()
+    }
+    
+    if (!is.null(pumps_sf)){
+      # convert sf to tibble
+      pumps <- tibble::as_tibble(pumps_sf) %>%
+        compare_to_dictionary()
+    }
 
     # add a section to list_of_sections
     list_of_sections[["pumps"]] <- pumps
@@ -295,23 +347,41 @@ shp_to_inp <- function(path_options = NULL,
     list_of_sections[["curves"]] <- suppressMessages(readr::read_table2(path_pump_curve, col_names = c("Name", "Type", "X", "Y")))
   }
 
-  # ...add weirs if path_weirs exists
-  if (is.null(path_weirs) == F) {
-    # read shape
-    weirs <- sf::st_read(path_weirs, stringsAsFactors = F, quiet = TRUE) %>%
-      tibble::as_tibble() %>%
-      compare_to_dictionary()
+  # ...add weirs if path_weirs or weirs_sf exists
+  if (!is.null(path_weirs) | !is.null(weirs_sf)) {
+    
+    if (!is.null(path_weirs)) {
+      # read shape
+      weirs <- sf::st_read(path_weirs, stringsAsFactors = F, quiet = TRUE) %>%
+        tibble::as_tibble() %>%
+        compare_to_dictionary()
+    }
+
+    if (!is.null(weirs_sf)) {
+      # convert sf to tibble
+      weirs <- tibble::as_tibble(weirs_sf) %>%
+        compare_to_dictionary()
+    }
 
     # add section to list_of_sections
     list_of_sections[["weirs"]] <- weirs
   }
 
-  # ...add storages
-  if (is.null(path_storage) == F) {
-    # read shape
-    storage <- sf::st_read(path_storage, stringsAsFactors = F, quiet = TRUE) %>%
-      tibble::as_tibble() %>%
-      compare_to_dictionary()
+  # ...add storages if path_storage or storage_sf exists
+  if (!is.null(path_storage) | !is.null(storage_sf)) {
+    
+    if (!is.null(path_storage)) {
+      # read shape
+      storage <- sf::st_read(path_storage, stringsAsFactors = F, quiet = TRUE) %>%
+        tibble::as_tibble() %>%
+        compare_to_dictionary()
+    }
+
+    if (!is.null(storage_sf)) {
+      # convert sf to tibble
+      storage <- tibble::as_tibble(storage_sf) %>%
+        compare_to_dictionary()
+    }
     
     # add section
     list_of_sections[["storage"]] <- storage
@@ -331,34 +401,43 @@ shp_to_inp <- function(path_options = NULL,
   }
 
   # ... do the same for the conduit line shape:
-  if (is.null(path_line)) {
-    warning("Define path to line file including filename and ending, otherwise section conduits is missing.")
+  if (is.null(path_line) & is.null(line_sf)) {
+    warning("Define path to line file including filename and ending (or line_sf alternatively) otherwise section conduits is missing.")
 
     # specify object conduits which is called when testing column names for warn message in conduit_material
     conduits <- NULL
   } else {
-    # read the line shape file
-    # conduits
-    conduits <- sf::st_read(path_line, stringsAsFactors = F, quiet = TRUE) %>%
-      tibble::as_tibble() %>%
-      compare_to_dictionary()
+    
+    if (!is.null(path_line)) {
+      # read the line shape file
+      conduits <- sf::st_read(path_line, stringsAsFactors = F, quiet = TRUE) %>%
+        tibble::as_tibble() %>%
+        compare_to_dictionary()
+    }
+    
+    if (!is.null(line_sf)){
+      # convert sf to tibble
+      conduits <- tibble::as_tibble(line_sf) %>%
+        compare_to_dictionary()
+    }
+    
     # check column names
     if (all(c("Name", "Length", "Shape", "FromNode", "ToNode", "OutOffset", "Geom1") %in% colnames(conduits))) {
       list_of_sections[["conduits"]] <- conduits
       list_of_sections[["xsections"]] <- conduits
     } else {
-      stop("The line file has to include at least the columns named: Name, Length, Shape, FromNode, ToNode, OutOffset, Geom1.")
+      stop("The line shape has to include at least the columns named: Name, Length, Shape, FromNode, ToNode, OutOffset, Geom1.")
     }
   }
 
   # ...check for material properties:
   if (is.null(conduit_material)) {
     if (!("Roughness" %in% colnames(conduits))) {
-      warning("Roughness is not defined in line.shp or Conduit_material. Check line.shp for completeness otherwise missing parameters in the sections conduits will be filled with default values.")
+      warning("Roughness is not defined in line shape or Conduit_material. Check line shape for completeness otherwise missing parameters in the sections conduits will be filled with default values.")
     }
   } else {
     if (!("Material" %in% colnames(conduits))) {
-      stop("column Material is missing in line.shp")
+      stop("column Material is missing in line shape")
     }
   }
 
