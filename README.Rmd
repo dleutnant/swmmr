@@ -1,4 +1,5 @@
 ---
+title: "swmmr"
 output: github_document
 ---
 
@@ -8,11 +9,10 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "man/figures/README-"
 )
+Sys.setenv(LANG = "en")
 ```
-
-# swmmr
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/swmmr)](https://cran.r-project.org/package=swmmr) [![Build Status](https://travis-ci.org/dleutnant/swmmr.svg?branch=dev)](https://travis-ci.org/dleutnant/swmmr)
 
@@ -20,20 +20,20 @@ Functions to connect the widely used [Storm Water Management Model (SWMM)](https
 of the United States Environmental Protection Agency (US EPA) to R with currently 
 two main goals: (1) Run a SWMM simulation from R and (2) provide fast 
 access to simulation results, i.e. SWMM's binary '.out'-files. High performance is 
-achieved with help of Rcpp. Additionally, reading SWMM's '.inp'-files is supported to 
-glance model structures. 
+achieved with help of Rcpp. Additionally, reading SWMM's '.inp' and '.rpt' files is supported to 
+glance model structures and to get direct access to simulation summaries.
 
 ## Installation
 
 Installation is easy thanks to CRAN:
-```{r cran}
-#install.packages("swmmr")
+```{r cran, eval = FALSE}
+install.packages("swmmr")
 ```
 
 You can install the dev version from github with:
 ```{r gh-installation, eval = FALSE}
-# install.packages("devtools")
-#devtools::install_github("dleutnant/swmmr@dev")
+# install.packages("remotes")
+remotes::install_github("dleutnant/swmmr")
 ```
 
 ## Example
@@ -41,22 +41,26 @@ You can install the dev version from github with:
 This is a basic example which shows you how to work with the package. We use 
 the example shipped with the SWMM5 executable.
 
-```{r example}
+### Initiate a SWMM run and retrieve simulation results
 
+```{r example}
 library(swmmr)
 library(purrr) # to conveniently work with list objects
 
-# set path to inp (avoid white spaces in file paths!)
-inp_path <- "~/EPA_SWMM_Projects/Examples/Example1.inp"
+# set path to inp
+# If your operating system is Windows, the Example model files are usually 
+# located at "C:\Users\your user name\Documents\EPA SWMM Projects\Examples".
+# For convenience the Example1.inp model is also included in the swmmr package.
+inp_path <- system.file("extdata", "Example1.inp", package = "swmmr", mustWork = TRUE)
 
 # glance model structure, the result is a list of data.frames with SWMM sections
-inp <- read_inp(inp = inp_path)
+inp <- read_inp(x = inp_path)
 
-# available SWMM sections
+# show swmm model summary
 summary(inp)
 
-# for example, inspect section TIMESERIES
-inp$TIMESERIES
+# for example, inspect section subcatchments
+inp$subcatchments
 
 # run a simulation
 # the result is a named list of paths, directing
@@ -72,18 +76,94 @@ results <- read_out(files$out, iType = 3, vIndex = c(1, 4))
 str(results, max.level = 2)
 
 # basic summary
-results[[1]] %>% purrr::map(summary)
+results[[1]] %>% invoke(merge, .) %>% summary
 
 # basic plotting
-results[[1]] %>% purrr::imap( ~ plot(.x, main = .y))
+results[[1]] %>% imap( ~ plot(.x, main = .y))
 
+# We also might be interested in the report file:
+# use read_rpt to get is a list of data.frames with SWMM summary sections
+report <- read_rpt(files$rpt)
+
+# glance available summaries
+summary(report)
+
+# convenient access to summaries through list structure
+report$subcatchment_runoff_summary
 ```
 
+### Visualisation of model structure
+
+With help of packages 'ggplot2' and 'sf' we can easily plot entire swmm models.
+Note that ggplot2 (>= 2.2.1.9000) is required, which provides the geometric 
+object `geom_sf()`.
+
+```{r visualization}
+library(ggplot2)
+
+# initially, we convert the objects to be plotted as sf objects:
+# here: subcatchments, links, junctions, raingages
+sub_sf <- subcatchments_to_sf(inp)
+lin_sf <- links_to_sf(inp)
+jun_sf <- junctions_to_sf(inp)
+rg_sf <- raingages_to_sf(inp)
+
+# calculate coordinates (centroid of subcatchment) for label position
+lab_coord <- sub_sf %>% 
+  sf::st_centroid() %>%
+  sf::st_coordinates() %>% 
+  tibble::as_tibble()
+
+# raingage label
+lab_rg_coord <- rg_sf %>% 
+  {sf::st_coordinates(.) + 500} %>% # add offset
+  tibble::as_tibble()
+  
+# add coordinates to sf tbl
+sub_sf <- dplyr::bind_cols(sub_sf, lab_coord)
+rg_sf <- dplyr::bind_cols(rg_sf, lab_rg_coord)
+
+# create the plot
+ggplot() + 
+  # first plot the subcatchment and colour continously by Area
+  geom_sf(data = sub_sf, aes(fill = Area)) + 
+  # label by subcatchments by name
+  geom_label(data = sub_sf, aes(X, Y, label = Name), alpha = 0.5, size = 3) +
+  # add links and highlight Geom1
+  geom_sf(data = lin_sf, aes(colour = Geom1), size = 2) +
+  # add junctions
+  geom_sf(data = jun_sf, aes(size = Elevation), colour = "darkgrey") + 
+  # finally show location of raingage
+  geom_sf(data = rg_sf, shape = 10) + 
+  # label raingage
+  geom_label(data = rg_sf, aes(X, Y, label = Name), alpha = 0.5, size = 3) +
+  # change scales
+  scale_fill_viridis_c() +
+  scale_colour_viridis_c(direction = -1) +
+  # change theme
+  theme_linedraw() +
+  theme(panel.grid.major = element_line(colour = "white")) +
+  # add labels
+  labs(title = "SWMM model Example1", 
+       subtitle = "customized visualization")
+```
+
+## Contributions
+With the release of `swmmr` 0.9.0, the latest contributions and other code that will appear in the next CRAN release is contained in the [`master`](https://github.com/dleutnant/swmmr) branch. Thus, contributing to this package is easy. Just send a simple [pull request](https://help.github.com/articles/using-pull-requests/). Your PR should pass `R CMD check --as-cran`, which will also be checked by <a href="https://travis-ci.org/dleutnant/swmmr">Travis CI</a> when the PR is submitted.
+
+## Code of condcut
+Please note that this project is released with a [Contributor Code of Conduct](https://github.com/dleutnant/swmmr/blob/master/CONDUCT.md). By participating in this project you agree to abide by its terms.
+
 ## Acknowledgments
-This package has been developed in the course of the project [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722), 
+This package has been mainly developed in the course of the project [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722), 
 carried out at the [Institute for Infrastructure, Water, Resources, Environment (IWARU)](https://en.fh-muenster.de/iwaru/index.php) of the
 [Muenster University of Applied Sciences](https://www.fh-muenster.de).
 The project was funded by the German Federal Ministry of Education and Research (BMBF, FKZ 03FH033PX2).
 
-The development of the R package was inspired by the work of [Peter Steinberg](https://github.com/PeterDSteinberg/RSWMM). Also, it benefits from SWMM
-Interface Guide. 
+The development of the R package was inspired by the work of [Peter Steinberg](https://github.com/PeterDSteinberg/RSWMM). Also, it benefits from the Interface Guide of [SWMM](https://www.epa.gov/water-research/storm-water-management-model-swmm).
+
+## Citation
+
+```{r citation, echo=FALSE, results='asis', warning=FALSE}
+citation("swmmr")
+```

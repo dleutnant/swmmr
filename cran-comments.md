@@ -1,34 +1,22 @@
-## Resubmission
-This is a resubmission. In this version I have:
+## Package Update
 
-* Substituted 'Library' with 'Interface' in the title.
-
-* Included an URL to direct the user to further information of SWMM
-
-* Added examples (which, however, are in 'dontrun')
-
-* Changed the start of the description.
+This is a package update to swmmr 0.9.1 and especially addresses a significant 
+compilation warning: ignoring return value of function declared with 'warn_unused_result' 
+attribute [-Wunused-result] (as requested by CRAN).
 
 ## Test environments
-* local OS X install, R 3.4.1
-* ubuntu 12.04 (on travis-ci), R 3.4.1
-* win-builder (devel and release)
+* local OS X install, R 3.6.1
+* r-hub x86_64-w64-mingw32 (64-bit), R 3.6.1
+* r-hub x86_64-pc-linux-gnu (64-bit), R.3.6.1
 
-## R CMD check results
+## local R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 note
 
-* This is a new release.
+## r-hub R CMD check results
+
+0 errors | 0 warnings | 0 note
 
 ## Reverse dependencies
 
-This is a new release, so there are no reverse dependencies.
-
----
-
-* I have run R CMD check on the NUMBER downstream dependencies.
-  (Summary at ...). 
-  
-* FAILURE SUMMARY
-
-* All revdep maintainers were notified of the release on RELEASE DATE.
+There are no reverse dependencies.

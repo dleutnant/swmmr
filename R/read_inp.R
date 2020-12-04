@@ -1,114 +1,93 @@
+# input section
+#' @keywords internal
+input_sections <- c("aquifers","backdrop","buildup",
+                    "conduits", "controls", "coordinates","coverages","curves",
+                    "dividers","dwf",
+                    "evaporation","events",
+                    "files","groundwater","hydrographs",
+                    "iiflows","infiltration","inflows",
+                    "junctions",
+                    "labels","landuses","lid_controls","lid_usage","loadings","losses",
+                    "map",
+                    "options", "orifices","outfalls","outlets",
+                    "patterns","pollutants","polygons","profiles","pumps",
+                    "raingages","report",
+                    "snowpacks","storage","subareas","subcatchments","symbols",
+                    "tags","temperature","timeseries","title","treatment",
+                    "vertices",
+                    "washoff","weirs",
+                    "xsections")
+
 #' Read SWMM's .inp file
 #'
 #' Reads a SWMM .inp file and creates a list with corresponding SWMM sections.
-#' This function reads the .inp in a very simplified but reasonable manner.
-#' It's main purpose is to glance the model structure and simulation options set. 
 #' 
-#' @param inp Name (incl. path) to an input file.
+#' @param x Name (incl. path) to an input file.
 #' @param rm.comment Should lines with comments starting with a ";" be discarded?
-#' @return A list with SWMM inp sections.
+#' @param ... optional arguments passed to \code{\link[readr]{read_lines}}.
+#' @return An object of class `inp`
 #' @examples  
 #' \dontrun{
-#' inp_sections <- read_inp("model.inp")
+#' list_of_inp_sections <- read_inp("model.inp")
 #' } 
 #' @rdname read_inp
 #' @export 
-read_inp <- function(inp, rm.comment = TRUE) {
+read_inp <- function(x, rm.comment = TRUE, ...) {
   
-  # Import raw data:
-  inp_raw <- base::readLines(inp)
+  # read lines
+  inp_lines <- readr::read_lines(x, ...)
   
-  # to support simplified parsing strategy "separating columns by white spaces",
-  # these words need to be filled...
-  words_with_ws <- c("Project Title/Notes",
-                     "Data Source",
-                     "Rain Gage",
-                     "Stage Data",
-                     "Curve Name/Params",
-                     "From Node",
-                     "To Node",
-                     "Pump Curve")
+  # delete leading whitespaces in strings
+  inp_lines <- gsub("^\\s+", "", inp_lines)
   
-  # ... so lets change the words in the raw text vector...
-  for (i in seq_along(words_with_ws)) inp_raw <- gsub(pattern = words_with_ws[i], 
-                                                      replacement = gsub(" ", "_", words_with_ws[i]),
-                                                      x = inp_raw, 
-                                                      fixed = TRUE)
-  
-  # remove divider lines
-  inp_raw <- inp_raw[!grepl("-----", inp_raw)]
-  
-  # find section lines
-  section_lines <- grep("\\[", inp_raw, value = F)
-  
-  section_title <- gsub(pattern = "\\[|\\]", 
-                        replacement = "",
-                        x = inp_raw[section_lines])
-  
-  header_lines <- data_blocks <- list_inp <- vector(length = length(section_lines), mode = "list")
-  
-  # get header lines
-  for (i in seq_len(length(header_lines))) {
-    
-    line <- inp_raw[section_lines[i] + 1]
-    
-    # section has columns
-    if (grepl(";;", substr(line, 1, 2), fixed = TRUE)) {
-      
-      line <- gsub(";;", "", line)
-      line <- gsub("\\s+", "_-_", line)
-      
-      header_lines[[i]] <- unlist(strsplit(line, "_-_"))
-      data_blocks[[i]]$start <- section_lines[i] + 2
-      
-    # sectios has no columns  
-    } else {
-      
-      header_lines[[i]] <- NA
-      data_blocks[[i]]$start <- section_lines[i] + 1
-      
-    }
-    
-    data_blocks[[i]]$end <- max(min(section_lines[i + 1] - 2, length(inp_raw), na.rm = TRUE),
-                                data_blocks[[i]]$start)
-                                
-    
-  }
-  
-  # create list of chunks 
-  inp_ranges <- sapply(data_blocks, function(x) seq(from = x$start, to = x$end))
-  
-  # read chunks
-  list_inp <- lapply(inp_ranges, function(x) {
-    
-    text <- inp_raw[x]
-    
-    # remove comments
-    if (rm.comment) text <- text[!grepl(";", text)]
-    
-    if (identical(text, "")) {
-      return(data.frame(NA, NA, NA, NA, NA, NA))
-    } else {
-      
-      utils::read.table(text = text,
-                        sep = "", 
-                        dec = ".", 
-                        numerals = "no.loss",
-                        stringsAsFactors = FALSE, 
-                        fill = TRUE)
-    }
-  })
+  # find section start
+  section_start <- grep("\\[", inp_lines, value = F)
 
-  # because we set previously header = FALSE to circumvent non harmonized headers, 
-  # we need to set the column names manually
-  for (i in seq_len(length(header_lines))) {
-    # get length of colnames
-    dummy <- colnames(list_inp[[i]])
-    colnames(list_inp[[i]]) <- c(header_lines[[i]], dummy)[seq_len(length(dummy))]
+  # get section names
+  section_names <- gsub(pattern = "\\[|\\]",
+                        replacement = "",
+                        x = inp_lines[section_start])
+  
+  # get end per section
+  section_end <- c(section_start[-1]-2, length(inp_lines))
+  
+  # remove empty sections (and skip section name)
+  section_not_emtpy <- (section_end-section_start > 0)
+  section <- list(start = section_start[section_not_emtpy] + 1,
+                  end = section_end[section_not_emtpy], 
+                  name = section_names[section_not_emtpy])
+  
+  # create list with sections  
+  list_of_sections <- section %>% 
+    purrr::transpose() %>% 
+    purrr::map( ~ inp_lines[.$start:.$end]) %>% 
+    purrr::set_names(base::tolower(section$name))
+  
+  # get options
+  if (is.null(list_of_sections$options)) {
+    warning("inp file does not contain section 'options'")
+    options <- NULL
+  } else {
+    opt <- section_to_tbl(x = list_of_sections$options, 
+                          section_name = "options", 
+                          rm.comment = TRUE)
+    options <- as.list(opt$Value)
+    names(options) <- opt$Option
   }
   
-  # rename chunks
-  names(list_inp) <- section_title
+  # parse sections individually
+  res <- purrr::imap(list_of_sections, ~ section_to_tbl(.x, .y, 
+                                                        rm.comment = rm.comment, 
+                                                        options = options)) %>% 
+    # discard nulls (nulls are returned if section is not parsed)
+    purrr::discard(is.null) %>% 
+    # discard empty tibbles (sections were parsed but empty)
+    purrr::discard( ~ nrow(.) < 1)
   
-  return(list_inp)
+  # assign class attribute
+  class(res) <- "inp"
+  
+  return(res)
+  
 }
+

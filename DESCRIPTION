@@ -6,19 +6,45 @@ Description: Functions to connect the widely used Storm Water Management Model (
   <https://www.epa.gov/water-research/storm-water-management-model-swmm> to R with
   currently two main goals: (1) Run a SWMM simulation from R and (2) provide fast 
   access to simulation results, i.e. SWMM's binary '.out'-files. High performance is achieved
-  with help of Rcpp. Additionally, reading SWMM's '.inp'-files is supported to 
-  glance model structures. 
-Version: 0.7.0
-Date: 2017-07-13
-Authors@R: person("Dominik", "Leutnant", email = "leutnant@fh-muenster.de", role = c("aut", "cre"))
+  with help of Rcpp. Additionally, reading SWMM's '.inp' and '.rpt' files is supported to 
+  glance model structures and to get direct access to simulation summaries.
+Version: 0.9.1
+Authors@R: c(
+  person("Dominik", "Leutnant", email = "leutnant@fh-muenster.de", 
+    role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3293-2315")), 
+  person("Anneke", "Doering", email = "doering@hydromech.uni-hannover.de", 
+    role = c("aut")),
+  person("Malte", "Henrichs", email = "henrichs@fh-muenster.de", 
+    role = c("ctb")),
+  person("Hauke", "Sonnenberg", email = "hauke.sonnenberg@gmx.de", 
+    role = c("ctb"), comment = c(ORCID = "0000-0001-9134-2871"))
+  )
 URL: https://github.com/dleutnant/swmmr
 License: GPL-3
+LazyData: TRUE
+Encoding: UTF-8
 BugReports: https://github.com/dleutnant/swmmr/issues
 ByteCompile: TRUE
-Imports:
+Imports: 
+    dplyr (>= 0.7.4),
+    purrr (>= 0.2.4),
+    readr (>= 1.1.1),
     Rcpp,
+    tibble (>= 1.2.4),
+    tidyr (>= 1.0.0),
     utils,
-    xts
-LinkingTo: 
+    xts (>= 0.10-1),
+    zoo
+LinkingTo:
     Rcpp
-RoxygenNote: 6.0.1
+Suggests: 
+    DEoptim,
+    ggplot2,
+    sf (>= 0.6-1),
+    knitr,
+    rmarkdown,
+    testthat
+SystemRequirements: SWMM (>=5.1.012)
+RoxygenNote: 7.0.2
+Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
+VignetteBuilder: knitr

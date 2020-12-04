@@ -1,0 +1,180 @@
+---
+title: "How to autocalibrate a SWMM model with swmmr"
+author: "Dominik Leutnant"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to autocalibrate a SWMM model with swmmr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+calibration_res <- NULL
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>", 
+  # https://community.rstudio.com/t/precompiling-vignette-with-devtools/1583/6
+  eval = nzchar(Sys.getenv("BUILD_SWMM_VIGNETTE")) # to prevent eval on CRAN!
+)
+```
+
+## Introduction
+Model calibration or optimization is an essential part within the modelling chain 
+to improve the model quality. During calibration, model parameter values are 
+systematically modified to optimize an objective function, which numerically 
+expresses the difference between observation and simulation data. In this 
+tutorial, we walk through the required steps to autocalibrate a SWMM 
+model with `swmmr`. We calibrate the _Example1.inp_ model which is shipped with the
+offical SWMM executable from US EPA. For the optimization, we use the `DEoptim`
+package, which provides a differential evolution optimization algorithm.
+
+```{r load_libs}
+library(swmmr)
+library(DEoptim)
+```
+
+## Setup
+First, model paths are defined and a simulation run is initiated with `run_swmm`
+to check for errors.
+
+```{r model_setup}
+# set path to inp
+# If your operating system is Windows, the Example1.inp model is usually 
+# located at "C:\Users\your user name\Documents\EPA SWMM Projects\Examples".
+# For convenience the Example1.inp model is also included in the swmmr package.
+# Feel free to change this to your path of choice.
+inp_file <- system.file("extdata", "Example1.inp", package = "swmmr", mustWork = TRUE)
+
+# both rpt and out files are temporary files
+tmp_rpt_file <- tempfile()
+tmp_out_file <- tempfile()
+
+# initiate the simulation
+swmm_files <- run_swmm(
+  inp = inp_file,
+  rpt = tmp_rpt_file,
+  out = tmp_out_file
+)
+```
+
+The original output of the first simulation run is assumed to be the observation 
+data. The parameter of interest is `total_runoff` at node `18`. We load the 
+observation data as an `xts` object with `read_out`.
+
+```{r obs}
+obs <- read_out(
+  file = swmm_files$out,
+  iType = 1,
+  object_name = "18",
+  vIndex = 4
+)[["18"]]$total_inflow
+```
+
+To keep it simple, we only calibrate the model parameter `Perc_Imperv` of 
+subcatchments which are larger than 10 ha. The original parameter values are 
+"50" for subcatchment "5" and "10" for subcatchment "6". The model structure is 
+loaded with `read_inp`.
+
+```{r sim_and_read}
+# read model structure
+inp <- read_inp(swmm_files$inp) 
+
+# show the original parameter values
+inp$subcatchments[inp$subcatchments$Area > 10, ]
+
+```
+
+## Goodness-of-fit criteria
+To numerically evaluate the difference between observation and simulation data, 
+we use the Nash-Sutcliffe efficiency (nse).
+```{r gof}
+# function calculates the goodness of fit value
+# input x is a two column xts object, col1: obs, col2: sim
+nse <- function(x) {
+  1 - sum((x[, 1] - x[, 2]) ^ 2) / sum((x[, 1] - mean(x[, 1])) ^ 2)
+}
+```
+
+## Objective function
+The optimization algorithm exactly needs one function to be minimized.
+Therefore, we define a function that
+
+1. first argument takes a vector of real-valued parameters, 
+2. second argument is a loaded `inp` file, containing a list of SWWM section
+as tibbles and
+3. takes observation data as a third argument.
+
+The function mainly consists of three sections. First, a new parameter set 
+generated from the optimization algorithm overrides the original values of the 
+`inp` object. The updated `inp` object is then written to disk with `write_inp`.
+Second a simulation run is performed with the new `inp` file and results 
+are read with `read_out`. Finally, the goodness-of-fit value is calculated.
+
+```{r obj_fun}
+obj_fun <- function(x, inp, obs) {
+
+  # set new parameters and update inp object
+  inp$subcatchments <- transform(
+    inp$subcatchments,
+    Perc_Imperv = ifelse(Area > 10, x, Perc_Imperv)
+  )
+
+  # write new inp file to disk
+  tmp_inp <- tempfile()
+  write_inp(inp, tmp_inp)
+
+  # run swmm with new parameter set
+  swmm_files <- suppressMessages(run_swmm(tmp_inp, stdout = NULL))
+
+  # remove files when function exits to avoid heavy disk usage
+  on.exit(file.remove(unlist(swmm_files)))
+
+  # read sim result
+  sim <- read_out(
+    file = swmm_files$out, # path to out file
+    iType = 1, # type: node
+    object_name = "18", # name of node
+    vIndex = 4 # parameter at node: total inflow
+  )[["18"]]$total_inflow # directly access to xts object
+
+  # calculate goodness-of-fit
+  # note: multiply by minus one to have a real min problem (nse: +1 to -Inf)
+  nse(merge(obs, sim)) * -1
+}
+
+```
+
+## Optimization
+Finally, we need to config the optimization algorithm. It is required to 
+provide
+
+1. the function to be optimized 
+2. parameter bounds (lower, upper)
+3. a list of control parameters (useful for parallel computing or fine tuning)
+4. further argument passed to the function to be minimized (here: the `ìnp`
+object and the observation data)
+
+```{r optim}
+  set.seed(84) # to get reproducible results
+
+  calibration_res <- DEoptim(
+    fn = obj_fun, 
+    lower = c(0, 0), 
+    upper = c(100, 100),
+    control = list(
+      itermax = 50, # maximum iterations
+      trace = 10, # print progress every 10th iteration
+      packages = c("swmmr"), # export packages to optimization environment
+      parVar = c("nse"), # export function to optimization environment
+      parallelType = 0 # set to 1 to use all available cores
+    ),
+    inp = inp, # 'inp' object
+    obs = obs # xts object containing observation data
+  )
+
+  summary(calibration_res)
+```
+
+The calibration yields `r calibration_res$optim$bestmem` as optimized parameter
+values which is close to the original values.

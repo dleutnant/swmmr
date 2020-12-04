@@ -4,24 +4,24 @@
 \alias{read_inp}
 \title{Read SWMM's .inp file}
 \usage{
-read_inp(inp, rm.comment = TRUE)
+read_inp(x, rm.comment = TRUE, ...)
 }
 \arguments{
-\item{inp}{Name (incl. path) to an input file.}
+\item{x}{Name (incl. path) to an input file.}
 
 \item{rm.comment}{Should lines with comments starting with a ";" be discarded?}
+
+\item{...}{optional arguments passed to \code{\link[readr]{read_lines}}.}
 }
 \value{
-A list with SWMM inp sections.
+An object of class \code{inp}
 }
 \description{
 Reads a SWMM .inp file and creates a list with corresponding SWMM sections.
-This function reads the .inp in a very simplified but reasonable manner.
-It's main purpose is to glance the model structure and simulation options set.
 }
 \examples{
  
 \dontrun{
-inp_sections <- read_inp("model.inp")
+list_of_inp_sections <- read_inp("model.inp")
 } 
 }
