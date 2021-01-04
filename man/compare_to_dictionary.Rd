@@ -4,7 +4,7 @@
 \alias{compare_to_dictionary}
 \title{import helper}
 \usage{
-compare_to_dictionary(shp)
+compare_to_dictionary(shp = NULL, sf = NULL)
 }
 \description{
 import helper
