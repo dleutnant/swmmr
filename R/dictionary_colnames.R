@@ -1,7 +1,7 @@
 
 #' import helper
 #' @keywords internal
-compare_to_dictionary <- function(shp) {
+compare_to_dictionary <- function(shp = NULL, sf = NULL) {
 
   # ...complete dictionary with all column names given in swmmr:
 
@@ -12,21 +12,41 @@ compare_to_dictionary <- function(shp) {
 						 )
 
   # -----
-
-  # cut dictionary to column names abbreviated and internal in shp_to_inp that differ:
-  dictionary <- dictionary_complete[-which(duplicated(dictionary_complete$shp_abb) == T), ]
-  dictionary <- subset(dictionary, dictionary$shp_abb != dictionary$int_shp_to_inp)
-
-  # ----
-
-  # set internal column names for abbreviated ones in shp-file
-
-  for (i in 1:length(colnames(shp))) {
-    if (colnames(shp)[i] %in% dictionary$shp_abb) {
-      row <- which(colnames(shp)[i] == dictionary$shp_abb)
-      colnames(shp)[i] <- dictionary$int_shp_to_inp[row]
+  if(!is.null(shp)){
+    # cut dictionary to column names abbreviated and internal in shp_to_inp that differ:
+    dictionary <- dictionary_complete[-which(duplicated(dictionary_complete$shp_abb) == T), ]
+    dictionary <- subset(dictionary, dictionary$shp_abb != dictionary$int_shp_to_inp)
+    
+    # ----
+    
+    # set internal column names for abbreviated ones in shp-file
+    
+    for (i in 1:length(colnames(shp))) {
+      if (colnames(shp)[i] %in% dictionary$shp_abb) {
+        row <- which(colnames(shp)[i] == dictionary$shp_abb)
+        colnames(shp)[i] <- dictionary$int_shp_to_inp[row]
+      }
     }
+    
+    return(shp)
   }
+  
+  if(!is.null(sf)){
+     # cut dictionary to column names original and internal in sf_to_inp that differ:
+    dictionary <- dictionary_complete[-which(duplicated(dictionary_complete$org_swmm) == T), ]
+    dictionary <- subset(dictionary, dictionary$org_swmm != dictionary$int_shp_to_inp)
+  
+    # set internal column names for original ones in sf-object:
+    for (i in 1:length(colnames(sf))) {
+      if (colnames(sf)[i] %in% dictionary$org_swmm) {
+        row <- which(colnames(sf)[i] == dictionary$org_swmm)
+        colnames(sf)[i] <- dictionary$int_shp_to_inp[row]
+      }
+    }
 
-  return(shp)
+    return(sf)
+  }
+  
+ 
+  
 }
