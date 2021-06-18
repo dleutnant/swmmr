@@ -4,9 +4,16 @@
 \alias{read_out}
 \title{Read time series data from SWMM's .out file}
 \usage{
-read_out(file = "", iType = NULL, object_name = NULL,
-  vIndex = NULL, firstPeriod = NULL, lastPeriod = NULL,
-  multiColumn = FALSE, byObject = TRUE)
+read_out(
+  file = "",
+  iType = NULL,
+  object_name = NULL,
+  vIndex = NULL,
+  firstPeriod = NULL,
+  lastPeriod = NULL,
+  multiColumn = FALSE,
+  byObject = TRUE
+)
 }
 \arguments{
 \item{file}{The file to be read.}

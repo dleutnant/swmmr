@@ -3,7 +3,6 @@
 \docType{package}
 \name{swmmr}
 \alias{swmmr}
-\alias{swmmr-package}
 \title{\code{swmmr} package}
 \description{
 R Interface for US EPA's SWMM

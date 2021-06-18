@@ -4,12 +4,23 @@
 \alias{shp_to_inp}
 \title{Convert *.shp files to SWMM's *.inp file}
 \usage{
-shp_to_inp(path_options = NULL, path_polygon = NULL,
-  subcatchment_typologies = NULL, path_point = NULL,
-  junction_parameters = NULL, path_outfall = NULL, path_line = NULL,
-  conduit_material = NULL, path_timeseries = NULL,
-  infiltration = NULL, path_pumps = NULL, path_pump_curve = NULL,
-  path_weirs = NULL, path_storage = NULL, path_storage_curve = NULL)
+shp_to_inp(
+  path_options = NULL,
+  path_polygon = NULL,
+  subcatchment_typologies = NULL,
+  path_point = NULL,
+  junction_parameters = NULL,
+  path_outfall = NULL,
+  path_line = NULL,
+  conduit_material = NULL,
+  path_timeseries = NULL,
+  infiltration = NULL,
+  path_pumps = NULL,
+  path_pump_curve = NULL,
+  path_weirs = NULL,
+  path_storage = NULL,
+  path_storage_curve = NULL
+)
 }
 \arguments{
 \item{path_options}{Name (incl. path) to a .txt file with SWMM sections. Write section name in lower case and in squared brackets. The following sections are allowed: options, report, raingages, evaporation, pollutant, landuse, buildup, washoff, coverages.}

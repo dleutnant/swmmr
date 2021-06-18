@@ -4,9 +4,14 @@
 \alias{assign_parameters.junction}
 \title{conversion helper}
 \usage{
-\method{assign_parameters}{junction}(x, infiltration = NULL,
-  subcatchment = NULL, subcatchment_typologies = NULL,
-  conduit_material = NULL, junction_parameters)
+\method{assign_parameters}{junction}(
+  x,
+  infiltration = NULL,
+  subcatchment = NULL,
+  subcatchment_typologies = NULL,
+  conduit_material = NULL,
+  junction_parameters
+)
 }
 \description{
 conversion helper
