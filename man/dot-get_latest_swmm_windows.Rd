@@ -4,8 +4,11 @@
 \alias{.get_latest_swmm_windows}
 \title{Determine the latest swmm5.exe in the specified  program files folder}
 \usage{
-.get_latest_swmm_windows(path = "c:/Program Files (x86)/",
-  prefix = "EPA SWMM", exe = "swmm5.exe")
+.get_latest_swmm_windows(
+  path = "c:/Program Files (x86)/",
+  prefix = "EPA SWMM",
+  exe = "swmm5.exe"
+)
 }
 \description{
 Determine the latest swmm5.exe in the specified  program files folder

@@ -4,9 +4,14 @@
 \alias{assign_parameters.subcatchments}
 \title{conversion helper}
 \usage{
-\method{assign_parameters}{subcatchments}(x, infiltration = NULL,
-  subcatchment = NULL, subcatchment_typologies,
-  conduit_material = NULL, junction_parameters = NULL)
+\method{assign_parameters}{subcatchments}(
+  x,
+  infiltration = NULL,
+  subcatchment = NULL,
+  subcatchment_typologies,
+  conduit_material = NULL,
+  junction_parameters = NULL
+)
 }
 \description{
 conversion helper
