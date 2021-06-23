@@ -33,7 +33,7 @@ install.packages("swmmr")
 You can install the dev version from github with:
 ```{r gh-installation, eval = FALSE}
 # install.packages("remotes")
-remotes::install_github("dleutnant/swmmr@dev")
+remotes::install_github("dleutnant/swmmr")
 ```
 
 ## Example
@@ -56,7 +56,7 @@ inp_path <- system.file("extdata", "Example1.inp", package = "swmmr", mustWork =
 # glance model structure, the result is a list of data.frames with SWMM sections
 inp <- read_inp(x = inp_path)
 
-# available SWMM sections
+# show swmm model summary
 summary(inp)
 
 # for example, inspect section subcatchments
@@ -149,12 +149,10 @@ ggplot() +
 ```
 
 ## Contributions
-This Git repository uses the [Git Flow](http://nvie.com/posts/a-successful-git-branching-model/) branching model (the [`git flow`](https://github.com/petervanderdoes/gitflow-avh) extension is useful for this). The [`dev`](https://github.com/dleutnant/swmmr/tree/dev) branch contains the latest contributions and other code that will appear in the next release, and the [`master`](https://github.com/dleutnant/swmmr) branch contains the code of the latest release, which is exactly what is currently on [CRAN](https://cran.r-project.org/package=swmmr).
-
-Contributing to this package is easy. Just send a [pull request](https://help.github.com/articles/using-pull-requests/). When you send your PR, make sure `dev` is the destination branch on the [swmmr repository](https://github.com/dleutnant/swmmr). Your PR should pass `R CMD check --as-cran`, which will also be checked by <a href="https://travis-ci.org/dleutnant/swmmr">Travis CI</a> when the PR is submitted.
+With the release of `swmmr` 0.9.0, the latest contributions and other code that will appear in the next CRAN release is contained in the [`master`](https://github.com/dleutnant/swmmr) branch. Thus, contributing to this package is easy. Just send a simple [pull request](https://help.github.com/articles/using-pull-requests/). Your PR should pass `R CMD check --as-cran`, which will also be checked by <a href="https://travis-ci.org/dleutnant/swmmr">Travis CI</a> when the PR is submitted.
 
 ## Code of condcut
-Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+Please note that this project is released with a [Contributor Code of Conduct](https://github.com/dleutnant/swmmr/blob/master/CONDUCT.md). By participating in this project you agree to abide by its terms.
 
 ## Acknowledgments
 This package has been mainly developed in the course of the project [STBMOD](https://www.fh-muenster.de/forschung/forschungskatalog/projekt.php?pr_id=722), 
@@ -166,6 +164,6 @@ The development of the R package was inspired by the work of [Peter Steinberg](h
 
 ## Citation
 
-```{r citation, echo=FALSE, results='asis'}
+```{r citation, echo=FALSE, results='asis', warning=FALSE}
 citation("swmmr")
 ```

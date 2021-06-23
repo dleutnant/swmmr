@@ -1,22 +1,22 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
 
-## ----load_libs, message= FALSE-------------------------------------------
+## ----load_libs, message= FALSE------------------------------------------------
 # First load the following packages:
 library(swmmr)
 library(purrr)
 library(dplyr)
 library(sf)
 
-## ----model_preparation---------------------------------------------------
+## ----model_preparation--------------------------------------------------------
 # in case your operating system is Windows, the examples are saved in the following directory:
 # "C:/Users/.../Documents/EPA SWMM Projects/Examples/"
 # please change the path to:
 # "C:/Users/.../Documents/EPA_SWMM_Projects/Examples/"
 # substitute '...' with your user name
 
-## ----model_setup---------------------------------------------------------
+## ----model_setup--------------------------------------------------------------
 # set path to inp
 # If your operating system is Windows, the Example1.inp model is usually 
 # located at "C:\Users\your user name\Documents\EPA SWMM Projects\Examples".
@@ -24,12 +24,12 @@ library(sf)
 # Feel free to change this to your path of choice.
 inp_file <- system.file("extdata", "Example1.inp", package = "swmmr", mustWork = TRUE)
 
-## ----out_dir-------------------------------------------------------------
+## ----out_dir------------------------------------------------------------------
 # set the path to the output directory for the example files (here, we use a temp directory)
 # Feel free to change this to your path of choice. 
 out_dir <- tempdir()
 
-## ----inp_to_files--------------------------------------------------------
+## ----inp_to_files-------------------------------------------------------------
 # read the "Example1.inp" using read_inp
 Example1 <- read_inp(x = inp_file)
 
@@ -48,7 +48,7 @@ c("shp", "txt", "dat") %>%
   map(list.files)
 
 
-## ----shp_to_inp----------------------------------------------------------
+## ----shp_to_inp---------------------------------------------------------------
 # convert shp and txt files to inp object:
 Example1_con <- shp_to_inp(
   path_options = file.path(out_dir,"txt/Example1_options.txt"),
@@ -66,7 +66,7 @@ summary(Example1_con)
 dir.create(file.path(out_dir, "inp_new"))
 write_inp(Example1_con, file.path(out_dir, "inp_new", "Example1_con.inp"))
 
-## ----objects-------------------------------------------------------------
+## ----objects------------------------------------------------------------------
 # ... assuming infiltration parameters are not given in the .shp file, an R object (tibble or data.frame) called infiltration can be added. Additionally a column 'Soil' must be added to polygon shp file.
 
 infiltration <- tibble(

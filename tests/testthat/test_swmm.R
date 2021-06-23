@@ -49,25 +49,6 @@ testthat::test_that("swmm_io", {
   
 })
 
-# testthat::test_that("swmm_plot", {
-#   
-#   # only local tests
-#   testthat::skip_on_cran()
-#   testthat::skip_on_travis()
-#   
-#   # get the inp files
-#   list_of_ggplots <- system.file("extdata", paste0("Example", 1:6, ".inp"),
-#                                  package = "swmmr", mustWork = TRUE) %>% 
-#     # read by swmmr
-#     purrr::map(swmmr::read_inp) %>% 
-#     # plot with generic plot method
-#     purrr::map(plot)
-#   
-#   # perform tests: Do we get objects of class ggplot2?
-#   purrr::walk(list_of_ggplots, testthat::expect_s3_class, class = "ggplot")
-#   
-# })
-
 testthat::test_that("rpt_reader", {
   
   # only local tests
@@ -92,3 +73,57 @@ testthat::test_that("rpt_reader", {
   
   purrr::walk(list_of_rpt, testthat::expect_s3_class, class = "rpt")  
 })
+
+testthat::test_that("swmm error", {
+  
+  # only local tests
+  testthat::skip_on_cran()
+  testthat::skip_on_travis()
+  
+  # get the inp files
+  inp_file <- system.file("extdata", paste0("Example", 1, ".inp"), 
+                           package = "swmmr", mustWork = TRUE)
+  
+  # read model
+  inp <- swmmr::read_inp(inp_file)
+  # set new parameters and update inp object
+  # Error 1
+  inp$timeseries <- transform(inp$timeseries, Name = "IDoNotExist")
+  # Error 2
+  inp$subcatchments <- transform(inp$subcatchments, 
+                                 Name = sample(1:1e3, nrow(inp$subcatchments)))
+  
+  # write new inp file to disk
+  tmp_inp <- tempfile()
+  write_inp(inp, tmp_inp)
+  
+  # run swmm and expect error
+  swmmr::run_swmm(inp = tmp_inp, 
+                  rpt = paste0(tmp_inp, ".rpt"),
+                  out = paste0(tmp_inp, ".out"))
+  
+  testthat::expect_message({
+    rpt <- swmmr::read_rpt(paste0(tmp_inp, ".rpt"))
+  })
+  
+  testthat::expect_s3_class(rpt, class = "rpt_error")
+})
+
+testthat::test_that("summary", {
+  
+  # only local tests
+  testthat::skip_on_cran()
+  testthat::skip_on_travis()
+  
+  # get the inp files
+  inp_files <- system.file("extdata", paste0("Example", 1:6, ".inp"), 
+                           package = "swmmr", mustWork = TRUE)
+  
+  # now read the models into R
+  inp_obj <- purrr::map(inp_files, swmmr::read_inp)
+  
+  purrr::walk(inp_obj, ~ testthat::expect_output(summary(.), 
+                                            "summary of swmm model structure"))
+  
+})
+
