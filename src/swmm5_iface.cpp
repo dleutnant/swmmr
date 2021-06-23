@@ -183,7 +183,7 @@ List OpenSwmmOutFile(const char* outFile)
   if (! file_seek(0, SEEK_SET)) {
     return List::create(_["error"] = ERROR_FILE_SEEK);
   }
-  
+
   read_record(&magic1, "magic1");
 
   // --- quit if errors found
@@ -271,7 +271,7 @@ List OpenSwmmOutFile(const char* outFile)
   n_objects[SYS] = 1;
   
   for (int i = SUBCATCH; i <= SYS; i++) {
-    
+
     n_records[i] = n_objects[i] * n_variables[i];
     n_record_sum += n_records[i];
     
@@ -320,7 +320,7 @@ Rcpp::NumericVector GetSwmmResultPart(
 {
   off_t offset;
   int n = SWMM_Nperiods;
-  
+
   firstPeriod = restrict_to_range(firstPeriod, 1, n, "firstPeriod");
   lastPeriod = restrict_to_range(lastPeriod, firstPeriod, n, "lastPeriod");
   

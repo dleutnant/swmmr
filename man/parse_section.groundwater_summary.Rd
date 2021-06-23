@@ -5,8 +5,12 @@
 \title{import helper}
 \usage{
 \method{parse_section}{groundwater_summary}(x, ...)
+
+\method{parse_section}{groundwater_summary}(x, ...)
 }
 \description{
+import helper
+
 import helper
 }
 \keyword{internal}

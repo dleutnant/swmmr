@@ -14,7 +14,8 @@ calibration_res <- NULL
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", 
-  eval = !identical(Sys.getenv("NO_VIGNETTE_ON_CRAN"), "") # set to FALSE to prevent eval on CRAN!
+  # https://community.rstudio.com/t/precompiling-vignette-with-devtools/1583/6
+  eval = nzchar(Sys.getenv("BUILD_SWMM_VIGNETTE")) # to prevent eval on CRAN!
 )
 ```
 
@@ -177,6 +178,3 @@ object and the observation data)
 
 The calibration yields `r calibration_res$optim$bestmem` as optimized parameter
 values which is close to the original values.
-
-
-

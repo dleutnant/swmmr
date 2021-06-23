@@ -1,0 +1,20 @@
+citHeader("To cite 'swmmr' in publications, please use:")
+citEntry(entry = "article",
+    author = personList(as.person("Dominik Leutnant"),
+                        as.person("Anneke Döring"),
+                        as.person("Mathias Uhl")),
+    title = "swmmr - an R package to interface SWMM",
+    journal = "Urban Water Journal",
+    volume = "16",
+    number = "1",
+    pages = "68-76",
+    year  = "2019",
+    publisher = "Taylor & Francis",
+    doi = "10.1080/1573062X.2019.1611889",
+    URL = "https://doi.org/10.1080/1573062X.2019.1611889",
+    textVersion  = paste("Dominik Leutnant, Anneke Döring & Mathias Uhl (2019).",
+                         "swmmr - an R package to interface SWMM",
+                         "Urban Water Journal",
+                         "DOI: 10.1080/1573062X.2019.1611889"),
+    eprint = "https://doi.org/10.1080/1573062X.2019.1611889"
+)

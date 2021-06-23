@@ -34,7 +34,7 @@ shp_to_inp <- function(path_options = NULL,
                        path_pump_curve = NULL, 
                        path_weirs = NULL, 
                        path_storage = NULL, 
-                       path_storage_curve = NULL) {  
+                       path_storage_curve = NULL) {
 
   # ... check missing arguments, add default or generate error messages, in some cases default values are added later...
 
@@ -156,8 +156,15 @@ shp_to_inp <- function(path_options = NULL,
       tibble::as_tibble() %>% 
       compare_to_dictionary()
     
+    # special case which should only occur if an inp has been exported using swmmr.
+    # in this case Area_subcatchment is Ar_sbct and Area_LID_usage is Ar_ld_s.
+    # Function was required to allow automatic tests with Example4.inp.
+    if ("Ar_sbct" %in% colnames(subcatchment)) {
+      colnames(subcatchment) <- gsub("Ar_sbct", "Area", colnames(subcatchment))
+    }
+    
     # check the structure of polygon file:
-    if (all(c("Name","Outlet","Area", "RouteTo") %in% colnames(subcatchment))) {
+    if (all(c("Name","Outlet","Area","RouteTo") %in% colnames(subcatchment))) {
       list_of_sections[['subcatchments']]  <- subcatchment # subcatchment_typologies
       list_of_sections[['subareas']] <- subcatchment # subcatchment_typologies
       list_of_sections[['polygons']] <- subcatchment
@@ -212,18 +219,18 @@ shp_to_inp <- function(path_options = NULL,
     warning("Define path to point file including filename and ending otherwise sections junctions and coordinates are missing.")
 
     # specify object junction which is called when testing column names for warn message in junction_parameters
-    junction <- NULL
+    junctions <- NULL
   } else {
     # read junction point file
-    junction <- sf::st_read(path_point, stringsAsFactors = F, quiet = TRUE) %>%
+    junctions <- sf::st_read(path_point, stringsAsFactors = F, quiet = TRUE) %>%
       tibble::as_tibble() %>%
       compare_to_dictionary()
 
     # check column names:
-    if (all(c("Name", "Bottom") %in% colnames(junction))) {
-      if ("Top" %in% colnames(junction) | "Ymax" %in% colnames(junction)) {
-        list_of_sections[["junction"]] <- junction
-        list_of_sections[["coordinates"]] <- junction
+    if (all(c("Name", "Bottom") %in% colnames(junctions))) {
+      if ("Top" %in% colnames(junctions) | "Ymax" %in% colnames(junctions)) {
+        list_of_sections[["junctions"]] <- junctions
+        list_of_sections[["coordinates"]] <- junctions[, c("Name", "geometry")]
       }
     } else {
       stop("The point file has to include at least the columns named: Name, Bottom and Top or Ymax.")
@@ -232,7 +239,7 @@ shp_to_inp <- function(path_options = NULL,
 
 
   if (is.null(junction_parameters)) {
-    if (!("Y" %in% colnames(junction)) | !("Ysur" %in% colnames(junction)) | !("Apond" %in% colnames(junction))) {
+    if (!("Y" %in% colnames(junctions)) | !("Ysur" %in% colnames(junctions)) | !("Apond" %in% colnames(junctions))) {
       warning(" Y, Ysur or Apond are not defined in point.shp or junction_parameters. Check point.shp for completeness otherwise missing parameters in the section junctions will be filled with default values.")
     }
   }
@@ -248,11 +255,11 @@ shp_to_inp <- function(path_options = NULL,
     # check for completeness:
     if (all(c("Name", "Bottom", "Type") %in% colnames(outfalls))) {
       list_of_sections[["outfalls"]] <- outfalls
+      list_of_sections[["coordinates"]] <- rbind(list_of_sections[["coordinates"]], outfalls[, c("Name", "geometry")])
     } else {
       stop("The outfall point shape has to include at least the columns named: Name, Bottom, Type.")
     }
   }
-
 
   # ... checking, reading or adding default values for optional function arguments:
 
@@ -305,9 +312,10 @@ shp_to_inp <- function(path_options = NULL,
     storage <- sf::st_read(path_storage, stringsAsFactors = F, quiet = TRUE) %>%
       tibble::as_tibble() %>%
       compare_to_dictionary()
-
+    
     # add section
     list_of_sections[["storage"]] <- storage
+    list_of_sections[["coordinates"]] <- rbind(list_of_sections[["coordinates"]], storage[, c("Name", "geometry")])
   }
   
   # ... add storage curve
@@ -374,7 +382,7 @@ shp_to_inp <- function(path_options = NULL,
   # adjust order of sections
   section_order <-  c("title", "options", "evaporation", "raingages", "subcatchments", 
                       "subareas", "infiltration", "aquifers", "groundwater", 
-                      "LID_controls", "LID_usage", "junction", "outfalls", "storage", 
+                      "LID_controls", "LID_usage", "junctions", "outfalls", "storage", 
                       "conduits", "pumps", "weirs", "xsections", "controls", "DWF", 
                       "pollutants", "landuses", "coverages", "loadings", "buildup", 
                       "washoff", "inflows", "timeseries", "curves", "patterns",
