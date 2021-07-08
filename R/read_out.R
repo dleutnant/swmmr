@@ -257,41 +257,8 @@ get_out_version <- function(file = "") {
   version <- list_of_results$meta$version
   
   return(version)
-  
 }
 
-<<<<<<< HEAD
-=======
-}
-
-#' Get the swmm version the .out file was generated with
-#' 
-#' This function opens an .out file and extract the swmm version the file was 
-#' generated with. It belongs to a set of helper functions which aim to simplify 
-#' the work with .out files. The lifecycle of this function is considered 
-#' experimental.
-#' 
-#' @inheritParams read_out
-#' @return A vector of type integer
-#' @examples
-#' \dontrun{
-#' version <- get_out_version("model.out")
-#' } 
-#' @rdname get_out_version
-#' @export
-get_out_version <- function(file = "") {
-  
-  # get the content
-  list_of_results <- get_out_content(file)
-  
-  # extract version information
-  version <- list_of_results$meta$version
-  
-  return(version)
-  
-}
-
->>>>>>> master
 #' Get the content of an .out file.
 #' 
 #' This function opens an .out file and lists all available time series data.
@@ -322,8 +289,4 @@ get_out_content <- function(file = "") {
   }
   
   return(list_of_results)
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> master
