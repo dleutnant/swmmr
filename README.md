@@ -30,6 +30,13 @@ You can install the dev version from github with:
 remotes::install_github("dleutnant/swmmr")
 ```
 
+## Documentation
+
+Release: [https://hsonne.github.io/swmmr](https://kwb-r.github.io/swmmr)
+
+Development: [https://hsonne.github.io/swmmr/dev](https://kwb-r.github.io/swmmr/dev)
+
+
 ## Example
 
 This is a basic example which shows you how to work with the package. We
