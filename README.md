@@ -1,11 +1,9 @@
-swmmr
-================
+[![R-CMD-check](https://github.com/KWB-R/swmmr/workflows/R-CMD-check/badge.svg)](https://github.com/KWB-R/swmmr/actions?query=workflow%3AR-CMD-check)
+[![pkgdown](https://github.com/KWB-R/swmmr/workflows/pkgdown/badge.svg)](https://github.com/KWB-R/swmmr/actions?query=workflow%3Apkgdown)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/swmmr)](https://cran.r-project.org/package=swmmr)
+[![Build Status](https://travis-ci.org/dleutnant/swmmr.svg?branch=dev)](https://travis-ci.org/dleutnant/swmmr)
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/swmmr)](https://cran.r-project.org/package=swmmr)
-[![Build
-Status](https://travis-ci.org/dleutnant/swmmr.svg?branch=dev)](https://travis-ci.org/dleutnant/swmmr)
+# swmmr
 
 Functions to connect the widely used [Storm Water Management Model
 (SWMM)](https://www.epa.gov/water-research/storm-water-management-model-swmm)
