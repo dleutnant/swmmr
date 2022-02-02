@@ -4,6 +4,8 @@
 
 * junction parameters are correctly assigned by `shp_to_inp` (#44)
 
+* arguments for SWMM command line are now quoted (#72)
+
 # swmmr 0.9.1
 
 ## Breaking changes
