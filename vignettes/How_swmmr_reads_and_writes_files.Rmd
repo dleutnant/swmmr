@@ -4,7 +4,7 @@ author: "Dominik Leutnant"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How swmmr reads and writes inp files}
+  %\VignetteIndexEntry{How swmmr reads and writes SWMM files}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

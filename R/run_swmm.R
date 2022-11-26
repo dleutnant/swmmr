@@ -58,7 +58,7 @@ run_swmm <- function(inp,
   
   # execute command
   base::system2(command = exec, 
-                args = c(inp, rpt, out), 
+                args = shQuote(c(inp, rpt, out)), 
                 stdout = stdout,
                 stderr = stdout,
                 wait = wait,
