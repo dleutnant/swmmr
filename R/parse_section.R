@@ -175,21 +175,24 @@ parse_section.subareas <- function(x, ...) {
 #' import helper
 #' @keywords internal
 parse_section.infiltration <- function(x, ...) {
+
+  # Exactly one additional argument must be given in ...
+  arguments <- list(...)
+  stopifnot(length(arguments) == 1L)
   
+  horton_header <- c("MaxRate", "MinRate", "Decay", "DryTime", "MaxInfil")
+  green_ampt_header <- c("Suction", "Ksat", "IMD")
+  curve_number_header <- c("CurveNum", "empty", "DryTime")
+
   header <- switch(
-    unlist(list(...)), 
-    "horton" = c(
-      "Subcatchment","MaxRate", "MinRate", "Decay", "DryTime", "MaxInfil"
-    ), 
-    "green_ampt" = c(
-      "Subcatchment", "Suction", "Ksat", "IMD"
-    ), 
-    "curve_number" = c(
-      "Subcatchment", "CurveNum", "empty", "DryTime"
-    )
+    arguments[[1L]], 
+    horton = horton_header, 
+    green_ampt = green_ampt_header, 
+    modified_green_ampt = green_ampt_header,
+    curve_number = curve_number_header
   )
-  
-  separate_into(x, header)
+
+  separate_into(x, c("Subcatchment", header))
 }
 
 #' import helper

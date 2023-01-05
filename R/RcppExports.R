@@ -5,6 +5,10 @@ OpenSwmmOutFile <- function(outFile) {
     .Call('_swmmr_OpenSwmmOutFile', PACKAGE = 'swmmr', outFile)
 }
 
+GetSwmmResultPart <- function(iType, iIndex, vIndex, firstPeriod, lastPeriod) {
+    .Call('_swmmr_GetSwmmResultPart', PACKAGE = 'swmmr', iType, iIndex, vIndex, firstPeriod, lastPeriod)
+}
+
 GetSwmmResult <- function(iType, iIndex, vIndex) {
     .Call('_swmmr_GetSwmmResult', PACKAGE = 'swmmr', iType, iIndex, vIndex)
 }
