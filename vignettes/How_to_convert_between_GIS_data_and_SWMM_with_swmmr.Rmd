@@ -1,6 +1,6 @@
 ---
 title: "Conversion between GIS data and SWMM with swmmr"
-author: "Anneke Döring"
+author: "Anneke Doering"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -15,8 +15,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## swmmr's function inp_to_files
-
------
 
 This function is an addition to the swmmr package. The function inp_to_files is used to convert SWMM projects saved as .inp to several independent files. While geographical informations are stored in .shp files, informations of the sections options, report, raingages, evaporation, pollutants, landuses, buildup, washoff and coverages are stored in one .txt file named 'options.txt'. Furthermore timeseries are converted to SWMM's timeseries format and saved in .dat files.
 

@@ -27,9 +27,7 @@ not windows: "/usr/local/bin/swmm5" , "/usr/bin/swmm5"}
 \item{wait}{a logical (not \code{NA}) indicating whether the \R
     interpreter should wait for the command to finish, or run it
     asynchronously.  This will be ignored (and the interpreter will
-    always wait) if \code{stdout = TRUE} or \code{stderr = TRUE}. When
-    running the command asynchronously, no output will be displayed on
-    the \code{Rgui} console in Windows (it will be dropped, instead).}
+    always wait) if \code{stdout = TRUE} or \code{stderr = TRUE}.}
 }
 \description{
 This function runs a swmm inp file. If rpt and out files are not
