@@ -6,6 +6,7 @@
 #' @param x An inp object
 #' @param ... currently ignored
 #' @note Lifecycle: experimental
+#' @importFrom ggplot2 autoplot
 #' @examples
 #' \dontrun{
 #' inp <- read_inp("model.inp")

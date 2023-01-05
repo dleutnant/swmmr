@@ -4,7 +4,7 @@
 \alias{autoplot.inp}
 \title{Plot a swmm model structure using ggplot2}
 \usage{
-autoplot.inp(x, ...)
+\method{autoplot}{inp}(x, ...)
 }
 \arguments{
 \item{x}{An inp object}
