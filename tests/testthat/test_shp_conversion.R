@@ -1,4 +1,4 @@
-testthat::context("testing swmm conversion")
+testthat::context("testing shp to inp conversion")
 
 testthat::test_that("shp conversion", {
   
