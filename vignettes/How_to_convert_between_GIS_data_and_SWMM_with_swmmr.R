@@ -1,59 +1,35 @@
----
-title: "Conversion between GIS data and SWMM with swmmr"
-author: "Anneke Döring"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{How to convert GIS data and SWMM with swmmr}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE-----------------------------------------------------
 library(knitr)
 knitr::opts_chunk$set(echo = TRUE)
-```
 
-## swmmr's function inp_to_files
-
------
-
-This function is an addition to the swmmr package. The function inp_to_files is used to convert SWMM projects saved as .inp to several independent files. While geographical informations are stored in .shp files, informations of the sections options, report, raingages, evaporation, pollutants, landuses, buildup, washoff and coverages are stored in one .txt file named 'options.txt'. Furthermore timeseries are converted to SWMM's timeseries format and saved in .dat files.
-
-The usage of swmmr's function inp_to_files is explained with Example1 shipped with the SWMM executable:
-
-```{r load_libs, message= FALSE}
+## ----load_libs, message= FALSE------------------------------------------------
 # First load the following packages:
 library(swmmr)
 library(purrr)
 library(dplyr)
 library(sf)
-```
 
-```{r model_preparation}
+## ----model_preparation--------------------------------------------------------
 # in case your operating system is Windows, the examples are saved in the following directory:
 # "C:/Users/.../Documents/EPA SWMM Projects/Examples/"
 # please change the path to:
 # "C:/Users/.../Documents/EPA_SWMM_Projects/Examples/"
 # substitute '...' with your user name
-``` 
 
-```{r model_setup}
+## ----model_setup--------------------------------------------------------------
 # set path to inp
 # If your operating system is Windows, the Example1.inp model is usually 
 # located at "C:\Users\your user name\Documents\EPA SWMM Projects\Examples".
 # For convenience the Example1.inp model is also included in the swmmr package.
 # Feel free to change this to your path of choice.
 inp_file <- system.file("extdata", "Example1.inp", package = "swmmr", mustWork = TRUE)
-```
 
-```{r out_dir}
+## ----out_dir------------------------------------------------------------------
 # set the path to the output directory for the example files (here, we use a temp directory)
 # Feel free to change this to your path of choice. 
 out_dir <- tempdir()
-```
 
-```{r inp_to_files}
+## ----inp_to_files-------------------------------------------------------------
 # read the "Example1.inp" using read_inp
 Example1 <- read_inp(x = inp_file)
 
@@ -71,19 +47,8 @@ c("shp", "txt", "dat") %>%
   map( ~ file.path(out_dir, .)) %>% 
   map(list.files)
 
-```
 
-## swmmr's function shp_to_inp
-
------
-
-This is the counterpart to inp_to_files. Geographical informations stored in .shp files are converted to the input file format '.inp' of SWMM using R. Informations on simulation settings, rain timeseries etc., stored in .txt or .dat files, complete these geographical informations. 
-
-### Conversion of Example1 files to one inp file
-
-Based on the converted files of Example1, the usage of swmmr's function shp_to_inp is explained:
-
-```{r shp_to_inp}
+## ----shp_to_inp---------------------------------------------------------------
 # convert shp and txt files to inp object:
 Example1_con <- shp_to_inp(
   path_options = file.path(out_dir,"txt/Example1_options.txt"),
@@ -100,23 +65,8 @@ summary(Example1_con)
 # save the input file to a new folder in the output directory:
 dir.create(file.path(out_dir, "inp_new"))
 write_inp(Example1_con, file.path(out_dir, "inp_new", "Example1_con.inp"))
-```
 
-Now simulation runs can be initiated...
-
-
-## setup a new SWMM project using shp_to_inp
-
-There are three different ways to define the parameters of the different SWMM sections: 
-
-1. all parameter values are given in .shp files containing polygon, point or line features and one .txt file containing informations on simulation settings
-2. a minimum of information is given in the attribute tables of the shp files, additional parameters are completed with information given in the R objects: infiltration, subcatchment_typologies, conduit_material and junction_parameters
-3. information that is neither given in the input files (.shp or .txt) or supplementary R objects is internally complemented with default values
-
-### supplementary R objects:
-Here examples for the structure of supplementary R objects are given:
-
-```{r objects}
+## ----objects------------------------------------------------------------------
 # ... assuming infiltration parameters are not given in the .shp file, an R object (tibble or data.frame) called infiltration can be added. Additionally a column 'Soil' must be added to polygon shp file.
 
 infiltration <- tibble(
@@ -159,35 +109,4 @@ junction_parameters <- tibble(
   Apond = 1
 )
 
-```
 
-The shp_to_inp function relies on the correct naming of the column names given in the .shp files: either you use the original swmm encoding (also given in swmmr::read_inp) or the swmm encoding abbreviated to seven characters (which is coerced when storing shp files, e.g. with sf::st_write).
-
-In the moment, inp_to_files and shp_to_inp support the following SWMM inp sections:
-
-- options
-- raingages
-- subcatchments
-- subareas
-- infiltration
-- junctions
-- outfalls
-- storage
-- conduits
-- weirs
-- xsections
-- pollutants
-- landuses
-- coverages
-- buildup
-- washoff
-- curves
-- report
-- coordinates
-- polygons
-
-The following sections are implemented with restrictions:
-
-- evaporation: only constant value
-- pumps: missing default values
-- timeseries: *.dat file only

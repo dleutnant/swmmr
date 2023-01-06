@@ -8,8 +8,10 @@ sections_to_shp <- function(x, name, path_out) {
   stopifnot(inherits(x, "inp"))
 
   # ... check if shp folder exists in path_out otherwise create new directory
-  if (!file.exists(file.path(path_out, "shp"))) {
-    dir.create(file.path(path_out, "shp"))
+  shape_folder <- file.path(path_out, "shp")
+  
+  if (!file.exists(shape_folder)) {
+    dir.create(shape_folder)
   }
 
   # dleutnant: 
@@ -18,12 +20,15 @@ sections_to_shp <- function(x, name, path_out) {
   # s. https://github.com/r-spatial/sf/issues/649
   # This hack per default overwrites an existent file only on OS X 
   # it is assumend that SWMM users are less likely OS X users... ;-(
-  if (.get_os() == "darwin") {
-    warning("Data source is deleted before attempting to write.")
-    delete_dsn <- TRUE 
-  } else {
-    delete_dsn <- FALSE
-  }
+  
+  # update: 180413 issue is fixed in sf 0.6-1
+  # if (.get_os() == "darwin") {
+  #   warning("Data source is deleted before attempting to write.")
+  #   delete_dsn <- TRUE 
+  # } else {
+  #   delete_dsn <- FALSE
+  # }
+  delete_dsn <- FALSE
 
   # dleutnant: 
   # maybe instead of writing each section individually, we might
@@ -31,84 +36,50 @@ sections_to_shp <- function(x, name, path_out) {
   # inp_to_sf(x) %>% 
   #   purrr::iwalk(., ~ sf::st_write(.x, file.path(path_out, 
   #                                                paste0("shp/", .y, "_.shp"))))
+
+  # Configuration with:
+  # - element names = section names
+  # - each element is a list with one named element:
+  #   - name = name of the shape file
+  #   - value = function that converts from section to shape
+  config <- list(
+    subcatchments = list(polygon = subcatchments_to_sf),
+    conduits = list(link = links_to_sf),
+    junctions = list(point = junctions_to_sf),
+    outfalls = list(outfall = outfalls_to_sf),
+    weirs = list(weir = weirs_to_sf),
+    orifices = list(orifices = orifices_to_sf),
+    pumps = list(pumps = pumps_to_sf),
+    storage = list(storages = storages_to_sf)
+  )
+
+  shape_dir <- file.path(path_out, "shp")
   
-  # ... convert sections to sf
-  if ("subcatchments" %in% names(x)) {
-    polygon <- subcatchments_to_sf(x)
-    suppressMessages(sf::st_write(polygon,
-                                  file.path(path_out, 
-                                            paste0("shp/", name, "_polygon.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section subcatchments is missing")
-  }
+  for (section in names(config)) {
+    
+    section_config <- config[[section]]
+    conversion_function <- section_config[[1]]
+    shape_name <- names(section_config)[1]
 
-  if ("conduits" %in% names(x)) {
-    link <- links_to_sf(x)
-    suppressMessages(sf::st_write(link, 
-                                  file.path(path_out, 
-                                            paste0("shp/", name, "_link.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section conduits is missing")
+    # ... convert section to sf if contained in x
+    if (section %in% names(x)) {
+      
+      suppressMessages(sf::st_write(
+        conversion_function(x), 
+        dsn = file.path(shape_dir, paste0(name, "_", shape_name, ".shp")), 
+        delete_dsn = delete_dsn
+      ))
+      
+    } else {
+      
+      message(sprintf("section %s is missing", section))
+    }
   }
-
-  if ("junctions" %in% names(x)) {
-    point <- junctions_to_sf(x)
-    suppressMessages(sf::st_write(point, file.path(path_out,
-                                                   paste0("shp/", name, "_point.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section junctions is missing")
-  }
-
-  if ("outfalls" %in% names(x)) {
-    outfall <- outfalls_to_sf(x)
-    suppressMessages(sf::st_write(outfall, file.path(path_out, 
-                                                     paste0("shp/", name, "_outfall.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section outfalls is missing")
-  }
-
-  if ("weirs" %in% names(x)) {
-    weirs <- weirs_to_sf(x)
-    suppressMessages(sf::st_write(weirs, file.path(path_out, 
-                                                   paste0("shp/", name, "_weir.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section weirs is missing")
-  }
-
-  if ("orifices" %in% names(x)) {
-    orifices <- orifices_to_sf(x)
-    suppressMessages(sf::st_write(orifices, file.path(path_out, 
-                                                      paste0("shp/", name, "_orifices.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section orifices is missing")
-  }
-
-  if ("pumps" %in% names(x)) {
-    pumps <- pumps_to_sf(x)
-    suppressMessages(sf::st_write(pumps, file.path(path_out, 
-                                                   paste0("shp/", name, "_pumps.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section pumps is missing")
-  }
-
-  if ("storage" %in% names(x)) {
-    storages <- storages_to_sf(x)
-    suppressMessages(sf::st_write(storages, file.path(path_out, 
-                                                      paste0("shp/", name, "_storages.shp")),
-                                  delete_dsn = delete_dsn))
-  } else {
-    print("section storage is missing")
-  }
-
-  print(paste0("*.shp files were written to: ", path_out, "/shp"))
+  
+  message(sprintf("*.shp files were written to %s", shape_dir))
 }
+
+#write_section_if_in_list <- function(x, section, conversion_function, file, ...)
 
 #' conversion helper
 #' @keywords internal
@@ -195,12 +166,11 @@ options_to_txt <- function(x, name, path_out) {
     # unlist and save txt file
     writeLines(unlist(options_txt), con = file.path(path_out, paste0("txt/", name, "_options.txt")))
 
-    print(paste0("*.txt file was written to: ", path_out, "/txt"))
+    message(sprintf("*.txt file was written to %s/txt", path_out))
   } else {
-    print("section options is missing")
+    message("section options is missing")
   }
 }
-
 
 #' conversion helper
 #' @keywords internal
@@ -219,26 +189,18 @@ curves_to_txt <- function(x, name, path_out) {
     # ...replace NA with the most recent non-NA prior it
     x$curves <- zoo::na.locf(x$curves)
 
-    # add coulumn for grouping
-    x$curves$group <- x$curves$Name
-
-    # group and split tibble
-    list_of_curves <- x$curves %>%
-      dplyr::group_by(group) %>%
-      tidyr::nest() %>%
-      dplyr::select(data) %>%
-      unlist(recursive = F)
+    # ... split by curve name
+    list_of_curves <- split(x$curves, x$curves$Name)
 
     # write table for each curve
     mapply(utils::write.table, list_of_curves, 
            file = paste0(path_out, "/txt/", name, "_", 
-                         unlist(lapply(list_of_curves, "[[", 1, 1)), ".txt"), 
+                         unlist(lapply(lapply(list_of_curves, "[[", 1), "[[", 1)), ".txt"), 
            sep = " ", dec = ".", col.names = F, row.names = F, quote = F)
 
-
-    print(paste0("curve.txt files were written to:", path_out, "/txt"))
+    message(sprintf("curve.txt files were written to %s/txt", path_out))
   } else {
-    print("section curves is missing")
+    message("section curves is missing")
   }
 }
 
@@ -275,10 +237,9 @@ timeseries_to_dat <- function(x, name, path_out) {
         }
       }
       
-    print(paste0("timeseries.dat files were written to: ", path_out, "/dat"))
-    
+    message(sprintf("timeseries.dat files were written to %s/dat", path_out))
   } else {
-    print("section timeseries is missing")
+    message("section timeseries is missing")
   }
 }
 
@@ -286,11 +247,13 @@ timeseries_to_dat <- function(x, name, path_out) {
 #'
 #' @param x An object of class inp.
 #' @param name Give a name for the current model, e.g. "Example1".
-#' @param path_out  Writeable directory name where to save the converted files. Folders: dat, shp and txt will be created if not existent.
+#' @param path_out  Writeable directory name where to save the converted files.
+#' Folders: dat, shp and txt will be created if not existent. Default is the 
+#' current working directory of the R process.
 #' @return .dat, .shp and/or .txt files.
 #' @rdname inp_to_files
 #' @export
-inp_to_files <- function(x, name, path_out) {
+inp_to_files <- function(x, name, path_out = getwd()) {
   # check class
   stopifnot(inherits(x, "inp"))
 

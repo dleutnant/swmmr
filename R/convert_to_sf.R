@@ -22,6 +22,7 @@
 #' orifices, pumps, subcatchments and raingages to a list of simple features
 #'
 #' @param x An object of class 'inp', created by \code{\link{read_inp}}.
+#' @param remove_invalid Should invalid sf geometries be removed?
 #' @return A simple feature or a list of simple features
 #' @name convert_to_sf
 #' @seealso \code{\link[sf]{sf}}
@@ -31,15 +32,10 @@ NULL
 #' @rdname convert_to_sf
 raingages_to_sf <- function(x) {
 
-  # checks if sf is available
-  check_pkg_avail("sf")
-    
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("raingages", "symbols") %in% names(x))) {
-    warning("incomplete features: raingages")
+  if (has_incomplete_features(x, "raingages", c("raingages", "symbols"))) {
     return(NULL)
   } 
   
@@ -50,19 +46,38 @@ raingages_to_sf <- function(x) {
     create_sf_of_pt()
 }
 
+#' Helper function
+#' @keywords internal
+check_package_and_class <- function(x, package = "sf", class = "inp") {
+  
+  # checks if sf is available
+  check_pkg_avail(package)
+  
+  # check class and required elements
+  stopifnot(inherits(x, class))
+}
+
+#' Helper function
+#' @keywords internal
+has_incomplete_features <- function(x, subject, features) {
+  
+  incomplete <- ! all(features %in% names(x))
+  
+  if (incomplete) {
+    warning("incomplete features: ", subject)
+  } 
+
+  incomplete
+}
+
 #' @export
 #' @rdname convert_to_sf
 junctions_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
+  check_package_and_class(x)
   
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
-
   # check sections
-  if (!all(c("junctions", "coordinates") %in% names(x))) {
-    warning("incomplete features: junctions")
+  if (has_incomplete_features(x, "junctions", c("junctions", "coordinates"))) {
     return(NULL)
   } 
   
@@ -78,15 +93,10 @@ junctions_to_sf <- function(x) {
 #' @rdname convert_to_sf
 outfalls_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("outfalls", "coordinates") %in% names(x))) {
-    warning("incomplete features: outfalls")
+  if (has_incomplete_features(x, "outfalls", c("outfalls", "coordinates"))) {
     return(NULL)
   } 
   
@@ -102,15 +112,10 @@ outfalls_to_sf <- function(x) {
 #' @rdname convert_to_sf
 storages_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("storage", "coordinates") %in% names(x))) {
-    warning("incomplete features: storage")
+  if (has_incomplete_features(x, "storage", c("storage", "coordinates"))) {
     return(NULL)
   } 
   
@@ -126,15 +131,12 @@ storages_to_sf <- function(x) {
 #' @rdname convert_to_sf
 subcatchments_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
-
+  check_package_and_class(x)
+  
   # check sections
-  if (!all(c("subcatchments", "subareas", "infiltration", "polygons") %in% names(x))) {
-    warning("incomplete features: subcatchments")
+  if (has_incomplete_features(x, "subcatchments", c(
+    "subcatchments", "subareas", "infiltration", "polygons"
+  ))) {
     return(NULL)
   } 
   
@@ -150,16 +152,18 @@ subcatchments_to_sf <- function(x) {
                      by = c("Name" = "Subcatchment")) 
   
   # add lids if available
-  if ("lidusage" %in% names(x)) {
+  if ("lid_usage" %in% names(x)) {
     subc_sf <- dplyr::left_join(x = subc_sf,
-                                y = x[["lidusage"]],
+                                y = x[["lid_usage"]],
                                 by = c("Name" = "Subcatchment"),
-                                suffix = c(".subcatchment", ".lidusage"))
+                                suffix = c(".subcatchment", ".lid_usage"))
   }
     
   subc_sf <- subc_sf %>% 
     # nest by coordinates
-    tidyr::nest(`X-Coord`,`Y-Coord`, .key = "geometry") %>%
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
+    # remove geometries with less than 3 points
+    dplyr::filter(purrr::map_lgl(geometry, ~ nrow(.)>2)) %>% 
     # check if polygon is closed
     dplyr::mutate(polygon_is_closed = purrr::map_lgl(geometry,
                                                      ~ identical(head(., 1),
@@ -188,15 +192,10 @@ subcatchments_to_sf <- function(x) {
 #' @rdname convert_to_sf
 links_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("conduits", "coordinates") %in% names(x))) {
-    warning("incomplete features: links")
+  if (has_incomplete_features(x, "links", c("conduits", "coordinates"))) {
     return(NULL)
   } 
   
@@ -254,15 +253,10 @@ links_to_sf <- function(x) {
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("weirs", "coordinates") %in% names(x))) {
-    warning("incomplete features: weirs")
+  if (has_incomplete_features("weirs", c("weirs", "coordinates"))) {
     return(NULL)
   } 
   
@@ -306,15 +300,10 @@ weirs_to_sf <- function(x) {
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("orifices", "coordinates") %in% names(x))) {
-    warning("incomplete features: orifices")
+  if (has_incomplete_features(x, "orifices", c("orifices", "coordinates"))) {
     return(NULL)
   } 
   
@@ -358,15 +347,10 @@ orifices_to_sf <- function(x) {
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("pumps", "coordinates") %in% names(x))) {
-    warning("incomplete features: pumps")
+  if (has_incomplete_features(x, "pumps", c("pumps", "coordinates"))) {
     return(NULL)
   } 
   
@@ -410,15 +394,10 @@ pumps_to_sf <- function(x) {
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("weirs", "coordinates") %in% names(x))) {
-    warning("incomplete features: weirs")
+  if (has_incomplete_features(x, "weirs", c("weirs", "coordinates"))) {
     return(NULL)
   } 
   
@@ -465,7 +444,7 @@ weirs_to_sf <- function(x) {
   # create df with sf column
   sf <- weirs_df %>% 
     dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>%
                                           sf::st_linestring(.))) %>% 
@@ -486,15 +465,10 @@ weirs_to_sf <- function(x) {
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("orifices", "coordinates") %in% names(x))) {
-    warning("incomplete features: orifices")
+  if (has_incomplete_features(x, "orifices", c("orifices", "coordinates"))) {
     return(NULL)
   } 
   
@@ -541,7 +515,7 @@ orifices_to_sf <- function(x) {
   # create df with sf column
   sf <- orifices_df %>% 
     dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>%
                                           sf::st_linestring(.))) %>% 
@@ -562,15 +536,10 @@ orifices_to_sf <- function(x) {
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # check sections
-  if (!all(c("pumps", "coordinates") %in% names(x))) {
-    warning("incomplete features: pumps")
+  if (has_incomplete_features(x, "pumps", c("pumps", "coordinates"))) {
     return(NULL)
   } 
   
@@ -617,7 +586,7 @@ pumps_to_sf <- function(x) {
   # create df with sf column
   sf <- pumps_df %>% 
     dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>%
                                           sf::st_linestring(.))) %>% 
@@ -637,13 +606,9 @@ pumps_to_sf <- function(x) {
 
 #' @export
 #' @rdname convert_to_sf
-inp_to_sf <- function(x) {
+inp_to_sf <- function(x, remove_invalid = TRUE) {
   
-  # checks if sf is available
-  check_pkg_avail("sf")
-  
-  # check class
-  stopifnot(inherits(x, "inp"))
+  check_package_and_class(x)
   
   # return list with simple features of swmm objects
   sf <- list(subcatchments = subcatchments_to_sf(x), 
@@ -656,14 +621,24 @@ inp_to_sf <- function(x) {
              pumps = pumps_to_sf(x),
              raingages = raingages_to_sf(x))
   
-  # discard NULLs
-  sf <- purrr::discard(sf, is.null) %>% 
+  # discard nulls
+  sf <- purrr::discard(sf, is.null)
+  
+  # should invalid sf geometries be removed?
+  if (remove_invalid) {
+    
+    # get index of invalid sf geometries
+    list_of_idx <- purrr::map(sf, sf::st_is_valid)
+    
+    # raise warning in case of invalid geometries
+    purrr::iwalk(list_of_idx,  ~ {
+      if (anyNA(.x)) warning(paste("removing invalid geometries of", .y))
+    })
+    
     # remove invalid geometries
-    purrr::iwalk( ~ {
-    if (anyNA(sf::st_is_valid(.x))) {
-      warning(paste("removing invalid geometries of", .y))
-    }}) %>% 
-    purrr::map( ~ .[!is.na(sf::st_is_valid(.)), ])
+    sf <- purrr::map2(sf, list_of_idx,  ~ .x[!is.na(.y), ])
+    
+  }
   
   return(sf)
 }
@@ -676,7 +651,7 @@ inp_to_sf <- function(x) {
 create_sf_of_pt <- function(x) {
   
   # nest by coordinates
-  tidyr::nest(x, `X-Coord`,`Y-Coord`, .key = "geometry") %>% 
+  tidyr::nest(x, geometry = c(`X-Coord`, `Y-Coord`)) %>%
     # create points
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>% 
@@ -706,7 +681,7 @@ create_sf_of_linestring <- function(x) {
   # create df with sf column
   sf <- x %>% 
     dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(`X-Coord`, `Y-Coord`, .key = "geometry") %>% 
+    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     dplyr::mutate(geometry = purrr::map(geometry,
                                         ~ data.matrix(.) %>%
                                           sf::st_linestring(.))) %>% 

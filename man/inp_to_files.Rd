@@ -4,14 +4,16 @@
 \alias{inp_to_files}
 \title{Convert SWMM's .inp to .shp and txt files}
 \usage{
-inp_to_files(x, name, path_out)
+inp_to_files(x, name, path_out = getwd())
 }
 \arguments{
 \item{x}{An object of class inp.}
 
 \item{name}{Give a name for the current model, e.g. "Example1".}
 
-\item{path_out}{Writeable directory name where to save the converted files. Folders: dat, shp and txt will be created if not existent.}
+\item{path_out}{Writeable directory name where to save the converted files.
+Folders: dat, shp and txt will be created if not existent. Default is the
+current working directory of the R process.}
 }
 \value{
 .dat, .shp and/or .txt files.

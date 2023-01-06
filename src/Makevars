@@ -1,0 +1,2 @@
+# Support large files > 2 GB
+PKG_CPPFLAGS = -D_FILE_OFFSET_BITS=64

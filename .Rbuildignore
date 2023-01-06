@@ -1,3 +1,4 @@
+^CRAN-RELEASE$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^cran-comments\.md$
@@ -5,3 +6,4 @@
 ^README-.*\.png$
 ^\.travis\.yml$
 ^CONDUCT\.md$
+^\.github$
