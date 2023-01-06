@@ -728,7 +728,9 @@ parse_section.subcatchment_runoff_summary <- function(x, ...) {
   
   separate_into(skip_head(x, 6), c("Subcatchment", paste(
     sep = "_", "Total", c(
-      "Precip", "Runon", "Evap", "Infil", "Runoff_Depth", "Runoff_Volume", 
+      "Precip", "Runon", "Evap", "Infil", 
+      "Runoff_imperv_Depth", "Runoff_perv_Depth",
+      "Runoff_Depth", "Runoff_Volume", 
       "Peak_Runoff", "Runoff_Coeff"
     )
   )))
@@ -738,9 +740,6 @@ parse_section.subcatchment_runoff_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.lid_performance_summary <- function(x, ...) {
   
-  #c("Total","Evap","Infil","Surface","Drain","Initial","Final","Continuity")
-  #c("Inflow","Loss","Loss","Outflow","Outflow","Storage","Storage","Error")
-
   separate_into(skip_head(x, 6), c(
     "Subcatchment","LID Control", 
     paste(
