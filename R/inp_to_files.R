@@ -1,6 +1,6 @@
 #' conversion helper
 #' @keywords internal
-sections_to_shp <- function(x, name, path_out) {
+sections_to_shp <- function(x, name, path_out, quiet = FALSE) {
   # ... convert inp to shp and save shape files
   # ... if implemented: convert weirs (links), orifices (links), pumps (links) and storages (point) to shape files
 
@@ -67,7 +67,8 @@ sections_to_shp <- function(x, name, path_out) {
       suppressMessages(sf::st_write(
         conversion_function(x), 
         dsn = file.path(shape_dir, paste0(name, "_", shape_name, ".shp")), 
-        delete_dsn = delete_dsn
+        delete_dsn = delete_dsn,
+        quiet = quiet
       ))
       
     } else {
@@ -250,10 +251,12 @@ timeseries_to_dat <- function(x, name, path_out) {
 #' @param path_out  Writeable directory name where to save the converted files.
 #' Folders: dat, shp and txt will be created if not existent. Default is the 
 #' current working directory of the R process.
+#' @param quiet if \code{TRUE} debug messages are suppressed, default: 
+#' \code{FALSE}
 #' @return .dat, .shp and/or .txt files.
 #' @rdname inp_to_files
 #' @export
-inp_to_files <- function(x, name, path_out = getwd()) {
+inp_to_files <- function(x, name, path_out = getwd(), quiet = FALSE) {
   # check class
   stopifnot(inherits(x, "inp"))
 
@@ -268,7 +271,7 @@ inp_to_files <- function(x, name, path_out = getwd()) {
   }
 
   # convert and save input sections to shape files
-  sections_to_shp(x, name, path_out)
+  sections_to_shp(x, name, path_out, quiet = quiet)
 
   # convert and save selection of input sections to txt files
   options_to_txt(x, name, path_out)
