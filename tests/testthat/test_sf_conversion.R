@@ -47,7 +47,7 @@ testthat::test_that("sf conversion", {
     point_sf = purrr::map(inp_obj, ~ if("junctions" %in% names(.x)) swmmr::junctions_to_sf(.x)),
     outfall_sf = purrr::map(inp_obj, ~ if("outfalls" %in% names(.x)) swmmr::outfalls_to_sf(.x)),
     line_sf = purrr::map(inp_obj, ~ if("conduits" %in% names(.x)) swmmr::links_to_sf(.x)),
-    path_timeseries <- purrr::map2(temp_files, inp_names, ~ path_or_null(list.files(file.path(.x,"dat"), "timeseries", full.names = TRUE))),
+    path_timeseries = purrr::map2(temp_files, inp_names, ~ path_or_null(list.files(file.path(.x,"dat"), "timeseries", full.names = TRUE))),
     pumps_sf = purrr::map(inp_obj, ~ if("pumps" %in% names(.x)) swmmr::pumps_to_sf(.x)),
     path_pump_curve = purrr::map2(temp_files, inp_names, ~ path_or_null(.x,"txt", paste0(.y,"_PUMP_CURVE1.shp"))), # only valid for example 3
     weirs_sf = purrr::map(inp_obj, ~ if("weirs" %in% names(.x)) swmmr::weirs_to_sf(.x)),
