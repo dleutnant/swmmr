@@ -4,7 +4,7 @@
 \alias{sections_to_shp}
 \title{conversion helper}
 \usage{
-sections_to_shp(x, name, path_out)
+sections_to_shp(x, name, path_out, quiet = FALSE)
 }
 \description{
 conversion helper

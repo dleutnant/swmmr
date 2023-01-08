@@ -1,12 +1,16 @@
 #' conversion helper
 #' @keywords internal
-sections_to_shp <- function(x, name, path_out) {
+sections_to_shp <- function(x, name, path_out, quiet = FALSE)
+{
   # ... convert inp to shp and save shape files
   # ... if implemented: convert weirs (links), orifices (links), pumps (links) and storages (point) to shape files
 
   # check class
   stopifnot(inherits(x, "inp"))
 
+  # helper function
+  msg <- function(...) if (!quiet) message(...)
+  
   # ... check if shp folder exists in path_out otherwise create new directory
   shape_folder <- file.path(path_out, "shp")
   
@@ -67,27 +71,32 @@ sections_to_shp <- function(x, name, path_out) {
       suppressMessages(sf::st_write(
         conversion_function(x), 
         dsn = file.path(shape_dir, paste0(name, "_", shape_name, ".shp")), 
-        delete_dsn = delete_dsn
+        delete_dsn = delete_dsn,
+        quiet = quiet
       ))
       
     } else {
       
-      message(sprintf("section %s is missing", section))
+      msg(sprintf("section %s is missing", section))
     }
   }
   
-  message(sprintf("*.shp files were written to %s", shape_dir))
+  msg(sprintf("*.shp files were written to %s", shape_dir))
 }
 
 #write_section_if_in_list <- function(x, section, conversion_function, file, ...)
 
 #' conversion helper
 #' @keywords internal
-options_to_txt <- function(x, name, path_out) {
+options_to_txt <- function(x, name, path_out, quiet = FALSE)
+{
   # convert section options, report, raingages, evaporation and if implemented: pollutant, landuse, buildup, washoff, coverage, (lid_controls lid_usage --> not in examples) to options.txt
   # check class and required elements
   stopifnot(inherits(x, "inp"))
 
+  # helper function
+  msg <- function(...) if (!quiet) message(...)
+  
   if ("options" %in% names(x)) {
     # ... check if txt folder exists in path_out otherwise create new directory
     if (!file.exists(file.path(path_out, "txt"))) {
@@ -166,19 +175,25 @@ options_to_txt <- function(x, name, path_out) {
     # unlist and save txt file
     writeLines(unlist(options_txt), con = file.path(path_out, paste0("txt/", name, "_options.txt")))
 
-    message(sprintf("*.txt file was written to %s/txt", path_out))
+    msg(sprintf("*.txt file was written to %s/txt", path_out))
+
   } else {
-    message("section options is missing")
+    
+    msg("section options is missing")
   }
 }
 
 #' conversion helper
 #' @keywords internal
-curves_to_txt <- function(x, name, path_out) {
+curves_to_txt <- function(x, name, path_out, quiet = FALSE)
+{
   # if implemented: convert curves to txt files
   # check class and required elements
   stopifnot(inherits(x, "inp"))
 
+  # helper function
+  msg <- function(...) if (!quiet) message(...)
+  
   if ("curves" %in% names(x)) {
 
     # ... check if txt folder exists in path_out otherwise create new directory
@@ -198,19 +213,25 @@ curves_to_txt <- function(x, name, path_out) {
                          unlist(lapply(lapply(list_of_curves, "[[", 1), "[[", 1)), ".txt"), 
            sep = " ", dec = ".", col.names = F, row.names = F, quote = F)
 
-    message(sprintf("curve.txt files were written to %s/txt", path_out))
+    msg(sprintf("curve.txt files were written to %s/txt", path_out))
+
   } else {
-    message("section curves is missing")
+    
+    msg(!quiet, "section curves is missing")
   }
 }
 
 #' conversion helper
 #' @keywords internal
-timeseries_to_dat <- function(x, name, path_out) {
+timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
+{
   # if implemented: convert timeseries to dat files
   
   # check class and required elements
   stopifnot(inherits(x, "inp"))
+
+  # helper function
+  msg <- function(...) if (!quiet) message(...)
   
   if ("timeseries" %in% names(x)) {
     # ... check if txt folder exists in path_out otherwise create new directory
@@ -237,9 +258,11 @@ timeseries_to_dat <- function(x, name, path_out) {
         }
       }
       
-    message(sprintf("timeseries.dat files were written to %s/dat", path_out))
+    msg(sprintf("timeseries.dat files were written to %s/dat", path_out))
+    
   } else {
-    message("section timeseries is missing")
+    
+    msg("section timeseries is missing")
   }
 }
 
@@ -250,10 +273,13 @@ timeseries_to_dat <- function(x, name, path_out) {
 #' @param path_out  Writeable directory name where to save the converted files.
 #' Folders: dat, shp and txt will be created if not existent. Default is the 
 #' current working directory of the R process.
+#' @param quiet if \code{TRUE} debug messages are suppressed, default: 
+#' \code{FALSE}
 #' @return .dat, .shp and/or .txt files.
 #' @rdname inp_to_files
 #' @export
-inp_to_files <- function(x, name, path_out = getwd()) {
+inp_to_files <- function(x, name, path_out = getwd(), quiet = FALSE)
+{
   # check class
   stopifnot(inherits(x, "inp"))
 
@@ -266,16 +292,16 @@ inp_to_files <- function(x, name, path_out = getwd()) {
   if (is.null(path_out)) {
     stop("path_out is missing")
   }
-
+  
   # convert and save input sections to shape files
-  sections_to_shp(x, name, path_out)
+  sections_to_shp(x, name, path_out, quiet = quiet)
 
   # convert and save selection of input sections to txt files
-  options_to_txt(x, name, path_out)
+  options_to_txt(x, name, path_out, quiet = quiet)
 
   # write curves to txt
-  curves_to_txt(x, name, path_out)
+  curves_to_txt(x, name, path_out, quiet = quiet)
 
   # timeseries to txt
-  timeseries_to_dat(x, name, path_out)
+  timeseries_to_dat(x, name, path_out, quiet = quiet)
 }

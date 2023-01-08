@@ -4,7 +4,7 @@
 \alias{curves_to_txt}
 \title{conversion helper}
 \usage{
-curves_to_txt(x, name, path_out)
+curves_to_txt(x, name, path_out, quiet = FALSE)
 }
 \description{
 conversion helper

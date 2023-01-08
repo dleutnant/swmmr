@@ -9,9 +9,9 @@
 #' the following paths are looked up when package gets loaded:
 #' windows: "C:/Program Files (x86)/EPA SWMM 5.X.XXX/swmm5.exe" 
 #' not windows: "/usr/local/bin/swmm5" , "/usr/bin/swmm5"
-#' @details The path to a swmm5 executable is read by calling 'getOption("swmmr.exec")'.
 #' @inheritParams base::system2
-#' @examples  
+#' @details The path to a swmm5 executable is read by calling 'getOption("swmmr.exec")'.
+#' @examples
 #' \dontrun{
 #' result <- run_swmm("model.inp")
 #' }
@@ -22,6 +22,7 @@ run_swmm <- function(inp,
                      out = NULL,
                      exec = NULL,
                      stdout = "", 
+                     stderr = "",
                      wait = TRUE) {
   
   # get the path of the executable on the precoded paths...
