@@ -21,6 +21,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// GetSwmmResultPart
+Rcpp::NumericVector GetSwmmResultPart(int iType, int iIndex, int vIndex, int firstPeriod, int lastPeriod);
+RcppExport SEXP _swmmr_GetSwmmResultPart(SEXP iTypeSEXP, SEXP iIndexSEXP, SEXP vIndexSEXP, SEXP firstPeriodSEXP, SEXP lastPeriodSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type iType(iTypeSEXP);
+    Rcpp::traits::input_parameter< int >::type iIndex(iIndexSEXP);
+    Rcpp::traits::input_parameter< int >::type vIndex(vIndexSEXP);
+    Rcpp::traits::input_parameter< int >::type firstPeriod(firstPeriodSEXP);
+    Rcpp::traits::input_parameter< int >::type lastPeriod(lastPeriodSEXP);
+    rcpp_result_gen = Rcpp::wrap(GetSwmmResultPart(iType, iIndex, vIndex, firstPeriod, lastPeriod));
+    return rcpp_result_gen;
+END_RCPP
+}
 // GetSwmmResult
 Rcpp::NumericVector GetSwmmResult(int iType, int iIndex, int vIndex);
 RcppExport SEXP _swmmr_GetSwmmResult(SEXP iTypeSEXP, SEXP iIndexSEXP, SEXP vIndexSEXP) {
@@ -57,6 +72,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_swmmr_OpenSwmmOutFile", (DL_FUNC) &_swmmr_OpenSwmmOutFile, 1},
+    {"_swmmr_GetSwmmResultPart", (DL_FUNC) &_swmmr_GetSwmmResultPart, 5},
     {"_swmmr_GetSwmmResult", (DL_FUNC) &_swmmr_GetSwmmResult, 3},
     {"_swmmr_GetSwmmTimes", (DL_FUNC) &_swmmr_GetSwmmTimes, 0},
     {"_swmmr_CloseSwmmOutFile", (DL_FUNC) &_swmmr_CloseSwmmOutFile, 0},
