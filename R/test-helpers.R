@@ -1,9 +1,9 @@
 # example_input_files ----------------------------------------------------------
-example_input_files <- function()
+example_input_files <- function(ids = 1:6)
 {
   system.file(
     "extdata", 
-    paste0("Example", 1:6, ".inp"), 
+    paste0("Example", ids, ".inp"), 
     package = "swmmr", 
     mustWork = TRUE
   )
