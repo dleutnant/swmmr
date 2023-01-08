@@ -1,3 +1,6 @@
+#source("./tests/testthat.R")
+#source("./tests/testthat/helpers.R")
+
 testthat::context("testing swmm io")
 
 testthat::test_that("swmm_io", {
@@ -11,11 +14,17 @@ testthat::test_that("swmm_io", {
   
   # initially run the models and save results to temp file
   temp_file <- purrr::rerun(length(inp_files), tempfile())
-  purrr::walk2(.x = inp_files, 
-               .y = temp_file,
-               ~ swmmr::run_swmm(.x, 
-                                 rpt = paste0(.y, ".rpt"),
-                                 out = paste0(.y, ".out")))
+  
+  purrr::walk2(
+    .x = inp_files, 
+    .y = temp_file,
+    ~ swmmr::run_swmm(
+      .x, 
+      rpt = paste0(.y, ".rpt"), 
+      out = paste0(.y, ".out"), 
+      stdout = FALSE
+    )
+  )
   
   # get the size of original rpt and out files
   orig_size_of_rpt <- file.size(paste0(temp_file, ".rpt"))
@@ -31,21 +40,20 @@ testthat::test_that("swmm_io", {
   purrr::walk2(inp_obj, tmp_inp, ~ swmmr::write_inp(.x, .y))
   
   # run the new models
-  purrr::walk(tmp_inp, swmmr::run_swmm)
+  purrr::walk(tmp_inp, swmmr::run_swmm, stdout = FALSE)
   
   # get the size of new rpt and out files
   new_size_of_rpt <- file.size(paste0(tmp_inp, ".rpt"))
   new_size_of_out <- file.size(paste0(tmp_inp, ".out"))
   
   # remove files
-  purrr::walk(c(tmp_inp, temp_file), ~ file.remove(list.files(tempdir(), 
-                                                              full.names = TRUE,
-                                                              pattern = basename(.))))
+  purrr::walk(c(tmp_inp, temp_file), ~ file.remove(
+    list.files(tempdir(), full.names = TRUE, pattern = basename(.))
+  ))
   
   # perform tests (with tolerance for rpt files due to tiny title change)
   testthat::expect_equal(orig_size_of_rpt, new_size_of_rpt, tolerance = 1e-3, info = "rpt check")
   testthat::expect_equal(orig_size_of_out, new_size_of_out, info = "out check")
-  
 })
 
 testthat::test_that("rpt_reader", {
@@ -59,15 +67,23 @@ testthat::test_that("rpt_reader", {
   
   # initially run the models and save results to temp file
   temp_file <- purrr::rerun(length(inp_files), tempfile())
-  purrr::walk2(.x = inp_files, 
-               .y = temp_file,
-               ~ swmmr::run_swmm(.x, 
-                                 rpt = paste0(.y, ".rpt"),
-                                 out = paste0(.y, ".out")))
-
+  
+  purrr::walk2(
+    .x = inp_files, 
+    .y = temp_file,
+    ~ swmmr::run_swmm(
+      .x, 
+      rpt = paste0(.y, ".rpt"),
+      out = paste0(.y, ".out"), stdout = FALSE
+    )
+  )
+  
   # read rpt files
   list_of_rpt <- paste0(temp_file, ".rpt") %>% 
-    purrr::map(swmmr::read_rpt)
+    purrr::map(
+      swmmr::read_rpt, 
+      locale = readr::locale(encoding = "ISO-8859-1")
+    )
   
   purrr::walk(list_of_rpt, testthat::expect_s3_class, class = "rpt")  
 })
