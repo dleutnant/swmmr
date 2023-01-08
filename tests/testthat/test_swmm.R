@@ -95,28 +95,38 @@ testthat::test_that("swmm error", {
   testthat::skip_on_travis()
   
   # get the inp files
-  inp_file <- system.file("extdata", paste0("Example", 1, ".inp"), 
-                           package = "swmmr", mustWork = TRUE)
+  inp_file <- swmmr:::example_input_files(ids = 1L)
   
   # read model
   inp <- swmmr::read_inp(inp_file)
+  
   # set new parameters and update inp object
+  
   # Error 1
-  inp$timeseries <- transform(inp$timeseries, Name = "IDoNotExist")
+  inp$timeseries <- transform(
+    inp$timeseries, 
+    Name = "IDoNotExist"
+  )
+  
   # Error 2
-  inp$subcatchments <- transform(inp$subcatchments, 
-                                 Name = sample(1:1e3, nrow(inp$subcatchments)))
+  inp$subcatchments <- transform(
+    inp$subcatchments, 
+    Name = sample(1:1e3, nrow(inp$subcatchments))
+  )
   
   # write new inp file to disk
   tmp_inp <- tempfile()
   write_inp(inp, tmp_inp)
   
   # run swmm and expect error
-  swmmr::run_swmm(inp = tmp_inp, 
-                  rpt = paste0(tmp_inp, ".rpt"),
-                  out = paste0(tmp_inp, ".out"))
+  testthat::expect_warning(swmmr::run_swmm(
+    inp = tmp_inp, 
+    rpt = paste0(tmp_inp, ".rpt"),
+    out = paste0(tmp_inp, ".out"), 
+    stdout = FALSE
+  ))
   
-  testthat::expect_message({
+  testthat::expect_message(regexp = "There are errors", {
     rpt <- swmmr::read_rpt(paste0(tmp_inp, ".rpt"))
   })
   
