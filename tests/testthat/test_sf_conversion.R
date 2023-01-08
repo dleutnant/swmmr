@@ -26,7 +26,7 @@ testthat::test_that("sf conversion", {
     ))
   
   # export models to temp dir
-  temp_files <- purrr::rerun(length(inp_obj), tempfile())
+  temp_files <- purrr::map(seq_along(inp_obj), ~ tempfile())
   purrr::walk(temp_files, ~ dir.create(path = .))
   
   # inp to files

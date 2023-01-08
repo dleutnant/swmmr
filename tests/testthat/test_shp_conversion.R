@@ -26,7 +26,7 @@ testthat::test_that("shp conversion", {
   
   # export models to temp dir
   #lapply(temp_files, unlink, recursive = TRUE) # Remove exsiting folders!
-  temp_files <- purrr::rerun(length(inp_obj), tempfile())
+  temp_files <- purrr::map(seq_along(inp_obj), ~ tempfile())
   purrr::walk(temp_files, ~ dir.create(path = .))
   
   # inp to files
