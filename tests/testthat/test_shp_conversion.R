@@ -1,5 +1,6 @@
 #source("./tests/testthat.R")
 #source("./tests/testthat/helpers.R")
+#source("./R/test-helpers.R")
 
 testthat::context("testing shp to inp conversion")
 
@@ -66,8 +67,23 @@ testthat::test_that("shp conversion", {
     ))
   
   # compare the differences
-  purrr::map2(summaries_orig, summaries_converted, ~ merge(
+  comparisons <- purrr::map2(summaries_orig, summaries_converted, ~ merge(
     .x,.y, by = "section"
   ))
+
+  # in these sections there are differences!
+  sections_with_diffs <- c(
+    "infiltration",
+    "polygons",
+    "subareas",
+    "subcatchments",
+    "timeseries",
+    "xsections"
+  )
+  
+  expect_true(all(sapply(comparisons, function(x) {
+    no_diff_expected <- !x$section %in% sections_with_diffs
+    all(x[no_diff_expected, 2L] == x[no_diff_expected, 3L])
+  })))
   
 })
