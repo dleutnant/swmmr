@@ -7,8 +7,7 @@ testthat::test_that("swmm_io", {
   testthat::skip_on_travis()
   
   # get the inp files
-  inp_files <- system.file("extdata", paste0("Example", 1:6, ".inp"), 
-                           package = "swmmr", mustWork = TRUE)
+  inp_files <- swmmr:::example_input_files()
   
   # initially run the models and save results to temp file
   temp_file <- purrr::rerun(length(inp_files), tempfile())
@@ -56,8 +55,7 @@ testthat::test_that("rpt_reader", {
   testthat::skip_on_travis()
   
   # get the inp files
-  inp_files <- system.file("extdata", paste0("Example", 1:6, ".inp"), 
-                           package = "swmmr", mustWork = TRUE)
+  inp_files <- swmmr:::example_input_files()
   
   # initially run the models and save results to temp file
   temp_file <- purrr::rerun(length(inp_files), tempfile())
@@ -116,8 +114,7 @@ testthat::test_that("summary", {
   testthat::skip_on_travis()
   
   # get the inp files
-  inp_files <- system.file("extdata", paste0("Example", 1:6, ".inp"), 
-                           package = "swmmr", mustWork = TRUE)
+  inp_files <- swmmr:::example_input_files()
   
   # now read the models into R
   inp_obj <- purrr::map(inp_files, swmmr::read_inp)

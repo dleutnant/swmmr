@@ -7,11 +7,8 @@ testthat::test_that("autoplot", {
   testthat::skip_on_cran()
   testthat::skip_on_travis()
   
-  # get the inp files
-  inp_files <- swmmr:::example_input_files()
-  
-  # read inp files
-  inputs <- purrr::map(inp_files, swmmr::read_inp)
+  # Read all example input files
+  inputs <- swmmr:::read_example_input_files()
   
   # autoplot contents of inp files
   suppressWarnings(list_of_ggplots <- purrr::map(

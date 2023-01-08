@@ -7,8 +7,7 @@ testthat::test_that("shp conversion", {
   testthat::skip_on_travis()
   
   # get the inp files
-  inp_files <- system.file("extdata", paste0("Example", 1:6, ".inp"), 
-                           package = "swmmr", mustWork = TRUE)
+  inp_files <- swmmr:::example_input_files()
   
   # read models
   inp_obj <- purrr::map(inp_files, swmmr::read_inp)
