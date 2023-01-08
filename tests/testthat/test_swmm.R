@@ -13,8 +13,8 @@ testthat::test_that("swmm_io", {
   inp_files <- swmmr:::example_input_files()
   
   # initially run the models and save results to temp file
-  temp_file <- purrr::map(seq_along(inp_files), ~ tempfile())
-  
+  temp_file <- create_temp_paths(n = length(inp_files))
+
   purrr::walk2(
     .x = inp_files, 
     .y = temp_file,
@@ -34,7 +34,7 @@ testthat::test_that("swmm_io", {
   inp_obj <- purrr::map(inp_files, swmmr::read_inp)
   
   # create temp file names
-  tmp_inp <- purrr::map(seq_along(inp_obj), ~ tempfile())
+  tmp_inp <- create_temp_paths(n = length(inp_obj))
   
   # write the models back to file
   purrr::walk2(inp_obj, tmp_inp, ~ swmmr::write_inp(.x, .y))
@@ -66,7 +66,7 @@ testthat::test_that("rpt_reader", {
   inp_files <- swmmr:::example_input_files()
   
   # initially run the models and save results to temp file
-  temp_file <- purrr::map(seq_along(inp_files), ~ tempfile())
+  temp_file <- create_temp_paths(n = length(inp_files))
   
   purrr::walk2(
     .x = inp_files, 

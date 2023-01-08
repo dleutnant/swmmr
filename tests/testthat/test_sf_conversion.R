@@ -1,6 +1,5 @@
 #source("./tests/testthat.R")
 #source("./tests/testthat/helpers.R")
-#lapply(temp_files, unlink, recursive = TRUE)
 
 testthat::context("testing sf to inp conversion")
 
@@ -26,8 +25,8 @@ testthat::test_that("sf conversion", {
     ))
   
   # export models to temp dir
-  temp_files <- purrr::map(seq_along(inp_obj), ~ tempfile())
-  purrr::walk(temp_files, ~ dir.create(path = .))
+  #lapply(temp_files, unlink, recursive = TRUE)
+  temp_files <- create_temp_directories(n = length(inp_obj))
   
   # inp to files
   suppressWarnings(purrr::pwalk(
