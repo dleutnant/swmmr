@@ -1,3 +1,6 @@
+#source("./tests/testthat.R")
+#source("./tests/testthat/helpers.R")
+
 testthat::test_that("autoplot", {
   
   # only local tests
@@ -5,14 +8,17 @@ testthat::test_that("autoplot", {
   testthat::skip_on_travis()
   
   # get the inp files
-  inp_files <- system.file("extdata", paste0("Example", 1:6, ".inp"), 
-                           package = "swmmr", mustWork = TRUE)
+  inp_files <- swmmr:::example_input_files()
   
-  # read and autoplot inp files
-  list_of_ggplots <- inp_files %>% 
-    purrr::map(swmmr::read_inp) %>% 
-    purrr::map(ggplot2::autoplot)
+  # read inp files
+  inputs <- purrr::map(inp_files, swmmr::read_inp)
+  
+  # autoplot contents of inp files
+  suppressWarnings(list_of_ggplots <- purrr::map(
+    inputs, 
+    ggplot2::autoplot, 
+    suppress_warnings = TRUE
+  ))
   
   purrr::walk(list_of_ggplots, testthat::expect_s3_class, class = "gg")
-  
 })
