@@ -41,6 +41,23 @@ stop_on_bad_index <- function(index, choices) {
   return(tolower(os))
 }
 
+#' Determine the path to the latest swmm5 executable
+.get_exec <- function()
+{
+  if (.get_os() == "windows") {
+    .get_exec_on_windows(
+      path = "c:/Program Files (x86)/", 
+      prefix = "EPA SWMM", 
+      exe = "swmm5.exe"
+    )
+  } else {
+    .get_exec_on_linux_or_mac(
+      path = c("/usr/local/bin", "/usr/bin"), 
+      exe = "swmm5"
+    )
+  }
+}
+
 #' Determine the latest swmm5.exe in the specified  program files folder
 #' @keywords internal
 .get_exec_on_windows <- function(path, prefix, exe) {

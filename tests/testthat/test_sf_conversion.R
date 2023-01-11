@@ -2,9 +2,7 @@
 #source("./tests/testthat/helpers.R")
 #source("./R/test-helpers.R")
 
-testthat::context("testing sf to inp conversion")
-
-testthat::test_that("sf conversion", {
+testthat::test_that("testing sf to inp conversion", {
   
   # only local tests
   testthat::skip_on_cran()
