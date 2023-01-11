@@ -1,8 +1,6 @@
 #source("./tests/testthat.R")
 #source("./tests/testthat/helpers.R")
 
-testthat::context("testing swmm io")
-
 testthat::test_that("swmm_io", {
   
   # only local tests
