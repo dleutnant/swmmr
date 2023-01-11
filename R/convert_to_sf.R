@@ -64,7 +64,7 @@ has_incomplete_features <- function(x, subject, features) {
   incomplete <- ! all(features %in% names(x))
   
   if (incomplete) {
-    warning("incomplete features: ", subject)
+    clean_warning("incomplete features: ", subject)
   } 
 
   incomplete
