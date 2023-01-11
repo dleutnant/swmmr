@@ -46,11 +46,11 @@ int open_output_file(const char* outFile)
 {
   if ((Fout = fopen(outFile, "rb")) == NULL) {
     
-    printf("Could not open '%s' for binary reading.\n", outFile);
+    Rprintf("Could not open '%s' for binary reading.\n", outFile);
     
   } else {
     
-    printf("File %s opened.\n", outFile);
+    Rprintf("File %s opened.\n", outFile);
   }
 
   return (Fout != NULL);
@@ -59,7 +59,7 @@ int open_output_file(const char* outFile)
 //-----------------------------------------------------------------------------
 int file_seek(off_t offset, int whence)
 {
-  /*if (debug) printf(
+  /*if (debug) Rprintf(
     "fseeko(Fout, offset = %jd, whence = %d) ... \n",
     (intmax_t) offset, whence
   );*/
@@ -75,18 +75,18 @@ int file_seek(off_t offset, int whence)
 //-----------------------------------------------------------------------------
 int read_bytes(void* pointer, const char* name, int n_bytes)
 {
-  //printf("Reading %s ... ", name);
+  //Rprintf("Reading %s ... ", name);
   
   size_t size = fread(pointer, n_bytes, 1, Fout);
 
   if (size != 1) {
     
-    printf("Reading %s failed.\n", name);
+    Rprintf("Reading %s failed.\n", name);
     
     return 0;
   }
   
-  //printf("ok.\n");
+  //Rprintf("ok.\n");
 
   return 1;
 }
@@ -112,9 +112,9 @@ int file_tell(off_t least_expected)
   
   if (result < least_expected) {
     
-    printf("File is not as big as expected.\n");
-    printf("- ftello returned: %jd\n", (intmax_t) result);
-    printf("- least_expected: %jd\n", (intmax_t) least_expected);
+    Rprintf("File is not as big as expected.\n");
+    Rprintf("- ftello returned: %jd\n", (intmax_t) result);
+    Rprintf("- least_expected: %jd\n", (intmax_t) least_expected);
     
     return 0;
   }
@@ -127,7 +127,11 @@ int read_names(std::vector<std::string> &names, const char* type_name)
 {
   int n_chars;
   
-  for (int i = 0; i < names.size(); i++) {
+  // found here: https://stackoverflow.com/questions/31196443/
+  //   how-can-i-get-the-size-of-an-stdvector-as-an-int
+  int size = static_cast<int>(names.size());
+  
+  for (int i = 0; i < size; i++) {
 
     if (! read_record(&n_chars, type_name)) {
       return 0;
@@ -136,7 +140,7 @@ int read_names(std::vector<std::string> &names, const char* type_name)
     names[i] = fgets(buffer, n_chars + 1, Fout);
   }
   
-  printf("%d %ss read.\n", names.size(), type_name);
+  Rprintf("%d %ss read.\n", size, type_name);
   
   return 1;
 }
@@ -173,11 +177,11 @@ List OpenSwmmOutFile(const char* outFile)
   read_record(&errCode, "errCode");
   read_record(&magic2, "magic2");
 
-  printf("InputStartPos: %d\n", InputStartPos);   // in SWMM: InputStartPos
-  printf("OutputStartPos: %d\n", OutputStartPos); // in SWMM: OutputStartPos
-  printf("SWMM_Nperiods: %d\n", SWMM_Nperiods);
-  printf("errCode: %d\n", errCode);
-  printf("magic2: %d\n", magic2);
+  Rprintf("InputStartPos: %d\n", InputStartPos);   // in SWMM: InputStartPos
+  Rprintf("OutputStartPos: %d\n", OutputStartPos); // in SWMM: OutputStartPos
+  Rprintf("SWMM_Nperiods: %d\n", SWMM_Nperiods);
+  Rprintf("errCode: %d\n", errCode);
+  Rprintf("magic2: %d\n", magic2);
   
   // --- read magic number from beginning of file
   if (! file_seek(0, SEEK_SET)) {
@@ -254,13 +258,13 @@ List OpenSwmmOutFile(const char* outFile)
   read_record_double(&SWMM_StartDate, "SWMM_StartDate");
   read_record(&SWMM_ReportStep, "SWMM_ReportStep");
 
-  printf("n_variables[SUBCATCH]: %d\n", n_variables[SUBCATCH]);
-  printf("n_variables[NODE]: %d\n", n_variables[NODE]);
-  printf("n_variables[LINK]: %d\n", n_variables[LINK]);
-  printf("n_variables[SYS]: %d\n", n_variables[SYS]);
+  Rprintf("n_variables[SUBCATCH]: %d\n", n_variables[SUBCATCH]);
+  Rprintf("n_variables[NODE]: %d\n", n_variables[NODE]);
+  Rprintf("n_variables[LINK]: %d\n", n_variables[LINK]);
+  Rprintf("n_variables[SYS]: %d\n", n_variables[SYS]);
   
-  printf("SWMM_StartDate: %f\n", SWMM_StartDate);
-  printf("SWMM_ReportStep: %d\n", SWMM_ReportStep);
+  Rprintf("SWMM_StartDate: %f\n", SWMM_StartDate);
+  Rprintf("SWMM_ReportStep: %d\n", SWMM_ReportStep);
 
   // calculate helper variables that will be used to determine the position
   // of result data in the output file 
@@ -301,11 +305,11 @@ List OpenSwmmOutFile(const char* outFile)
 int restrict_to_range(int i, int from, int to, const char* name) {
   
   if (i < from) {
-    printf("Setting %s (%d) to min allowed value: %d\n", name, i, from);
+    Rprintf("Setting %s (%d) to min allowed value: %d\n", name, i, from);
     i = from;
   } 
   else if (i > to) {
-    printf("Setting %s (%d) to max allowed value: %d\n", name, i, to);
+    Rprintf("Setting %s (%d) to max allowed value: %d\n", name, i, to);
     i = to;
   }
   
@@ -327,13 +331,13 @@ Rcpp::NumericVector GetSwmmResultPart(
   std::vector<float> resultvec(lastPeriod - firstPeriod + 1);
 
   if (iType != SUBCATCH && iType != NODE && iType != LINK && iType != SYS) {
-    printf("Unknown iType: %d\n", iType);
+    Rprintf("Unknown iType: %d\n", iType);
     return wrap(resultvec);
   }
   
   if (iType == SYS) {
     if (iIndex != 777) {
-      printf(
+      Rprintf(
         "iIndex is not 777 as expected but: %d. Anyway using iIndex = 0.",
         iIndex
       );
