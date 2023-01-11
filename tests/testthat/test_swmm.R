@@ -1,11 +1,11 @@
 #source("./tests/testthat.R")
 #source("./tests/testthat/helpers.R")
 
+# only local tests
+testthat::skip_on_cran()
+testthat::skip_on_travis()
+
 testthat::test_that("swmm_io", {
-  
-  # only local tests
-  testthat::skip_on_cran()
-  testthat::skip_on_travis()
   
   # get the inp files
   inp_files <- swmmr:::example_input_files()
@@ -56,10 +56,6 @@ testthat::test_that("swmm_io", {
 
 testthat::test_that("rpt_reader", {
   
-  # only local tests
-  testthat::skip_on_cran()
-  testthat::skip_on_travis()
-  
   # get the inp files
   inp_files <- swmmr:::example_input_files()
   
@@ -87,10 +83,6 @@ testthat::test_that("rpt_reader", {
 })
 
 testthat::test_that("swmm error", {
-  
-  # only local tests
-  testthat::skip_on_cran()
-  testthat::skip_on_travis()
   
   # get the inp files
   inp_file <- swmmr:::example_input_files(ids = 1L)
@@ -133,10 +125,6 @@ testthat::test_that("swmm error", {
 
 testthat::test_that("summary", {
   
-  # only local tests
-  testthat::skip_on_cran()
-  testthat::skip_on_travis()
-  
   # get the inp files
   inp_files <- swmmr:::example_input_files()
   
@@ -147,4 +135,3 @@ testthat::test_that("summary", {
                                             "summary of swmm model structure"))
   
 })
-
