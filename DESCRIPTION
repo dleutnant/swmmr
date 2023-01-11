@@ -43,8 +43,9 @@ Suggests:
     sf (>= 0.6-1),
     knitr,
     rmarkdown,
-    testthat
+    testthat (>= 3.0.0)
 SystemRequirements: SWMM (>=5.1.012)
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 VignetteBuilder: knitr
+Config/testthat/edition: 3
