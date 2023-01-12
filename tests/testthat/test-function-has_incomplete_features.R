@@ -4,11 +4,11 @@ test_that("has_incomplete_features() works", {
   
   expect_error(f())
 
-  x <- data.frame(x = 1)
+  x <- list(x = 1)
   
   expect_warning(
-    result <- f(x, "subject", "a"), 
-    "incomplete features: subject"
+    result <- f(x, "subject", c("missing_1", "missing_2")), 
+    "incomplete features: subject \\(missing: missing_1, missing_2\\)"
   )
   
   expect_true(result)
