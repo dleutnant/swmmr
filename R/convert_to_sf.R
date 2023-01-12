@@ -54,20 +54,29 @@ check_package_and_class <- function(x, package = "sf", class = "inp") {
   check_pkg_avail(package)
   
   # check class and required elements
-  stopifnot(inherits(x, class))
+  if (!inherits(x, class)) {
+    clean_stop(sprintf(
+      "%s does not inherit from class '%s' as expected.",
+      deparse(substitute(x, env = parent.frame(n = 1L))), class
+    ))
+  }
 }
 
 #' Helper function
 #' @keywords internal
 has_incomplete_features <- function(x, subject, features) {
   
-  incomplete <- ! all(features %in% names(x))
-  
-  if (incomplete) {
-    clean_warning("incomplete features: ", subject)
+  is_there <- features %in% names(x)
+  is_incomplete <- !all(is_there)
+
+  if (is_incomplete) {
+    clean_warning(sprintf(
+      "incomplete features: %s (missing: %s)", 
+      subject, paste(features[!is_there], collapse = ", ")
+    ))
   } 
 
-  incomplete
+  is_incomplete
 }
 
 #' @export
