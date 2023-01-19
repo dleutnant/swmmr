@@ -91,7 +91,7 @@ NULL
 read_out <- function(
   file = "", iType = NULL, object_name = NULL, vIndex = NULL, 
   firstPeriod = NULL, lastPeriod = NULL, multiColumn = FALSE,
-  byObject = TRUE, method = 1
+  byObject = TRUE, method = 1L
 )
 {
   # open swmm out file
@@ -127,10 +127,8 @@ read_out <- function(
   is_zero <- times_seconds == 0
   
   if (any(is_zero)) {
-    
-    stop(
-      sprintf("GetSwmmTimes() returned %d-times zero", sum(is_zero)), 
-      call. = FALSE
+    clean_stop(
+      sprintf("GetSwmmTimes() returned %d-times zero", sum(is_zero))
     )
   }
   
@@ -139,21 +137,19 @@ read_out <- function(
   maxPeriod <- length(time)
   
   if (is.null(firstPeriod)) {
-    firstPeriod <- 1
+    firstPeriod <- 1L
   }
   
   if (is.null(lastPeriod)) {
     lastPeriod <- maxPeriod
   }
 
-  stop_if_out_of_range(firstPeriod, 1, maxPeriod)
-  stop_if_out_of_range(lastPeriod, 1, maxPeriod)
+  stop_if_out_of_range(firstPeriod, 1L, maxPeriod)
+  stop_if_out_of_range(lastPeriod, 1L, maxPeriod)
     
   if (lastPeriod < firstPeriod) {
-    
-    stop(
-      "lastPeriod must be greater or equal to firstPeriod (", firstPeriod, ")!", 
-      call. = FALSE
+    clean_stop(
+      "lastPeriod must be greater or equal to firstPeriod (", firstPeriod, ")!"
     )
   }
   
@@ -172,13 +168,12 @@ read_out <- function(
   # provide timestamps
   order_by <- time[firstPeriod:lastPeriod]
 
-  if (method == 2) {
+  if (method == 2L) {
     
-    if (! multiColumn || ! byObject) {
-      
-      stop(
-        "method = 2 is only implemented for multiColumn = TRUE and ", 
-        "byObject = TRUE", call. = FALSE
+    if (!multiColumn || !byObject) {
+      clean_stop(
+        "method = 2 is only implemented for multiColumn = TRUE and ",
+        "byObject = TRUE"
       )
     }
     
@@ -257,9 +252,8 @@ read_out <- function(
 stop_if_out_of_range <- function(x, a, b)
 {
   if (x < a || x > b) {
-    stop(
-      deparse(substitute(x)), " must be a value between ", a, " and ", b, "!",
-      call. = FALSE 
+    clean_stop(
+      deparse(substitute(x)), " must be a value between ", a, " and ", b, "!"
     )
   }
 }
