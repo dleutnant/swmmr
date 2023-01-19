@@ -36,10 +36,10 @@ existing_path_or_null <- function(x)
 
 # read_example_input_files -----------------------------------------------------
 #' @importFrom purrr map
-read_example_input_files <- function()
+read_example_input_files <- function(ids = 1:6)
 {
   # Get the paths to the inp files
-  inp_files <- example_input_files()
+  inp_files <- example_input_files(ids = ids)
   
   # Read the inp files
   inputs <- purrr::map(inp_files, read_inp)

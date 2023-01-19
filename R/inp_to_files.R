@@ -217,7 +217,7 @@ curves_to_txt <- function(x, name, path_out, quiet = FALSE)
 
   } else {
     
-    msg(!quiet, "section curves is missing")
+    msg("section curves is missing")
   }
 }
 
