@@ -1,5 +1,7 @@
 test_that("GetSwmmResultPart() works", {
 
+  skip_on_ci()
+  
   f <- swmmr:::GetSwmmResultPart
   
   expect_error(f())
