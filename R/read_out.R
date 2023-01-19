@@ -284,10 +284,8 @@ get_out_version <- function(file = "") {
   # get the content
   list_of_results <- get_out_content(file)
   
-  # extract version information
-  version <- list_of_results$meta$version
-  
-  return(version)
+  # return version information
+  list_of_results$meta$version
 }
 
 #' Get the content of an .out file.
@@ -319,5 +317,5 @@ get_out_content <- function(file = "") {
     warning("error reading out file")
   }
   
-  return(list_of_results)
+  list_of_results
 }
