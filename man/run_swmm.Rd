@@ -4,7 +4,15 @@
 \alias{run_swmm}
 \title{Initiate a simulation run}
 \usage{
-run_swmm(inp, rpt = NULL, out = NULL, exec = NULL, stdout = "", wait = TRUE)
+run_swmm(
+  inp,
+  rpt = NULL,
+  out = NULL,
+  exec = NULL,
+  stdout = "",
+  stderr = "",
+  wait = TRUE
+)
 }
 \arguments{
 \item{inp}{Name and path to an input file.}
@@ -13,12 +21,12 @@ run_swmm(inp, rpt = NULL, out = NULL, exec = NULL, stdout = "", wait = TRUE)
 
 \item{out}{Name and path to an out file.}
 
-\item{exec}{Name and path to swmm5 executable. If not manually set, the following paths are looked up:
-linux: "/usr/bin/swmm5"
-darwin: "/Applications/swmm5"
-windows: "C:/Program Files (x86)/EPA SWMM 5.1/swmm5.exe"}
+\item{exec}{Name and path to swmm5 executable. If not manually set,
+the following paths are looked up when package gets loaded:
+windows: "C:/Program Files (x86)/EPA SWMM 5.X.XXX/swmm5.exe"
+not windows: "/usr/local/bin/swmm5" , "/usr/bin/swmm5"}
 
-\item{stdout}{where output to \file{stdout} or
+\item{stdout, stderr}{where output to \file{stdout} or
     \file{stderr} should be sent.  Possible values are \code{""}, to the \R
     console (the default), \code{NULL} or \code{FALSE} (discard output),
     \code{TRUE} (capture the output in a character vector) or a
@@ -36,8 +44,10 @@ This function runs a swmm inp file. If rpt and out files are not
 specified files are automatically created in the same directory of
 the inp file.
 }
+\details{
+The path to a swmm5 executable is read by calling 'getOption("swmmr.exec")'.
+}
 \examples{
- 
 \dontrun{
 result <- run_swmm("model.inp")
 }

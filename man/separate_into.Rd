@@ -4,8 +4,16 @@
 \alias{separate_into}
 \title{helper function using defaults for arguments to tidyr::separate()}
 \usage{
-separate_into(x, into, fill = "left", sep = "\\\\s+",
-  extra = "merge", col = "value", convert = TRUE, ...)
+separate_into(
+  x,
+  into,
+  fill = "left",
+  sep = "\\\\s+",
+  extra = "merge",
+  col = "value",
+  convert = TRUE,
+  ...
+)
 }
 \description{
 helper function using defaults for arguments to tidyr::separate()

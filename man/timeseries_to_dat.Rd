@@ -4,7 +4,7 @@
 \alias{timeseries_to_dat}
 \title{conversion helper}
 \usage{
-timeseries_to_dat(x, name, path_out)
+timeseries_to_dat(x, name, path_out, quiet = FALSE)
 }
 \description{
 conversion helper

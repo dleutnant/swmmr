@@ -175,21 +175,24 @@ parse_section.subareas <- function(x, ...) {
 #' import helper
 #' @keywords internal
 parse_section.infiltration <- function(x, ...) {
+
+  # Exactly one additional argument must be given in ...
+  arguments <- list(...)
+  stopifnot(length(arguments) == 1L)
   
+  horton_header <- c("MaxRate", "MinRate", "Decay", "DryTime", "MaxInfil")
+  green_ampt_header <- c("Suction", "Ksat", "IMD")
+  curve_number_header <- c("CurveNum", "empty", "DryTime")
+
   header <- switch(
-    unlist(list(...)), 
-    "horton" = c(
-      "Subcatchment","MaxRate", "MinRate", "Decay", "DryTime", "MaxInfil"
-    ), 
-    "green_ampt" = c(
-      "Subcatchment", "Suction", "Ksat", "IMD"
-    ), 
-    "curve_number" = c(
-      "Subcatchment", "CurveNum", "empty", "DryTime"
-    )
+    arguments[[1L]], 
+    horton = horton_header, 
+    green_ampt = green_ampt_header, 
+    modified_green_ampt = green_ampt_header,
+    curve_number = curve_number_header
   )
-  
-  separate_into(x, header)
+
+  separate_into(x, c("Subcatchment", header))
 }
 
 #' import helper
@@ -214,7 +217,7 @@ parse_section.snowpacks <- function(x, ...) {
 #' @keywords internal
 parse_section.junctions <- function(x, ...) {
 
-  separate_into(x, sep = "\\s+", extra = "warn", fill = "warn", into = c(
+  separate_into(x, sep = "\\s+", fill = "warn", into = c(
     "Name", "Elevation", "MaxDepth", "InitDepth", "SurDepth", "Aponded"
   ))
 }
@@ -256,7 +259,7 @@ parse_section.storage <- function(x, ...) {
 #' @keywords internal
 parse_section.conduits <- function(x, ...) {
   
-  separate_into(x, sep = "\\s+", extra = "warn", fill = "warn", into = c(
+  separate_into(x, sep = "\\s+", fill = "warn", into = c(
     "Name", "From Node", "To Node", "Length", "Roughness", "InOffset", 
     "OutOffset", "InitFlow", "MaxFlow"
   ))
@@ -725,7 +728,9 @@ parse_section.subcatchment_runoff_summary <- function(x, ...) {
   
   separate_into(skip_head(x, 6), c("Subcatchment", paste(
     sep = "_", "Total", c(
-      "Precip", "Runon", "Evap", "Infil", "Runoff_Depth", "Runoff_Volume", 
+      "Precip", "Runon", "Evap", "Infil", 
+      "Runoff_imperv_Depth", "Runoff_perv_Depth",
+      "Runoff_Depth", "Runoff_Volume", 
       "Peak_Runoff", "Runoff_Coeff"
     )
   )))
@@ -735,9 +740,6 @@ parse_section.subcatchment_runoff_summary <- function(x, ...) {
 #' @keywords internal
 parse_section.lid_performance_summary <- function(x, ...) {
   
-  #c("Total","Evap","Infil","Surface","Drain","Initial","Final","Continuity")
-  #c("Inflow","Loss","Loss","Outflow","Outflow","Storage","Storage","Error")
-
   separate_into(skip_head(x, 6), c(
     "Subcatchment","LID Control", 
     paste(

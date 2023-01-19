@@ -257,7 +257,6 @@ get_out_version <- function(file = "") {
   version <- list_of_results$meta$version
   
   return(version)
-  
 }
 
 #' Get the content of an .out file.

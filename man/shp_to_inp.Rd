@@ -49,7 +49,7 @@ shp_to_inp(
 
 \item{path_weirs}{Name (incl. path) to a .shp file with line features. All parameters must be given: Name, FromNode, ToNode, Type, CrestHt, Cd, Gated, EC, Cd2, Sur.}
 
-\item{path_storage}{Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage" "Storage" "x" "y", without header.}
+\item{path_storage}{Name (incl. path) to a .shp file with storage curve information. The following parameters must be given: Name, Elev, Ymax, Y0, Shape, Curve_Name, N_A, Fevap.}
 
 \item{path_storage_curve}{Name (incl. path) to a .txt file with storage curve information. Having the following structure: "Name of storage unit" "Storage" "x" "y", without header.}
 }

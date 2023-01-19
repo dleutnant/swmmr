@@ -1,5 +1,3 @@
-context("test_utils")
-
 test_that("clean_stop() works", {
   expect_error(clean_stop())
 })
