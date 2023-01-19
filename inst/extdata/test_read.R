@@ -5,7 +5,11 @@ inp_file <- package_file("extdata", "Example1.inp")
 exec <- "/home/hauke/CProgramming/Stormwater-Management-Model/bin/run-swmm"
 
 out_file <- file.path(tempdir(), "swmm-Example1.out")
+out_file <- "/home/hauke/Downloads/SWMM/result_example1.out"
+
 out_file <- "/home/hauke/Downloads/SWMM/result.out"
+
+swmmr::run_swmm(inp_file, out = out_file, exec = exec)
 
 file.size(out_file) / (1024^3)
 
@@ -16,15 +20,25 @@ swmmr:::CloseSwmmOutFile()
 #kwb.utils::assignPackageObjects("swmmr")
 #kwb.utils::assignArgumentDefaults(swmmr::read_out)
 #file = out_file; byObject = FALSE; multiColumn = TRUE
-system.time(result2 <- swmmr::read_out(
-  file = out_file, byObject = FALSE, multiColumn = TRUE
-  , iType = 0, object_name = "SV8", firstPeriod = 1, lastPeriod = 5*86400, 
-  vIndex = 0
-))
-identical(result, result2)
-#, firstPeriod = 1, lastPeriod = 100)
+results <- list()
+for (method in 1:2) {
+  print(system.time(results[[method]] <- swmmr::read_out(
+    file = out_file, 
+    byObject = TRUE, multiColumn = TRUE,
+    iType = 0, 
+    object_name = c("SV8", "SV27"),
+    #object_name = c("1", "2", "3"), 
+    firstPeriod = 1, lastPeriod = 1000000, 
+    vIndex = 0:1, method = method
+  )))
+}
 
-swmmr::run_swmm(inp_file, out = out_file, exec = exec)
+kwb.utils::allAreIdentical(results)
+
+i <- 1
+head(result1[[i]])
+head(result2[[i]])
+#, firstPeriod = 1, lastPeriod = 100)
 
 #swmmr:::OpenSwmmOutFile(out_file)
 #swmmr:::CloseSwmmOutFile()

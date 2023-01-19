@@ -14,12 +14,16 @@ NULL
 #' @param vIndex Sets the variables to be read (s. Details).
 #' Leave empty for retrieving elements available.
 #' @param firstPeriod integer number of first period to be returned
-#' @param lastPeriod integer number of lastPeriod to be returned
+#' @param lastPeriod integer number of last period to be returned
 #' @param multiColumn if \code{TRUE} (the default is \code{FALSE}), the result
 #' is a list of xts objects with each object containing all variables instead of 
 #' a list of lists of xts objects.
 #' @param byObject if \code{TRUE}, each top level list element represents an
 #' object, otherwise a variable
+#' @param method Integer number determining the method of reading the binary
+#'   file. The default is method = 1. If multiColumn = TRUE and byObject = TRUE
+#'   you may try method = 2 and see if performance is enhanced (intended effect)
+#'   compared to method = 1. The results should be the same!
 #' @return A list of a list of xts-objects (if \code{multiColumn = TRUE}) or a
 #' list of xts-objects (if \code{multiColumn = FALSE}).
 #' 
@@ -91,7 +95,7 @@ NULL
 read_out <- function(
   file = "", iType = NULL, object_name = NULL, vIndex = NULL, 
   firstPeriod = NULL, lastPeriod = NULL, multiColumn = FALSE,
-  byObject = TRUE
+  byObject = TRUE, method = 1L
 )
 {
   # open swmm out file
@@ -127,10 +131,8 @@ read_out <- function(
   is_zero <- times_seconds == 0
   
   if (any(is_zero)) {
-    
-    stop(
-      sprintf("GetSwmmTimes() returned %d-times zero", sum(is_zero)), 
-      call. = FALSE
+    clean_stop(
+      sprintf("GetSwmmTimes() returned %d-times zero", sum(is_zero))
     )
   }
   
@@ -139,21 +141,19 @@ read_out <- function(
   maxPeriod <- length(time)
   
   if (is.null(firstPeriod)) {
-    firstPeriod <- 1
+    firstPeriod <- 1L
   }
   
   if (is.null(lastPeriod)) {
     lastPeriod <- maxPeriod
   }
 
-  stop_if_out_of_range(firstPeriod, 1, maxPeriod)
-  stop_if_out_of_range(lastPeriod, 1, maxPeriod)
+  stop_if_out_of_range(firstPeriod, 1L, maxPeriod)
+  stop_if_out_of_range(lastPeriod, 1L, maxPeriod)
     
   if (lastPeriod < firstPeriod) {
-    
-    stop(
-      "lastPeriod must be greater or equal to firstPeriod (", firstPeriod, ")!", 
-      call. = FALSE
+    clean_stop(
+      "lastPeriod must be greater or equal to firstPeriod (", firstPeriod, ")!"
     )
   }
   
@@ -171,11 +171,41 @@ read_out <- function(
 
   # provide timestamps
   order_by <- time[firstPeriod:lastPeriod]
+
+  if (method == 2L) {
+    
+    if (!multiColumn || !byObject) {
+      clean_stop(
+        "method = 2 is only implemented for multiColumn = TRUE and ",
+        "byObject = TRUE"
+      )
+    }
+    
+    result_list <- lapply(iIndex$iIndex, function(iIndex) {
+      
+      xts::xts(order.by = order_by, matrix(
+        data = GetSwmmResultPart2(
+          iType = iType, 
+          iIndex = iIndex, 
+          varIndices = vIndex$vIndex,
+          firstPeriod = firstPeriod, 
+          lastPeriod = lastPeriod
+        ),
+        ncol = length(vIndex$vIndex), 
+        byrow = TRUE,
+        dimnames = list(NULL, vIndex$names)
+      ))
+    })
+
+    return(stats::setNames(result_list, iIndex$names))
+  }
   
+  # Continue with method = 1
+    
   # for each iIndex, i.e. for each subcatchment, nodes or links ...
   # give list elements name of subcathments|nodes|links|sysvar
   arg_combis <- expand.grid(iIndex = iIndex$iIndex, vIndex = vIndex$vIndex)
-
+  
   result_list <- lapply(seq_len(nrow(arg_combis)), function(i) {
     
     cat(sprintf("Reading time series %d/%d ... ", i, nrow(arg_combis)))
@@ -192,7 +222,7 @@ read_out <- function(
     
     series
   })
-
+  
   indexObjects <- list(iIndex = iIndex, vIndex = vIndex)
   
   indexNames <- if (byObject) c("iIndex", "vIndex") else c("vIndex", "iIndex")
@@ -226,9 +256,8 @@ read_out <- function(
 stop_if_out_of_range <- function(x, a, b)
 {
   if (x < a || x > b) {
-    stop(
-      deparse(substitute(x)), " must be a value between ", a, " and ", b, "!",
-      call. = FALSE 
+    clean_stop(
+      deparse(substitute(x)), " must be a value between ", a, " and ", b, "!"
     )
   }
 }
@@ -253,10 +282,8 @@ get_out_version <- function(file = "") {
   # get the content
   list_of_results <- get_out_content(file)
   
-  # extract version information
-  version <- list_of_results$meta$version
-  
-  return(version)
+  # return version information
+  list_of_results$meta$version
 }
 
 #' Get the content of an .out file.
@@ -288,5 +315,5 @@ get_out_content <- function(file = "") {
     warning("error reading out file")
   }
   
-  return(list_of_results)
+  list_of_results
 }
