@@ -388,18 +388,18 @@ Rcpp::NumericVector GetSwmmResultPart2(
   // Count number of variables
   int nVars = varIndices.size();
 
-  printf("Number of variables to read: %d\n", nVars);
+  Rprintf("Number of variables to read: %d\n", nVars);
   
   std::vector<float> resultvec(nVars * (lastPeriod - firstPeriod + 1));
 
   if (iType != SUBCATCH && iType != NODE && iType != LINK && iType != SYS) {
-    printf("Unknown iType: %d\n", iType);
+    Rprintf("Unknown iType: %d\n", iType);
     return wrap(resultvec);
   }
   
   if (iType == SYS) {
     if (iIndex != 777) {
-      printf(
+      Rprintf(
         "iIndex is not 777 as expected but: %d. Anyway using iIndex = 0.",
         iIndex
       );
@@ -427,7 +427,7 @@ Rcpp::NumericVector GetSwmmResultPart2(
     
     if (size != MAX_VAR_VALUES) {
       
-      printf(
+      Rprintf(
         "Could not read %d values from the output file.\n", MAX_VAR_VALUES
       );
       
