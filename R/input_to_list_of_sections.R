@@ -2,20 +2,20 @@
 #'
 #' @keywords internal 
 input_to_list_of_sections <- function(path_options, 
-                                      subcatchment,
-                                      subcatchment_typologies, 
-                                      junctions,
-                                      junction_parameters, 
-                                      outfalls,
-                                      conduits,
-                                      conduit_material, 
-                                      path_timeseries, 
-                                      infiltration, 
-                                      pumps, 
-                                      path_pump_curve, 
-                                      weirs,
-                                      storage,
-                                      path_storage_curve){
+                                      subcatchment = NULL,
+                                      subcatchment_typologies = NULL, 
+                                      junctions = NULL,
+                                      junction_parameters = NULL, 
+                                      outfalls = NULL,
+                                      conduits = NULL,
+                                      conduit_material = NULL, 
+                                      path_timeseries = NULL, 
+                                      infiltration = NULL, 
+                                      pumps = NULL, 
+                                      path_pump_curve = NULL, 
+                                      weirs = NULL,
+                                      storage = NULL,
+                                      path_storage_curve = NULL){
   # ... check missing arguments, add default or generate error messages, in some cases default values are added later...
   
   # check if options are available, otherwise add default:
