@@ -41,7 +41,7 @@
       
       result <- list(iIndex = match(object_name, object_names) - 1,
                      names = object_name)
-      
+
     } else {
       
       warning("no ", element)
