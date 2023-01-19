@@ -91,7 +91,7 @@ NULL
 read_out <- function(
   file = "", iType = NULL, object_name = NULL, vIndex = NULL, 
   firstPeriod = NULL, lastPeriod = NULL, multiColumn = FALSE,
-  byObject = TRUE
+  byObject = TRUE, method = 1
 )
 {
   # open swmm out file
@@ -171,11 +171,42 @@ read_out <- function(
 
   # provide timestamps
   order_by <- time[firstPeriod:lastPeriod]
+
+  if (method == 2) {
+    
+    if (! multiColumn || ! byObject) {
+      
+      stop(
+        "method = 2 is only implemented for multiColumn = TRUE and ", 
+        "byObject = TRUE", call. = FALSE
+      )
+    }
+    
+    result_list <- lapply(iIndex$iIndex, function(iIndex) {
+      
+      xts::xts(order.by = order_by, matrix(
+        data = GetSwmmResultPart2(
+          iType = iType, 
+          iIndex = iIndex, 
+          varIndices = vIndex$vIndex,
+          firstPeriod = firstPeriod, 
+          lastPeriod = lastPeriod
+        ),
+        ncol = length(vIndex$vIndex), 
+        byrow = TRUE,
+        dimnames = list(NULL, vIndex$names)
+      ))
+    })
+
+    return(stats::setNames(result_list, iIndex$names))
+  }
   
+  # Continue with method = 1
+    
   # for each iIndex, i.e. for each subcatchment, nodes or links ...
   # give list elements name of subcathments|nodes|links|sysvar
   arg_combis <- expand.grid(iIndex = iIndex$iIndex, vIndex = vIndex$vIndex)
-
+  
   result_list <- lapply(seq_len(nrow(arg_combis)), function(i) {
     
     cat(sprintf("Reading time series %d/%d ... ", i, nrow(arg_combis)))
@@ -192,7 +223,7 @@ read_out <- function(
     
     series
   })
-
+  
   indexObjects <- list(iIndex = iIndex, vIndex = vIndex)
   
   indexNames <- if (byObject) c("iIndex", "vIndex") else c("vIndex", "iIndex")
