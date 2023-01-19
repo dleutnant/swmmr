@@ -103,6 +103,7 @@ input_to_list_of_sections <- function(path_options,
     
     # make tibble and transpose it
     for (i in 1:length(section_lines)) {
+      
       list_of_sections[[i]] <- options[(section_lines[i] + 1):(section_end[i])] %>%
         cbind(list_of_sections[[i]]) %>%
         tibble::as_tibble(.) %>%
@@ -113,7 +114,7 @@ input_to_list_of_sections <- function(path_options,
       
       # transpose and keep order of original data
       list_of_sections[[i]] <- tidyr::gather(list_of_sections[[i]], Variable, Value) %>%
-        tidyr::spread_(names(.)[1], "Value") %>%
+        tidyr::spread(names(.)[1], "Value") %>%
         .[, cols]
       
       # separate rows with more than one entry (e.g. in pollution section)
