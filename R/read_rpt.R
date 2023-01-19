@@ -57,7 +57,7 @@ report_sections <- c("Element Count",
 read_rpt <- function(x, ...) {
   
   # read lines and trimws
-  rpt_lines <- readr::read_lines(x, ...) %>% 
+  rpt_lines <- readr::read_lines(x) %>% 
     trimws(.) %>% 
     .[!grepl("---------", .)]
   
