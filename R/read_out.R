@@ -14,12 +14,16 @@ NULL
 #' @param vIndex Sets the variables to be read (s. Details).
 #' Leave empty for retrieving elements available.
 #' @param firstPeriod integer number of first period to be returned
-#' @param lastPeriod integer number of lastPeriod to be returned
+#' @param lastPeriod integer number of last period to be returned
 #' @param multiColumn if \code{TRUE} (the default is \code{FALSE}), the result
 #' is a list of xts objects with each object containing all variables instead of 
 #' a list of lists of xts objects.
 #' @param byObject if \code{TRUE}, each top level list element represents an
 #' object, otherwise a variable
+#' @param method Integer number determining the method of reading the binary
+#'   file. The default is method = 1. If multiColumn = TRUE and byObject = TRUE
+#'   you may try method = 2 and see if performance is enhanced (intended effect)
+#'   compared to method = 1. The results should be the same!
 #' @return A list of a list of xts-objects (if \code{multiColumn = TRUE}) or a
 #' list of xts-objects (if \code{multiColumn = FALSE}).
 #' 

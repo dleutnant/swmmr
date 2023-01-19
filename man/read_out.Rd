@@ -12,7 +12,8 @@ read_out(
   firstPeriod = NULL,
   lastPeriod = NULL,
   multiColumn = FALSE,
-  byObject = TRUE
+  byObject = TRUE,
+  method = 1L
 )
 }
 \arguments{
@@ -30,7 +31,7 @@ Leave empty for retrieving elements available.}
 
 \item{firstPeriod}{integer number of first period to be returned}
 
-\item{lastPeriod}{integer number of lastPeriod to be returned}
+\item{lastPeriod}{integer number of last period to be returned}
 
 \item{multiColumn}{if \code{TRUE} (the default is \code{FALSE}), the result
 is a list of xts objects with each object containing all variables instead of
@@ -38,6 +39,11 @@ a list of lists of xts objects.}
 
 \item{byObject}{if \code{TRUE}, each top level list element represents an
 object, otherwise a variable}
+
+\item{method}{Integer number determining the method of reading the binary
+file. The default is method = 1. If multiColumn = TRUE and byObject = TRUE
+you may try method = 2 and see if performance is enhanced (intended effect)
+compared to method = 1. The results should be the same!}
 }
 \value{
 A list of a list of xts-objects (if \code{multiColumn = TRUE}) or a
