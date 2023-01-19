@@ -79,7 +79,8 @@ management model 'SWMM' and creates a list of xts-objects.</p>
 <span>  firstPeriod <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lastPeriod <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  multiColumn <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  byObject <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  byObject <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  method <span class="op">=</span> <span class="fl">1L</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -110,7 +111,7 @@ Leave empty for retrieving elements available.</p></dd>
 
 
 <dt>lastPeriod</dt>
-<dd><p>integer number of lastPeriod to be returned</p></dd>
+<dd><p>integer number of last period to be returned</p></dd>
 
 
 <dt>multiColumn</dt>
@@ -122,6 +123,13 @@ a list of lists of xts objects.</p></dd>
 <dt>byObject</dt>
 <dd><p>if <code>TRUE</code>, each top level list element represents an
 object, otherwise a variable</p></dd>
+
+
+<dt>method</dt>
+<dd><p>Integer number determining the method of reading the binary
+file. The default is method = 1. If multiColumn = TRUE and byObject = TRUE
+you may try method = 2 and see if performance is enhanced (intended effect)
+compared to method = 1. The results should be the same!</p></dd>
 
 </dl></div>
     <div id="value">
