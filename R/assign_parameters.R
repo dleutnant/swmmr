@@ -1,7 +1,7 @@
 #' Get List of Default Values for Columns for Different Objects
 #' @keywords internal
-get_column_defaults <- function() {
-  
+get_column_defaults <- function()
+{
   list(
     
     subcatchments = list(
@@ -103,10 +103,15 @@ assign_parameters.options <- function(
   junction_parameters = NULL
 )
 {
+  assign_option_value(x)
+}
+
+assign_option_value <- function(x)
+{
   # transpose tibble of options
-  rbind(Option = colnames(x), Value = x[1, ]) %>% 
-    t(.) %>% 
-    tibble::as_tibble(.)
+  rbind(Option = colnames(x), Value = x[1L, ]) %>% 
+    t() %>% 
+    tibble::as_tibble()
 }
 
 #' conversion helper
@@ -121,9 +126,7 @@ assign_parameters.report <- function(
 )
 {
   # transpose tibble of report
-  rbind(Option = colnames(x), Value = x[1, ]) %>% 
-    t(.) %>% 
-    tibble::as_tibble(.)
+  assign_option_value(x)
 }
 
 #' conversion helper
