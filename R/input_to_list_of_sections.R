@@ -41,7 +41,8 @@ input_to_list_of_sections <- function(
     list_of_sections <- read_list_of_sections(path_options)
   }
   
-  if(!is.null(subcatchment)){
+  if (!is.null(subcatchment)) {
+    
     # check subcatchment for completeness and 
     # read supplementary information for subcatchments (subcatchment_typologies and infiltration):
     
@@ -51,17 +52,26 @@ input_to_list_of_sections <- function(
     if ("Ar_sbct" %in% colnames(subcatchment)) {
       colnames(subcatchment) <- gsub("Ar_sbct", "Area", colnames(subcatchment))
     }
+    
     if ("Area.subcatchment" %in% colnames(subcatchment)) {
       colnames(subcatchment) <- gsub("Area.subcatchment", "Area", colnames(subcatchment))
     }
     
     # check the structure of polygon file:
-    if (all(c("Name","Outlet","Area","RouteTo") %in% colnames(subcatchment))) {
+    required_columns <- c("Name", "Outlet", "Area", "RouteTo")
+    if (all(required_columns %in% colnames(subcatchment))) {
+      
       list_of_sections[['subcatchments']]  <- subcatchment # subcatchment_typologies
       list_of_sections[['subareas']] <- subcatchment # subcatchment_typologies
       list_of_sections[['polygons']] <- subcatchment
+      
     } else {
-      clean_stop("The polygon shape has to include at least the columns named: Name, Outlet, Area, RouteTo. For optional column names check the documentation.")
+      
+      clean_stop(
+        "The polygon shape has to include at least the columns named: ", 
+        paste(required_columns, collapse = ", "), 
+        ". For optional column names check the documentation."
+      )
     }
     
     # check infiltration model
@@ -74,7 +84,6 @@ input_to_list_of_sections <- function(
         clean_warning("Function is only running with Horton or Green_Ampt infiltration.")
       }
     } 
-    
     
     # ... infiltration parameter
     if (is.null(infiltration)) {
@@ -193,17 +202,25 @@ input_to_list_of_sections <- function(
     }
   }
   
-  if(!is.null(conduits)){
-    # ... do the same for the conduit line shape:
-    # check column names
-    if (all(c(
+  if (!is.null(conduits)) {
+    
+    # ... do the same for the conduit line shape: check column names
+    required_columns <- c(
       "Name", "Length", "Shape", "FromNode", "ToNode", "OutOffset", "Geom1"
-    ) %in% colnames(conduits))) {
+    )
+    
+    if (all(required_columns %in% colnames(conduits))) {
+      
       list_of_sections[["conduits"]] <- conduits
       list_of_sections[["xsections"]] <- conduits
+      
     } else {
-      clean_stop("The line shape has to include at least the columns named: ",
-           "Name, Length, Shape, FromNode, ToNode, OutOffset, Geom1.")
+      
+      clean_stop(
+        "The line shape has to include at least the columns named: ",
+        paste(required_columns, collapse = ", "),
+        "."
+      )
     }
     
     # ...check for material properties:
