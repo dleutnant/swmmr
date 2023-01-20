@@ -944,17 +944,16 @@ parse_section.rpt_error <- function(x, ...){
   
   # first line contains version string
   # currently not used (evtl. message?)
-  version <- dplyr::slice(x, 1) %>% dplyr::pull(value)
+  version <- dplyr::slice(x, 1L) %>% dplyr::pull(value)
   
   # remove version string
-  x <- dplyr::slice(x, -1)
+  x <- dplyr::slice(x, -1L)
   
   # each error has two rows: error type and section
-  odd <- dplyr::filter(x, dplyr::row_number() %% 2 == 1) %>% dplyr::pull(value)
-  even <- dplyr::filter(x, dplyr::row_number() %% 2 == 0) %>% dplyr::pull(value)
-  # we put all error in one row
-  error <- tibble::tibble(value = paste(odd, even))
+  remainders <- dplyr::row_number() %% 2L
+  odd <- dplyr::filter(x, remainders == 1L) %>% dplyr::pull(value)
+  even <- dplyr::filter(x, remainders == 0L) %>% dplyr::pull(value)
   
-  # return errror
-  return(error)
+  # return tibble with all error put in one row
+  tibble::tibble(value = paste(odd, even))
 }
