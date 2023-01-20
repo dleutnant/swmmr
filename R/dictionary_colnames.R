@@ -1,7 +1,10 @@
 # get_complete_dictionary ------------------------------------------------------
+
+#' @importFrom tibble as_tibble
+#' @importFrom utils read.csv
 get_complete_dictionary <- function()
 {
-  # ...complete dictionary with all column names given in swmmr:
+  # complete dictionary with all column names given in swmmr:
   text <- c(
     "section,org_swmm,shp_abb,int_shp_to_inp",
     "subcatchment,Name,Name,Name", 
@@ -85,50 +88,47 @@ get_complete_dictionary <- function()
     "storage,IMD,IMD,IMD"
   )
   
-  tibble::as_tibble(read.csv(text = text)[, c(2:4, 1L)])
+  tibble::as_tibble(read.csv(text = text))
 }
 
 #' import helper
 #' @keywords internal
-compare_to_dictionary <- function(shp = NULL, sf = NULL) {
-
-  # ...complete dictionary with all column names given in swmmr:
-  dictionary_complete <- get_complete_dictionary()
-
-  # -----
+compare_to_dictionary <- function(shp = NULL, sf = NULL)
+{
   if (!is.null(shp)) {
-    # cut dictionary to column names abbreviated and internal in shp_to_inp that differ:
-    dictionary <- dictionary_complete[-which(duplicated(dictionary_complete$shp_abb) == T), ]
-    dictionary <- subset(dictionary, dictionary$shp_abb != dictionary$int_shp_to_inp)
-    
-    # ----
-    
-    # set internal column names for abbreviated ones in shp-file
-    
-    for (i in 1:length(colnames(shp))) {
-      if (colnames(shp)[i] %in% dictionary$shp_abb) {
-        row <- which(colnames(shp)[i] == dictionary$shp_abb)
-        colnames(shp)[i] <- dictionary$int_shp_to_inp[row]
-      }
-    }
-    
-    return(shp)
+    return(rename_columns_using_dict(df = shp, from = "shp_abb"))
   }
   
   if (!is.null(sf)) {
-     # cut dictionary to column names original and internal in sf_to_inp that differ:
-    dictionary <- dictionary_complete[-which(duplicated(dictionary_complete$org_swmm) == T), ]
-    dictionary <- subset(dictionary, dictionary$org_swmm != dictionary$int_shp_to_inp)
-  
-    # set internal column names for original ones in sf-object:
-    for (i in 1:length(colnames(sf))) {
-      if (colnames(sf)[i] %in% dictionary$org_swmm) {
-        row <- which(colnames(sf)[i] == dictionary$org_swmm)
-        colnames(sf)[i] <- dictionary$int_shp_to_inp[row]
-      }
-    }
-
-    return(sf)
+    return(rename_columns_using_dict(df = sf, from = "org_swmm"))
   }
+}
+
+# rename_columns_using_dict ----------------------------------------------------
+rename_columns_using_dict <- function(df, from, to = "int_shp_to_inp")
+{
+  # complete dictionary with all column names given in swmmr:
+  d <- get_complete_dictionary()
   
+  # cut dictionary to column names 
+  # - abbreviated and internal in shp_to_inp() or
+  # - original and internal in sf_to_inp()
+  # that differ:
+  
+  d <- d[!duplicated(d[[from]]) & d[[from]] != d[[to]], ]
+  
+  # set internal column names for abbreviated ones in data frame (representing
+  # shp-file or sf-object)
+  colnames(df) <- replace_values(colnames(df), d[[from]], d[[to]])
+  
+  df
+}
+
+# replace_values ---------------------------------------------------------------
+replace_values <- function(x, from, to)
+{
+  indices <- match(x, from)
+  is_match <- !is.na(indices)
+  x[is_match] <- to[indices[is_match]]
+  x
 }
