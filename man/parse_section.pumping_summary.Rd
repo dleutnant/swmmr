@@ -5,12 +5,8 @@
 \title{import helper}
 \usage{
 \method{parse_section}{pumping_summary}(x, ...)
-
-\method{parse_section}{pumping_summary}(x, ...)
 }
 \description{
-import helper
-
 import helper
 }
 \keyword{internal}
