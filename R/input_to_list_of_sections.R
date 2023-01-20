@@ -43,18 +43,25 @@ input_to_list_of_sections <- function(
   
   if (!is.null(subcatchment)) {
     
-    # check subcatchment for completeness and 
-    # read supplementary information for subcatchments (subcatchment_typologies and infiltration):
+    # check subcatchment for completeness and read supplementary information for
+    # subcatchments (subcatchment_typologies and infiltration):
     
-    # special case which should only occur if an inp has been exported using swmmr.
-    # in this case Area_subcatchment is Ar_sbct and Area_LID_usage is Ar_ld_s.
-    # Function was required to allow automatic tests with Example4.inp.
+    # special case which should only occur if an inp has been exported using
+    # swmmr. in this case Area_subcatchment is Ar_sbct and Area_LID_usage is
+    # Ar_ld_s. Function was required to allow automatic tests with Example4.inp.
     if ("Ar_sbct" %in% colnames(subcatchment)) {
-      colnames(subcatchment) <- gsub("Ar_sbct", "Area", colnames(subcatchment))
+      colnames(subcatchment) <- gsub(
+        pattern = "Ar_sbct", 
+        replacement = "Area", 
+        x = colnames(subcatchment))
     }
     
     if ("Area.subcatchment" %in% colnames(subcatchment)) {
-      colnames(subcatchment) <- gsub("Area.subcatchment", "Area", colnames(subcatchment))
+      colnames(subcatchment) <- gsub(
+        pattern = "Area.subcatchment", 
+        replacement = "Area", 
+        x = colnames(subcatchment)
+      )
     }
     
     # check the structure of polygon file:
@@ -62,8 +69,8 @@ input_to_list_of_sections <- function(
     
     if (all(required_columns %in% colnames(subcatchment))) {
       
-      list_of_sections[['subcatchments']]  <- subcatchment # subcatchment_typologies
-      list_of_sections[['subareas']] <- subcatchment # subcatchment_typologies
+      list_of_sections[['subcatchments']]  <- subcatchment
+      list_of_sections[['subareas']] <- subcatchment
       list_of_sections[['polygons']] <- subcatchment
       
     } else {
@@ -95,17 +102,36 @@ input_to_list_of_sections <- function(
     
     # ... infiltration parameter
     if (is.null(infiltration)) {
+      
       if (infiltration_model == "Horton" | infiltration_model == "HORTON") {
-        if (!("MaxRate" %in% colnames(subcatchment)) | !("MinRate" %in% colnames(subcatchment)) | !("Decay" %in% colnames(subcatchment)) | !("DryTime" %in% colnames(subcatchment)) | !("MaxInfl" %in% colnames(subcatchment))) {
-          clean_warning("All or some Horton infiltration parameters are not defined, infiltration default values are taken.")
+        
+        if (!("MaxRate" %in% colnames(subcatchment)) | 
+            !("MinRate" %in% colnames(subcatchment)) | 
+            !("Decay" %in% colnames(subcatchment)) | 
+            !("DryTime" %in% colnames(subcatchment)) | 
+            !("MaxInfl" %in% colnames(subcatchment))) {
+          clean_warning(
+            "All or some Horton infiltration parameters are not defined, ", 
+            "infiltration default values are taken."
+          )
         }
       }
-      if (infiltration_model == "Green_Ampt" | infiltration_model == "GREEN_AMPT") {
-        if (!("Suction" %in% colnames(subcatchment)) | !("HydCon" %in% colnames(subcatchment)) | !("IMDmax" %in% colnames(subcatchment))) {
-          clean_warning("All or some Green_Ampt infiltration parameters are not defined, infiltration default values are taken.")
+      
+      if (infiltration_model == "Green_Ampt" | 
+          infiltration_model == "GREEN_AMPT") {
+        
+        if (!("Suction" %in% colnames(subcatchment)) | 
+            !("HydCon" %in% colnames(subcatchment)) | 
+            !("IMDmax" %in% colnames(subcatchment))) {
+          clean_warning(
+            "All or some Green_Ampt infiltration parameters are not defined, ",
+            "infiltration default values are taken."
+          )
         }
       }
+      
     } else {
+      
       if (!("Soil" %in% colnames(subcatchment))) {
         clean_stop("column Soil is missing in polygon shape")
       }
@@ -113,10 +139,31 @@ input_to_list_of_sections <- function(
     
     # ... check for optional subcatchment_typologies:
     if (is.null(subcatchment_typologies)) {
-      if (!("N_Imperv" %in% colnames(subcatchment)) | !("N_Perv" %in% colnames(subcatchment)) | !("S_Imperv" %in% colnames(subcatchment)) | !("S_Perv" %in% colnames(subcatchment)) | !("Pct_Zero" %in% colnames(subcatchment)) | !("RouteTo" %in% colnames(subcatchment)) | !("PctRouted" %in% colnames(subcatchment)) | !("Rain_Gage" %in% colnames(subcatchment)) | !("CurbLen" %in% colnames(subcatchment)) | !("Snowpack" %in% colnames(subcatchment)) | !("PercImperv" %in% colnames(subcatchment)) | !("Slope" %in% colnames(subcatchment)) | !("Width" %in% colnames(subcatchment))) {
-        clean_warning("N_Imperv, N_Perv, S_Imperv, S_Perv, Rain_Gage, CurbLen, Snowpack, PercImperv, Slope or Width are not defined in polygon.shp or Subcatchment_typologies. Check polygon shape for completeness otherwise missing parameters in the sections subcatchment and subareas will be filled with default values.")
+      
+      if (!("N_Imperv" %in% colnames(subcatchment)) | 
+          !("N_Perv" %in% colnames(subcatchment)) | 
+          !("S_Imperv" %in% colnames(subcatchment)) | 
+          !("S_Perv" %in% colnames(subcatchment)) | 
+          !("Pct_Zero" %in% colnames(subcatchment)) | 
+          !("RouteTo" %in% colnames(subcatchment)) | 
+          !("PctRouted" %in% colnames(subcatchment)) | 
+          !("Rain_Gage" %in% colnames(subcatchment)) | 
+          !("CurbLen" %in% colnames(subcatchment)) | 
+          !("Snowpack" %in% colnames(subcatchment)) | 
+          !("PercImperv" %in% colnames(subcatchment)) | 
+          !("Slope" %in% colnames(subcatchment)) | 
+          !("Width" %in% colnames(subcatchment))) {
+        
+        clean_warning(
+          "N_Imperv, N_Perv, S_Imperv, S_Perv, Rain_Gage, CurbLen, Snowpack, ", 
+          "PercImperv, Slope or Width are not defined in polygon.shp or ", 
+          "Subcatchment_typologies. Check polygon shape for completeness ", 
+          "otherwise missing parameters in the sections subcatchment and ", 
+          "subareas will be filled with default values."
+        )
       }
     }
+    
     if (!(is.null(subcatchment_typologies))) {
       if (!("Type" %in% colnames(subcatchment))) {
         clean_stop("column Type is missing in polygon shape")
@@ -124,51 +171,85 @@ input_to_list_of_sections <- function(
     }
   }
   
-  if(!is.null(junctions)){
+  if (!is.null(junctions)) {
     # ... and for the junction point shape:
     # check column names:
     if (all(c("Name", "Bottom") %in% colnames(junctions))) {
+      
       if ("Top" %in% colnames(junctions) | "Ymax" %in% colnames(junctions)) {
         list_of_sections[["junctions"]] <- junctions
         list_of_sections[["coordinates"]] <- junctions[, c("Name", "geometry")]
       }
+      
     } else {
-      clean_stop("The point shape has to include at least the columns named: Name, Bottom and Top or Ymax.")
+      clean_stop(
+        "The point shape has to include at least the columns named: ", 
+        "Name, Bottom and Top or Ymax."
+      )
     }
     
     if (is.null(junction_parameters)) {
-      if (!("Y" %in% colnames(junctions)) | !("Ysur" %in% colnames(junctions)) | !("Apond" %in% colnames(junctions))) {
-        clean_warning(" Y, Ysur or Apond are not defined in point.shp (or point_sf) or junction_parameters. Check point shape for completeness otherwise missing parameters in the section junctions will be filled with default values.")
+      
+      if (!("Y" %in% colnames(junctions)) | 
+          !("Ysur" %in% colnames(junctions)) | 
+          !("Apond" %in% colnames(junctions))) {
+        
+        clean_warning(
+          " Y, Ysur or Apond are not defined in point.shp (or point_sf) or ", 
+          "junction_parameters. Check point shape for completeness otherwise ", 
+          "missing parameters in the section junctions will be filled with ", 
+          "default values."
+        )
       }
     }
   }
   
-  if(!is.null(outfalls)){
+  if (!is.null(outfalls)) {
     # ... also do it for the outfall point shape:
     # check for completeness:
     if (all(c("Name", "Bottom", "Type") %in% colnames(outfalls))) {
+      
       list_of_sections[["outfalls"]] <- outfalls
-      list_of_sections[["coordinates"]] <- rbind(list_of_sections[["coordinates"]], outfalls[, c("Name", "geometry")])
+      
+      list_of_sections[["coordinates"]] <- rbind(
+        list_of_sections[["coordinates"]], 
+        outfalls[, c("Name", "geometry")]
+      )
+      
     } else {
-      clean_stop("The outfall point shape has to include at least the columns named: Name, Bottom, Type.")
+      
+      clean_stop(
+        "The outfall point shape has to include at least the columns named: ", 
+        "Name, Bottom, Type."
+      )
     }
   }
   
-  # ... checking, reading or adding default values for optional function arguments:
+  # checking, reading or adding default values for optional function arguments:
   
   # ... timeseries
   if (is.null(path_timeseries)) {
-    clean_warning("Define path to timeseries file including filename and ending, otherwise default values are taken.")
+    
+    clean_warning(
+      "Define path to timeseries file including filename and ending, ", 
+      "otherwise default values are taken."
+    )
+    
     list_of_sections[["timeseries"]] <- tibble::tibble(
       Name = "default_rain",
       date = " ",
       time_min = 1,
       rain_mm = 1
     )
+    
   } else {
+    
     # add path to timeseries file
     name_RG <- gsub("TIMESERIES ", "", list_of_sections[["raingages"]]$Source)
-    list_of_sections[["timeseries"]] <- paste0(name_RG, " ", "FILE ", path_timeseries)
+    
+    list_of_sections[["timeseries"]] <- paste0(
+      name_RG, " ", "FILE ", path_timeseries
+    )
   }
   
   # ...add Pumps section if path_pump or pumps_sf exists
@@ -180,7 +261,10 @@ input_to_list_of_sections <- function(
   # ... add pump curve
   if (!is.null(path_pump_curve)) {
     # add table of pump curves
-    list_of_sections[["curves"]] <- suppressMessages(readr::read_table2(path_pump_curve, col_names = c("Name", "Type", "X", "Y")))
+    list_of_sections[["curves"]] <- suppressMessages(readr::read_table2(
+      file = path_pump_curve, 
+      col_names = c("Name", "Type", "X", "Y")
+    ))
   }
   
   # ...add weirs if path_weirs or weirs_sf exists
@@ -203,13 +287,27 @@ input_to_list_of_sections <- function(
   
   # ... add storage curve
   if (!is.null(path_storage_curve)) {
+    
     if ("curves" %in% names(list_of_sections)) {
+      
       # add table of storage curves to existing curve table
-      storage_curves <- suppressMessages(readr::read_table2(path_storage_curve, col_names = c("Name", "Type", "X", "Y")))
-      list_of_sections[["curves"]] <- rbind(list_of_sections[["curves"]], storage_curves)
+      storage_curves <- suppressMessages(readr::read_table2(
+        file = path_storage_curve, 
+        col_names = c("Name", "Type", "X", "Y")
+      ))
+      
+      list_of_sections[["curves"]] <- rbind(
+        list_of_sections[["curves"]], 
+        storage_curves
+      )
+      
     } else {
+      
       # add table of storage curves to a new list entry
-      list_of_sections[["curves"]] <- suppressMessages(readr::read_table2(path_storage_curve, col_names = c("Name", "Type", "X", "Y")))
+      list_of_sections[["curves"]] <- suppressMessages(readr::read_table2(
+        file = path_storage_curve, 
+        col_names = c("Name", "Type", "X", "Y")
+      ))
     }
   }
   
@@ -236,10 +334,17 @@ input_to_list_of_sections <- function(
     
     # ...check for material properties:
     if (is.null(conduit_material)) {
+      
       if (!("Roughness" %in% colnames(conduits))) {
-        clean_warning("Roughness is not defined in line shape or Conduit_material. Check line shape for completeness otherwise missing parameters in the sections conduits will be filled with default values.")
+        clean_warning(
+          "Roughness is not defined in line shape or Conduit_material. ", 
+          "Check line shape for completeness otherwise missing parameters in ", 
+          "the sections conduits will be filled with default values."
+        )
       }
+      
     } else {
+      
       if (!("Material" %in% colnames(conduits))) {
         clean_stop("column Material is missing in line shape")
       }
