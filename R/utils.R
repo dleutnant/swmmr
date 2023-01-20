@@ -20,17 +20,20 @@ add_column_if_missing <- function(df, column, default, force = FALSE)
   df
 }
 
+# clean_stop -------------------------------------------------------------------
 clean_stop <- function(...)
 {
   stop(..., call. = FALSE)
 }
 
+# clean_warning ----------------------------------------------------------------
 clean_warning <- function(...)
 {
   warning(..., call. = FALSE)
   invisible(NULL)
 }
 
+# create_dir_if_required -------------------------------------------------------
 create_dir_if_required <- function(path)
 {
   if (!file.exists(path)) {
@@ -39,11 +42,13 @@ create_dir_if_required <- function(path)
   }
 }
 
+# in_brackets ------------------------------------------------------------------
 in_brackets <- function(x)
 {
   paste0("[", x, "]")
 }
 
+# stop_on_bad_index ------------------------------------------------------------
 stop_on_bad_index <- function(index, choices)
 {
   # Possible values for index
@@ -58,6 +63,7 @@ stop_on_bad_index <- function(index, choices)
   }
 }
 
+# stop_formatted ---------------------------------------------------------------
 stop_formatted <- function(fmt, ...)
 {
   clean_stop(sprintf(fmt, ...))

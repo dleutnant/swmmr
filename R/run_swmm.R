@@ -17,23 +17,27 @@
 #' }
 #' @rdname run_swmm
 #' @export
-run_swmm <- function(inp, 
-                     rpt = NULL,
-                     out = NULL,
-                     exec = NULL,
-                     stdout = "", 
-                     stderr = "",
-                     wait = TRUE) {
-  
+run_swmm <- function(
+    inp, 
+    rpt = NULL,
+    out = NULL,
+    exec = NULL,
+    stdout = "", 
+    stderr = "",
+    wait = TRUE
+)
+{
   # get the path of the executable on the precoded paths...
-  if (is.null(exec)) exec <- getOption("swmmr.exec")
+  if (is.null(exec)) {
+    exec <- getOption("swmmr.exec")
+  }
   
   # check if inp and exec exists
   stopifnot(file.exists(inp), file.exists(exec))
   
   # get the name of the directory which is used to create rpt and out files if not provided.
   dirn <- base::dirname(inp)
-
+  
   # get the name of the inp file
   filename <- sub("^([^.]*).*", "\\1", base::basename(inp)) 
   
@@ -55,23 +59,27 @@ run_swmm <- function(inp,
   
   # Change directory
   setwd(dirn);
-  ####
-  
+
   # execute command
-  base::system2(command = exec, 
-                args = shQuote(c(inp, rpt, out)), 
-                stdout = stdout,
-                stderr = stdout,
-                wait = wait,
-                minimized = FALSE,
-                invisible = TRUE)
+  base::system2(
+    command = exec, 
+    args = shQuote(c(inp, rpt, out)), 
+    stdout = stdout,
+    stderr = stdout,
+    wait = wait,
+    minimized = FALSE,
+    invisible = TRUE
+  )
   
   # flush console
   utils::flush.console()
   
   # return a list with file paths
-  invisible(list(inp = normalizePath(inp),
-                 rpt = normalizePath(rpt), 
-                 out = normalizePath(out)))
+  paths <- list(
+    inp = inp, 
+    rpt = rpt, 
+    out = out
+  )
   
+  invisible(lapply(paths, normalizePath))
 }

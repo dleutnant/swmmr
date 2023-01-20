@@ -14,18 +14,18 @@
 #' }
 #' @rdname plot
 #' @export
-autoplot.inp <- function(x, ...) {
-
+autoplot.inp <- function(x, ...)
+{
   # checks if ggplot2 is available
   check_pkg_avail("ggplot2")
-
+  
   # create list with simple feature objects for
   # subcatchments, junctions, links and raingages
   sff <- inp_to_sf(x)
-
+  
   # init ggplot obj
   p <- ggplot2::ggplot()
-
+  
   # walk through the list
   for (i in seq_along(sff)) {
     # create extra shape for raingages
@@ -39,5 +39,6 @@ autoplot.inp <- function(x, ...) {
       )
     }
   }
-  return(p)
+  
+  p
 }

@@ -10,29 +10,51 @@
 #' } 
 #' @rdname summary
 #' @export
-summary.inp <- function(object, ...) {
-  
+summary.inp <- function(object, ...)
+{
   x <- object
   
   # from options take ...
   # infiltration_model
   # flow_units
   # flow_routing
-  vec_opts <- c("infiltration", "flow_units", "flow_routing", 
-                "start_date", "end_date")
+  vec_opts <- c(
+    "infiltration", 
+    "flow_units", 
+    "flow_routing", 
+    "start_date", 
+    "end_date"
+  )
   
   opts <- vec_opts %>% 
-    purrr::map_chr( ~ x$options$Value[which(tolower(x$options$Option) == .x)]) %>% 
+    purrr::map_chr(
+      ~ x$options$Value[which(tolower(x$options$Option) == .x)]
+    ) %>% 
     purrr::set_names(vec_opts) %>% 
     tolower()
   
   # define sections which are of interest
-  vec_sects <- c("raingages", "subcatchments", "aquifers", "snowpacks",
-                 "junctions", "outfalls", "dividers", "storage", "conduits",
-                 "pumps", "orifices", "weirs", "outlets",
-                 "controls", "pollutants", "landuses",
-                 # Inflows
-                 "lid_controls", "treatment")
+  vec_sects <- c(
+    "raingages", 
+    "subcatchments", 
+    "aquifers", 
+    "snowpacks",
+    "junctions", 
+    "outfalls", 
+    "dividers", 
+    "storage", 
+    "conduits",
+    "pumps", 
+    "orifices", 
+    "weirs", 
+    "outlets",
+    "controls", 
+    "pollutants", 
+    "landuses",
+    # Inflows
+    "lid_controls", 
+    "treatment"
+  )
   
   #todo: controls are not correctly interpreted
   
@@ -42,12 +64,13 @@ summary.inp <- function(object, ...) {
     purrr::map_int( ~ length(unique(x[[.]][[1]])) %||% 0) %>% 
     purrr::set_names(vec_sects)
   
-  cat("\n** summary of swmm model structure **", 
-      paste0("\n", sprintf("%-14s : %10s", names(opts), opts)), 
-      paste0("\n", sprintf("%-14s : %10s", names(sects), sects)), 
-      "\n*************************************\n")
+  cat(
+    "\n** summary of swmm model structure **", 
+    paste0("\n", sprintf("%-14s : %10s", names(opts), opts)), 
+    paste0("\n", sprintf("%-14s : %10s", names(sects), sects)), 
+    "\n*************************************\n"
+  )
   
   # return inp object invisible
   invisible(x)
-  
 }
