@@ -37,48 +37,8 @@ input_to_list_of_sections <- function(
     )
     
   } else {
-    # ...use information from options (option.txt)
-    options <- readLines(path_options)
     
-    # ...delete empty lines
-    options <- options[options != ""]
-    
-    # find section lines
-    section_lines <- grep("\\[", options, value = F)
-    section_end <- c(section_lines[-1] - 1, length(options))
-    
-    # separate section title
-    section_title <- gsub(
-      pattern = "\\[|\\]",
-      replacement = "",
-      x = options[section_lines]
-    )
-    
-    # list all section blocks
-    list_of_sections <- vector(length = length(section_lines), mode = "list")
-    names(list_of_sections) <- section_title
-    
-    # make tibble and transpose it
-    for (i in 1:length(section_lines)) {
-      
-      list_of_sections[[i]] <- options[(section_lines[i] + 1):(section_end[i])] %>%
-        cbind(list_of_sections[[i]]) %>%
-        tibble::as_tibble(.) %>%
-        tidyr::separate(., 1, c("Variable", "Value"), "\t", extra = "merge", fill = "left")
-      
-      # define column vector to keep the order later
-      cols <- list_of_sections[[i]][, 1] %>% unlist(.) %>% as.character(.)
-      
-      # transpose and keep order of original data
-      list_of_sections[[i]] <- tidyr::gather(list_of_sections[[i]], Variable, Value) %>%
-        tidyr::spread(names(.)[1], "Value") %>%
-        .[, cols]
-      
-      # separate rows with more than one entry (e.g. in pollution section)
-      if (any(grepl("\t", list_of_sections[[i]]))) {
-        list_of_sections[[i]] <- tidyr::separate_rows(list_of_sections[[i]], (1:ncol(list_of_sections[[i]])), sep = "\t")
-      }
-    }
+    list_of_sections <- read_list_of_sections(path_options)
   }
   
   if(!is.null(subcatchment)){
@@ -326,4 +286,53 @@ default_evaporation <- function()
     CONSTANT = 0,
     DRY_ONLY = 0
   )
+}
+
+# read_list_of_sections --------------------------------------------------------
+read_list_of_sections <- function(path_options)
+{
+  # ...use information from options (option.txt)
+  options <- readLines(path_options)
+  
+  # ...delete empty lines
+  options <- options[options != ""]
+  
+  # find section lines
+  section_lines <- grep("\\[", options, value = F)
+  section_end <- c(section_lines[-1] - 1, length(options))
+  
+  # separate section title
+  section_title <- gsub(
+    pattern = "\\[|\\]",
+    replacement = "",
+    x = options[section_lines]
+  )
+  
+  # list all section blocks
+  list_of_sections <- vector(length = length(section_lines), mode = "list")
+  names(list_of_sections) <- section_title
+  
+  # make tibble and transpose it
+  for (i in 1:length(section_lines)) {
+    
+    list_of_sections[[i]] <- options[(section_lines[i] + 1):(section_end[i])] %>%
+      cbind(list_of_sections[[i]]) %>%
+      tibble::as_tibble(.) %>%
+      tidyr::separate(., 1, c("Variable", "Value"), "\t", extra = "merge", fill = "left")
+    
+    # define column vector to keep the order later
+    cols <- list_of_sections[[i]][, 1] %>% unlist(.) %>% as.character(.)
+    
+    # transpose and keep order of original data
+    list_of_sections[[i]] <- tidyr::gather(list_of_sections[[i]], Variable, Value) %>%
+      tidyr::spread(names(.)[1], "Value") %>%
+      .[, cols]
+    
+    # separate rows with more than one entry (e.g. in pollution section)
+    if (any(grepl("\t", list_of_sections[[i]]))) {
+      list_of_sections[[i]] <- tidyr::separate_rows(list_of_sections[[i]], (1:ncol(list_of_sections[[i]])), sep = "\t")
+    }
+  }
+  
+  list_of_sections
 }
