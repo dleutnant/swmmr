@@ -72,7 +72,8 @@ shp_to_inp <- function(
     path_storage_curve = NULL
 ) 
 {
-  # helper function
+  # helper functions
+  given <- function(x) !is.null(x)
   read_and_normalise <- function(path, quiet = TRUE) {
     path %>%
       sf::st_read(stringsAsFactors = FALSE, quiet = quiet) %>% 
@@ -83,7 +84,9 @@ shp_to_inp <- function(
   # read spatial data:
   
   # check if polygon shape is available, return error message or read shape:
-  subcatchment <- if (is.null(path_polygon)) {
+  subcatchment <- if (given(path_polygon)) {
+    read_and_normalise(path_polygon)
+  } else {
     clean_warning(
       "Define path to polygon file including filename and ending (or object ", 
       "polygon_sf alternatively) otherwise sections subcatchments, subareas, ", 
@@ -91,13 +94,12 @@ shp_to_inp <- function(
     )
     # specify object subcatchment which is called when calling:
     # assign_parameters.coverages
-    NULL
-  } else {
-    read_and_normalise(path_polygon)
   }
   
   # ... and for the junction point shape:
-  junctions <- if (is.null(path_point)) {
+  junctions <- if (given(path_point)) {
+    read_and_normalise(path_point)
+  } else {
     clean_warning(
       "Define path to point file including filename and ending (or object ", 
       "point_sf alternatively) otherwise sections junctions and coordinates ", 
@@ -105,55 +107,43 @@ shp_to_inp <- function(
     )
     # specify object junction which is called when testing column names for warn
     # message in junction_parameters
-    NULL
-    
-  } else {
-    read_and_normalise(path_point)
   }
   
   # ... also do it for the outfall point shape:
-  outfalls <- if (is.null(path_outfall)) {
+  outfalls <- if (given(path_outfall)) {
+    read_and_normalise(path_outfall)
+  } else {
     clean_warning(
       "Define path to outfall file including filename and ending (or object ", 
       "outfall_sf alternatively) otherwise section outfall is missing."
     )
-    NULL
-  } else {
-    read_and_normalise(path_outfall)
   }
   
   # ...add Pumps section if pumps_sf exists
-  pumps <- if (is.null(path_pumps)) {
-    NULL
-  } else {
+  pumps <- if (given(path_pumps)) {
     read_and_normalise(path_pumps)
-  }
+  } # else NULL implicitly
   
   # ...add weirs if path_weirs or weirs_sf exists
-  weirs <- if (is.null(path_weirs)) {
-    NULL
-  } else {
+  weirs <- if (given(path_weirs)) {
     read_and_normalise(path_weirs)
-  }
+  } # else NULL implicitly
   
   # ...add storages if path_storage or storage_sf exists
-  storage <- if (is.null(path_storage)) {
-    NULL
-  } else{
+  storage <- if (given(path_storage)) {
     read_and_normalise(path_storage)
-  }
+  } # else NULL implicitly
   
   # ...do the same for the conduit line shape:
-  conduits <- if (is.null(path_line)) {
+  conduits <- if (given(path_line)) {
+    read_and_normalise(path_line)
+  } else {
     clean_warning(
       "Define path to line file including filename and ending (or line_sf ", 
       "alternatively) otherwise section conduits is missing."
     )
     # specify object conduits which is called when testing column names for warn
     # message in conduit_material
-    NULL
-  } else {
-    read_and_normalise(path_line)
   }
   
   # read supplementary data and check data for completeness, return a
