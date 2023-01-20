@@ -92,17 +92,14 @@ assign_parameters.subcatchments <- function(
 {
   defaults <- get_column_defaults()$subcatchments
 
-  if (! all(names(defaults) %in% colnames(x))) {
+  if (!all(names(defaults) %in% colnames(x))) {
     
-    x <- if (! is.null(subcatchment_typologies)) {
-      
-      #...take parameters defined in subcatchment_typologies
-      dplyr::full_join(x, subcatchment_typologies, by = "Type")
-      
-    } else {
-      
+    x <- if (is.null(subcatchment_typologies)) {
       #... take default values for missing columns
       add_columns_if_missing(x, defaults)
+    } else {
+      #...take parameters defined in subcatchment_typologies
+      dplyr::full_join(x, subcatchment_typologies, by = "Type")
     }
   }
 
@@ -134,17 +131,14 @@ assign_parameters.subareas <- function(
   
   defaults <- get_column_defaults()$subareas
 
-  if (! all(names(defaults) %in% colnames(x))) {
+  if (!all(names(defaults) %in% colnames(x))) {
     
-    x <- if (! is.null(subcatchment_typologies)) {
-      
-      #...take values defined in subcatchment_typologies
-      dplyr::full_join(x, subcatchment_typologies, by = "Type")
-      
-    } else {
-      
+    x <- if (is.null(subcatchment_typologies)) {
       #...take default values for missing columns
       add_columns_if_missing(x, defaults)
+    } else {
+      #...take values defined in subcatchment_typologies
+      dplyr::full_join(x, subcatchment_typologies, by = "Type")
     }
   }
 
