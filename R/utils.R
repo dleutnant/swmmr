@@ -1,3 +1,25 @@
+#' Add Columns With Default Values if Not in Data Frame
+#' @keywords internal
+add_columns_if_missing <- function(df, defaults, force = FALSE)
+{
+  for (column in names(defaults)) {
+    df <- add_column_if_missing(df, column, defaults[[column]], force)
+  }
+  
+  df
+}
+
+#' Add Column With Default Value if Not in Data Frame
+#' @keywords internal
+add_column_if_missing <- function(df, column, default, force = FALSE)
+{
+  if (force || ! column %in% colnames(df)) {
+    df[[column]] <- default
+  }
+  
+  df
+}
+
 clean_stop <- function(...) {
   
   stop(..., call. = FALSE)
