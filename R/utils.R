@@ -31,6 +31,19 @@ clean_warning <- function(...)
   invisible(NULL)
 }
 
+create_dir_if_required <- function(path)
+{
+  if (!file.exists(path)) {
+    cat("Creating directory", path, "\n")
+    dir.create(path)
+  }
+}
+
+in_brackets <- function(x)
+{
+  paste0("[", x, "]")
+}
+
 stop_on_bad_index <- function(index, choices)
 {
   # Possible values for index
