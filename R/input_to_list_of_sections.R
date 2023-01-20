@@ -67,10 +67,10 @@ input_to_list_of_sections <- function(
     required <- c("Name", "Outlet", "Area", "RouteTo")
     
     if (!all(required %in% colnames(subcatchment))) {
-      clean_stop(
-        "The polygon shape has to include at least the columns named: ", 
+      stop_formatted(
+        "The polygon shape has to include at least these columns: %s. %s", 
         comma_space_collapsed(required), 
-        ". For optional column names check the documentation."
+        "For optional column names check the documentation."
       )
     }
     
@@ -160,7 +160,7 @@ input_to_list_of_sections <- function(
     # check column names:
     if (!all(c("Name", "Bottom") %in% colnames(junctions))) {
       clean_stop(
-        "The point shape has to include at least the columns named: ", 
+        "The point shape has to include at least these columns: ", 
         "Name, Bottom and Top or Ymax."
       )
     }
@@ -192,9 +192,9 @@ input_to_list_of_sections <- function(
     required <- c("Name", "Bottom", "Type")
     
     if (!all(required %in% colnames(outfalls))) {
-      clean_stop(
-        "The outfall point shape has to include at least the columns named: ", 
-        comma_space_collapsed(required), "."
+      stop_formatted(
+        "The outfall point shape has to include at least these columns: %s.", 
+        comma_space_collapsed(required)
       )
     }
     
@@ -300,10 +300,9 @@ input_to_list_of_sections <- function(
     )
     
     if (!all(required %in% colnames(conduits))) {
-      clean_stop(
-        "The line shape has to include at least the columns named: ",
-        comma_space_collapsed(required),
-        "."
+      stop_formatted(
+        "The line shape has to include at least these columns: %s.",
+        comma_space_collapsed(required)
       )
     }
     

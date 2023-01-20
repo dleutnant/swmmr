@@ -285,12 +285,12 @@ inp_to_files <- function(x, name, path_out = getwd(), quiet = FALSE)
 
   # check name
   if (is.null(name)) {
-    stop("name is missing")
+    clean_stop("name is missing")
   }
 
   # check path_out
   if (is.null(path_out)) {
-    stop("path_out is missing")
+    clean_stop("path_out is missing")
   }
   
   # convert and save input sections to shape files
