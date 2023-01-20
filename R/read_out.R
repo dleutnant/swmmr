@@ -131,9 +131,7 @@ read_out <- function(
   is_zero <- times_seconds == 0
   
   if (any(is_zero)) {
-    clean_stop(
-      sprintf("GetSwmmTimes() returned %d-times zero", sum(is_zero))
-    )
+    stop_formatted("GetSwmmTimes() returned %d-times zero", sum(is_zero))
   }
   
   time <- as.POSIXct(times_seconds, tz = "GMT", origin = "1899-12-30")
@@ -152,8 +150,8 @@ read_out <- function(
   stop_if_out_of_range(lastPeriod, 1L, maxPeriod)
     
   if (lastPeriod < firstPeriod) {
-    clean_stop(
-      "lastPeriod must be greater or equal to firstPeriod (", firstPeriod, ")!"
+    stop_formatted(
+      "lastPeriod must be greater or equal to firstPeriod (%d)!", firstPeriod
     )
   }
   
@@ -175,9 +173,9 @@ read_out <- function(
   if (method == 2L) {
     
     if (!multiColumn || !byObject) {
-      clean_stop(
-        "method = 2 is only implemented for multiColumn = TRUE and ",
-        "byObject = TRUE"
+      stop_formatted(
+        "method = 2 is only implemented for %s",
+        "multiColumn = TRUE and byObject = TRUE"
       )
     }
     
@@ -256,8 +254,9 @@ read_out <- function(
 stop_if_out_of_range <- function(x, a, b)
 {
   if (x < a || x > b) {
-    clean_stop(
-      deparse(substitute(x)), " must be a value between ", a, " and ", b, "!"
+    stop_formatted(
+      "%s must be a value between %d and %d!",
+      deparse(substitute(x)), a, b
     )
   }
 }
