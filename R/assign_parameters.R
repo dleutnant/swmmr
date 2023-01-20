@@ -140,10 +140,7 @@ assign_parameters.evaporation <- function(
   junction_parameters = NULL
 )
 {
-  # transpose tibble of evaporation
-  rbind(Option = colnames(x), Value = x[1, ]) %>% 
-    t(.) %>% 
-    tibble::as_tibble(.)
+  assign_option_value(x)
 }
 
 #' conversion helper
