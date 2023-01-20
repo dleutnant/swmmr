@@ -160,19 +160,16 @@ input_to_list_of_sections <- function(
     
     # ... and for the junction point shape:
     # check column names:
-    if (all(c("Name", "Bottom") %in% colnames(junctions))) {
-      
-      if ("Top" %in% colnames(junctions) | "Ymax" %in% colnames(junctions)) {
-        list_of_sections[["junctions"]] <- junctions
-        list_of_sections[["coordinates"]] <- junctions[, c("Name", "geometry")]
-      }
-      
-    } else {
-      
+    if (!all(c("Name", "Bottom") %in% colnames(junctions))) {
       clean_stop(
         "The point shape has to include at least the columns named: ", 
         "Name, Bottom and Top or Ymax."
       )
+    }
+    
+    if ("Top" %in% colnames(junctions) | "Ymax" %in% colnames(junctions)) {
+      list_of_sections[["junctions"]] <- junctions
+      list_of_sections[["coordinates"]] <- junctions[, c("Name", "geometry")]
     }
     
     if (is.null(junction_parameters)) {
@@ -192,24 +189,21 @@ input_to_list_of_sections <- function(
   }
   
   if (!is.null(outfalls)) {
-    # ... also do it for the outfall point shape:
-    # check for completeness:
-    if (all(c("Name", "Bottom", "Type") %in% colnames(outfalls))) {
-      
-      list_of_sections[["outfalls"]] <- outfalls
-      
-      list_of_sections[["coordinates"]] <- rbind(
-        list_of_sections[["coordinates"]], 
-        outfalls[, c("Name", "geometry")]
-      )
-      
-    } else {
-      
+    
+    # ... also do it for the outfall point shape: check for completeness
+    if (!all(c("Name", "Bottom", "Type") %in% colnames(outfalls))) {
       clean_stop(
         "The outfall point shape has to include at least the columns named: ", 
         "Name, Bottom, Type."
       )
     }
+    
+    list_of_sections[["outfalls"]] <- outfalls
+    
+    list_of_sections[["coordinates"]] <- rbind(
+      list_of_sections[["coordinates"]], 
+      outfalls[, c("Name", "geometry")]
+    )
   }
   
   # checking, reading or adding default values for optional function arguments:
@@ -305,19 +299,16 @@ input_to_list_of_sections <- function(
       "Name", "Length", "Shape", "FromNode", "ToNode", "OutOffset", "Geom1"
     )
     
-    if (all(required_columns %in% colnames(conduits))) {
-      
-      list_of_sections[["conduits"]] <- conduits
-      list_of_sections[["xsections"]] <- conduits
-      
-    } else {
-      
+    if (!all(required_columns %in% colnames(conduits))) {
       clean_stop(
         "The line shape has to include at least the columns named: ",
         paste(required_columns, collapse = ", "),
         "."
       )
     }
+    
+    list_of_sections[["conduits"]] <- conduits
+    list_of_sections[["xsections"]] <- conduits
     
     # ...check for material properties:
     if (is.null(conduit_material)) {
