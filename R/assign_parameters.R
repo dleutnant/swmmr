@@ -170,8 +170,17 @@ assign_parameters.subcatchments <- function(
     }
   }
 
-  x[, c("Name", "Rain_Gage", "Outlet", "Area", "PercImperv", "Width", "Slope", 
-        "CurbLen", "Snowpack")]
+  columns <- c(
+    "Name", "Rain_Gage", "Outlet", "Area", "PercImperv", "Width", "Slope", 
+    "CurbLen", "Snowpack"
+  )
+  
+  # Lookup column names in dictionary
+  d <- swmmr:::get_complete_dictionary()
+  columns2 <- d$int_shp_to_inp[d$section == "subcatchment"]
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' Add Columns With Default Values if Not in Data Frame
@@ -184,7 +193,7 @@ add_columns_if_missing <- function(df, defaults, force = FALSE)
   
   df
 }
-    
+
 #' Add Column With Default Value if Not in Data Frame
 #' @keywords internal
 add_column_if_missing <- function(df, column, default, force = FALSE)
@@ -224,9 +233,18 @@ assign_parameters.subareas <- function(
       add_columns_if_missing(x, defaults)
     }
   }
+
+  columns <- c(
+    "Subcatchment", "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero",
+    "RouteTo", "PctRouted"
+  )
   
-  x[, c("Subcatchment", "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero",
-        "RouteTo", "PctRouted")]
+  # Lookup column names in dictionary
+  d <- swmmr:::get_complete_dictionary()
+  columns2 <- c("Subcatchment", d$int_shp_to_inp[d$section == "subarea"])
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
@@ -385,8 +403,18 @@ assign_parameters.junctions <- function(
       add_columns_if_missing(x, defaults, force = TRUE)
     }
   }
+
+  columns <- c("Name", "Elevation", "Ymax", names(defaults))
   
-  x[, c("Name", "Elevation", "Ymax", names(defaults))]
+  # Get column names from dictionary
+  d <- swmmr:::get_complete_dictionary()
+  columns2 <- swmmr:::replace_values(
+    d$int_shp_to_inp[d$section == "junction"],
+    from = "Bottom",
+    to = "Elevation"
+  )
+  stopifnot(identical(columns, columns2))  
+  x[, columns2]
 }
 
 #' conversion helper
@@ -429,7 +457,18 @@ assign_parameters.outfalls <- function(
 
   x <- add_columns_if_missing(x, defaults)
 
-  x[, c("Name", "Elevation", "Type", "StageData", "Gated", "RouteTo")]
+  columns <- c("Name", "Elevation", "Type", "StageData", "Gated", "RouteTo")
+  
+  # Get column names from dictionary
+  d <- swmmr:::get_complete_dictionary()
+  columns2 <- swmmr:::replace_values(
+    d$int_shp_to_inp[d$section == "outfalls"], 
+    from = "Bottom", 
+    to = "Elevation"
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
@@ -456,8 +495,19 @@ assign_parameters.conduits <- function(
     }
   }
   
-  x[, c("Name", "FromNode", "ToNode", "Length", "Roughness", "InOffset", 
-        "OutOffset")]
+  columns <- c(
+    "Name", "FromNode", "ToNode", "Length", "Roughness", "InOffset", "OutOffset"
+  )
+
+  # Get column names from dictionary
+  d <- swmmr:::get_complete_dictionary()
+  columns2 <- setdiff(
+    d$int_shp_to_inp[d$section == "conduit"], 
+    c("InitFlow", "MaxFlow")
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
@@ -479,7 +529,17 @@ assign_parameters.xsections <- function(
   #... default is circular shape
   x <- add_columns_if_missing(x, defaults)
 
-  x[, c("Link", names(defaults))]
+  columns <- c("Link", names(defaults))
+    
+  # Get column names from dictionary
+  d <- swmmr:::get_complete_dictionary()
+  columns2 <- c(
+    "Link", 
+    setdiff(d$int_shp_to_inp[d$section == "xsection"], "Culvert")
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
@@ -494,7 +554,16 @@ assign_parameters.pumps <- function(
 )
 {
   #...add default values ?
-  x[, c("Name", "FromNode", "ToNode", "Pcurve", "status", "Startup", "Shutoff")]
+  columns <- c(
+    "Name", "FromNode", "ToNode", "Pcurve", "status", "Startup", "Shutoff"
+  )
+
+  # Get column names from dictionary
+  d <- swmmr:::get_complete_dictionary()
+  columns2 <- d$int_shp_to_inp[d$section == "pump"]
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
@@ -509,8 +578,20 @@ assign_parameters.weirs <- function(
 )
 {
   #...add default values ?
-  x[, c("Name", "FromNode", "ToNode", "Type", "CrestHt", "Cd",  "Gated", "EC", 
-        "Cd2", "Sur")]
+  columns <- c(
+    "Name", "FromNode", "ToNode", "Type", "CrestHt", "Cd",  "Gated", "EC", 
+    "Cd2", "Sur"
+  )
+
+  # Get column names from dictionary
+  d <- swmmr:::get_complete_dictionary()
+  columns2 <- setdiff(
+    d$int_shp_to_inp[d$section == "weir"],
+    c("RoadWidth", "RoadSurf")
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
@@ -525,7 +606,19 @@ assign_parameters.storage <- function(
 )
 {
   #...add default values ?
-  x[, c("Name", "Elev", "Ymax", "Y0", "Shape", "Curve_Name", "N_A", "Fevap")]
+  columns <- c(
+    "Name", "Elev", "Ymax", "Y0", "Shape", "Curve_Name", "N_A", "Fevap"
+  )
+
+  # Get column names from dictionary
+  d <- swmmr:::get_complete_dictionary()
+  columns2 <- setdiff(
+    d$int_shp_to_inp[d$section == "storage"], 
+    c("Psi", "Ksat", "IMD")
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
