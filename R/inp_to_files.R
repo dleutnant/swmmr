@@ -13,12 +13,8 @@ sections_to_shp <- function(x, name, path_out, quiet = FALSE)
   msg <- function(...) if (!quiet) message(...)
   
   # ... check if shp folder exists in path_out otherwise create new directory
-  shape_folder <- file.path(path_out, "shp")
-  
-  if (!file.exists(shape_folder)) {
-    dir.create(shape_folder)
-  }
-  
+  create_dir_if_required(file.path(path_out, "shp"))
+
   # dleutnant: 
   # There is currently an issue in writing sf objects on OS X which
   # causes R to crash if the file to be written already exists.
