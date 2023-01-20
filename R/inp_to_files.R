@@ -65,19 +65,17 @@ sections_to_shp <- function(x, name, path_out, quiet = FALSE)
     shape_name <- names(section_config)[1L]
     
     # ... convert section to sf if contained in x
-    if (section %in% names(x)) {
-      
-      suppressMessages(sf::st_write(
-        conversion_function(x), 
-        dsn = file.path(shape_dir, paste0(name, "_", shape_name, ".shp")), 
-        delete_dsn = delete_dsn,
-        quiet = quiet
-      ))
-      
-    } else {
-      
+    if (!section %in% names(x)) {
       msg(sprintf("section %s is missing", section))
+      next
     }
+    
+    suppressMessages(sf::st_write(
+      conversion_function(x), 
+      dsn = file.path(shape_dir, paste0(name, "_", shape_name, ".shp")), 
+      delete_dsn = delete_dsn,
+      quiet = quiet
+    ))
   }
   
   msg(sprintf("*.shp files were written to %s", shape_dir))
