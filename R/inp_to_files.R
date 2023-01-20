@@ -3,11 +3,12 @@
 sections_to_shp <- function(x, name, path_out, quiet = FALSE)
 {
   # ... convert inp to shp and save shape files
-  # ... if implemented: convert weirs (links), orifices (links), pumps (links) and storages (point) to shape files
-
+  # ... if implemented: convert weirs (links), orifices (links), pumps (links)
+  #     and storages (point) to shape files
+  
   # check class
   stopifnot(inherits(x, "inp"))
-
+  
   # helper function
   msg <- function(...) if (!quiet) message(...)
   
@@ -17,7 +18,7 @@ sections_to_shp <- function(x, name, path_out, quiet = FALSE)
   if (!file.exists(shape_folder)) {
     dir.create(shape_folder)
   }
-
+  
   # dleutnant: 
   # There is currently an issue in writing sf objects on OS X which
   # causes R to crash if the file to be written already exists.
@@ -33,14 +34,12 @@ sections_to_shp <- function(x, name, path_out, quiet = FALSE)
   #   delete_dsn <- FALSE
   # }
   delete_dsn <- FALSE
-
+  
   # dleutnant: 
-  # maybe instead of writing each section individually, we might
-  # use sth:
+  # maybe instead of writing each section individually, we might use sth:
   # inp_to_sf(x) %>% 
-  #   purrr::iwalk(., ~ sf::st_write(.x, file.path(path_out, 
-  #                                                paste0("shp/", .y, "_.shp"))))
-
+  #   purrr::iwalk(., ~ sf::st_write(.x, file.path(path_out, paste0("shp/", .y, "_.shp"))))
+  
   # Configuration with:
   # - element names = section names
   # - each element is a list with one named element:
@@ -56,15 +55,15 @@ sections_to_shp <- function(x, name, path_out, quiet = FALSE)
     pumps = list(pumps = pumps_to_sf),
     storage = list(storages = storages_to_sf)
   )
-
+  
   shape_dir <- file.path(path_out, "shp")
   
   for (section in names(config)) {
     
     section_config <- config[[section]]
-    conversion_function <- section_config[[1]]
-    shape_name <- names(section_config)[1]
-
+    conversion_function <- section_config[[1L]]
+    shape_name <- names(section_config)[1L]
+    
     # ... convert section to sf if contained in x
     if (section %in% names(x)) {
       
@@ -282,12 +281,12 @@ inp_to_files <- function(x, name, path_out = getwd(), quiet = FALSE)
 {
   # check class
   stopifnot(inherits(x, "inp"))
-
+  
   # check name
   if (is.null(name)) {
     clean_stop("name is missing")
   }
-
+  
   # check path_out
   if (is.null(path_out)) {
     clean_stop("path_out is missing")
@@ -295,13 +294,13 @@ inp_to_files <- function(x, name, path_out = getwd(), quiet = FALSE)
   
   # convert and save input sections to shape files
   sections_to_shp(x, name, path_out, quiet = quiet)
-
+  
   # convert and save selection of input sections to txt files
   options_to_txt(x, name, path_out, quiet = quiet)
-
+  
   # write curves to txt
   curves_to_txt(x, name, path_out, quiet = quiet)
-
+  
   # timeseries to txt
   timeseries_to_dat(x, name, path_out, quiet = quiet)
 }
