@@ -1,211 +1,169 @@
-#' Get List of Default Values for Columns for Different Objects
-#' @keywords internal
-get_column_defaults <- function() {
-  
-  list(
-    
-    subcatchments = list(
-      Rain_Gage = "default", 
-      CurbLen = 0, 
-      Snowpack = " ", 
-      PercImperv = 25, 
-      Slope = 0.5,
-      Width = 500
-    ),
-    
-    subareas =list(
-      N_Imperv = 0.01, 
-      N_Perv = 0.1, 
-      S_Imperv = 0.05, 
-      S_Perv = 0.05, 
-      Pct_Zero = 25, 
-      RouteTo = "OUTLET", 
-      PctRouted = 100
-    ),
-    
-    infiltration_horton = list(
-      MaxRate = 3,
-      MinRate = 0.5,
-      Decay = 4,
-      DryTime = 7,
-      MaxInfl = 0
-    ),
-
-    infiltration_green_ampt = list(
-      Suction = 3,
-      HydCon = 0.5,
-      IMDMax = 4
-    ),
-    
-    junction = list(
-      Y = 0, 
-      Ysur = 0,
-      Apond = 0
-    ),
-    
-    outfalls = list(
-      Gated = "NO",
-      StageData = " ",
-      RouteTo = " "
-    ),
-    
-    conduits = list(
-      Roughness = 0.018
-    ),
-    
-    xsections = list(
-      Shape = "CIRCULAR",
-      Geom1 = 3,
-      Geom2 = 0,
-      Geom3 = 0,
-      Geom4 = 0,
-      Barrels = 1
-    )
-  )
-}
-
 #' conversion helper
 #' @keywords internal
 assign_parameters <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   UseMethod("assign_parameters", x)
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.default <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   tibble::as_tibble(x)
+}
+
+#' helper function
+#' @keywords internal
+assign_option_value <- function(x)
+{
+  # transpose tibble of options
+  rbind(Option = colnames(x), Value = x[1L, ]) %>% 
+    t() %>% 
+    tibble::as_tibble()
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.options <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
-  # transpose tibble of options
-  rbind(Option = colnames(x), Value = x[1, ]) %>% 
-    t(.) %>% 
-    tibble::as_tibble(.)
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
+  assign_option_value(x)
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.report <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   # transpose tibble of report
-  rbind(Option = colnames(x), Value = x[1, ]) %>% 
-    t(.) %>% 
-    tibble::as_tibble(.)
+  assign_option_value(x)
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.evaporation <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
-  # transpose tibble of evaporation
-  rbind(Option = colnames(x), Value = x[1, ]) %>% 
-    t(.) %>% 
-    tibble::as_tibble(.)
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
+  assign_option_value(x)
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.subcatchments <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   defaults <- get_column_defaults()$subcatchments
-
-  if (! all(names(defaults) %in% colnames(x))) {
+  
+  if (!all(names(defaults) %in% colnames(x))) {
     
-    if (! is.null(subcatchment_typologies)) {
-      
-      #...take parameters defined in subcatchment_typologies
-      x <- dplyr::full_join(x, subcatchment_typologies, by = "Type")
-      
-    } else {
-      
+    x <- if (is.null(subcatchment_typologies)) {
       #... take default values for missing columns
-      x <- add_columns_if_missing(x, defaults)
+      add_columns_if_missing(x, defaults)
+    } else {
+      #...take parameters defined in subcatchment_typologies
+      dplyr::full_join(x, subcatchment_typologies, by = "Type")
     }
   }
-
-  x[, c("Name", "Rain_Gage", "Outlet", "Area", "PercImperv", "Width", "Slope", 
-        "CurbLen", "Snowpack")]
-}
-
-#' Add Columns With Default Values if Not in Data Frame
-#' @keywords internal
-add_columns_if_missing <- function(df, defaults, force = FALSE)
-{
-  for (column in names(defaults)) {
-    df <- add_column_if_missing(df, column, defaults[[column]], force)
-  }
   
-  df
-}
-    
-#' Add Column With Default Value if Not in Data Frame
-#' @keywords internal
-add_column_if_missing <- function(df, column, default, force = FALSE) {
+  columns <- c(
+    "Name", "Rain_Gage", "Outlet", "Area", "PercImperv", "Width", "Slope", 
+    "CurbLen", "Snowpack"
+  )
   
-  if (force || ! column %in% colnames(df)) {
-    df[[column]] <- default
-  }
+  # Lookup column names in dictionary
+  d <- get_complete_dictionary()
+  columns2 <- d$int_shp_to_inp[d$section == "subcatchment"]
+  stopifnot(identical(columns, columns2))
   
-  df
+  x[, columns2]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.subareas <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   x$Subcatchment <- x$Name
   
   defaults <- get_column_defaults()$subareas
-
-  if (! all(names(defaults) %in% colnames(x))) {
+  
+  if (!all(names(defaults) %in% colnames(x))) {
     
-    if (! is.null(subcatchment_typologies)) {
-      
-      #...take values defined in subcatchment_typologies
-      x <- dplyr::full_join(x, subcatchment_typologies, by = "Type")
-      
-    } else {
-      
+    x <- if (is.null(subcatchment_typologies)) {
       #...take default values for missing columns
-      x <- add_columns_if_missing(x, defaults)
+      add_columns_if_missing(x, defaults)
+    } else {
+      #...take values defined in subcatchment_typologies
+      dplyr::full_join(x, subcatchment_typologies, by = "Type")
     }
   }
   
-  x[, c("Subcatchment", "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero",
-        "RouteTo", "PctRouted")]
+  columns <- c(
+    "Subcatchment", "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero",
+    "RouteTo", "PctRouted"
+  )
+  
+  # Lookup column names in dictionary
+  d <- get_complete_dictionary()
+  columns2 <- c("Subcatchment", d$int_shp_to_inp[d$section == "subarea"])
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.polygons <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
 ) {
   
   y <- sf::st_coordinates(x$geometry) %>% 
@@ -224,80 +182,74 @@ assign_parameters.polygons <- function(
 #' conversion helper
 #' @keywords internal
 assign_parameters.infiltration <- function(
-  x, infiltration, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   # separate model and subcatchment
   model <- x[[1]]
   x <- x[[2]]
+
+  # Provide defaults for infiltration-related columns (if applicable, else NULL)
+  infiltration_defaults <- if (model %in% c("Horton", "Green_Ampt")) {
+    
+    element <- ifelse(
+      model == "Horton", 
+      "infiltration_horton", 
+      "infiltration_green_ampt"
+    )
+
+    get_column_defaults()[[element]]
+    
+  } # else NULL implicitly    
+  
+  add_defaults_or_skip <- function(x, defaults) {
+    if (is.null(defaults)) {
+      return(x)
+    }
+    # Add default columns and select infiltration columns
+    add_columns_if_missing(x, defaults)[, c('Subcatchment', names(defaults))]
+  }
   
   if (! is.null(infiltration)) {
     
     x$Subcatchment <- x$Name
+    
     #...take values defined in infiltration
     x <- dplyr::full_join(x, infiltration, by = "Soil")
     
     #... fill missing columns with default and select infiltration columns
-    if (model == "Horton") {
-
-      #...take default values
-      defaults <- get_column_defaults()$infiltration_horton
-      
-      x <- add_columns_if_missing(x, defaults)
-
-      #... select infiltration columns
-      x <- x[, c('Subcatchment', names(defaults))]
-    }
-    
-    if (model == "Green_Ampt") {
-      
-      #...take default values
-      defaults <- get_column_defaults()$infiltration_green_ampt
-      
-      x <- add_columns_if_missing(x, defaults)
-
-      #... select infiltration columns
-      x <- x[, c('Subcatchment', names(defaults))]
-    }
+    x <- add_defaults_or_skip(x, infiltration_defaults)
     
   } else {
-
-    if (model == "Horton") {
-      
-        x$Subcatchment <- x$Name
     
-        #...take default values
-        defaults <- get_column_defaults()$infiltration_horton
-
-        x <- add_columns_if_missing(x, defaults)
-
-        x <- x[, c('Subcatchment', names(defaults))]
-    }
-    
-    if (model == "Green_Ampt") {
+    if (!is.null(infiltration_defaults)) {
       
       x$Subcatchment <- x$Name
       
-      #...take default values
-      defaults <- get_column_defaults()$infiltration_green_ampt
-
-      x <- add_columns_if_missing(x, defaults)
-
-      x <- x[, c('Subcatchment', names(defaults))]
+      #... fill missing columns with default and select infiltration columns
+      x <- add_defaults_or_skip(x, infiltration_defaults)
     }
   }
-
+  
   x
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.coverages <- function(
-  x, infiltration = NULL, subcatchment, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   if (is.null(subcatchment)) {
     
     if ("Type" %in% colnames(subcatchment)) {
@@ -307,7 +259,9 @@ assign_parameters.coverages <- function(
       
       return(x) 
     }
-  } else{
+    
+  } else {
+    
     x
   }
 }
@@ -315,10 +269,14 @@ assign_parameters.coverages <- function(
 #' conversion helper
 #' @keywords internal
 assign_parameters.junctions <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters
+)
+{
   if ("Top" %in% colnames(x)) {
     #... calculate maximum depth
     x$Ymax <- x$Top - x$Bottom
@@ -328,28 +286,45 @@ assign_parameters.junctions <- function(
   x$Elevation <- x$Bottom
   
   defaults <- get_column_defaults()$junction
-
+  
   if (! all(names(defaults) %in% colnames(x))) {
     
-    if (! is.null(junction_parameters)) {
+    x <- if (! is.null(junction_parameters)) {
+      
       #...merge with values defined in junction_parameters
-      x <- dplyr::full_join(x, junction_parameters, by = "Name")
+      dplyr::full_join(x, junction_parameters, by = "Name")
+      
     } else {
+      
       #...take default values
-      x <- add_columns_if_missing(x, defaults, force = TRUE)
+      add_columns_if_missing(x, defaults, force = TRUE)
     }
   }
   
-  x[, c("Name", "Elevation", "Ymax", names(defaults))]
+  columns <- c("Name", "Elevation", "Ymax", names(defaults))
+  
+  # Get column names from dictionary
+  d <- get_complete_dictionary()
+  columns2 <- replace_values(
+    d$int_shp_to_inp[d$section == "junction"],
+    from = "Bottom",
+    to = "Elevation"
+  )
+  stopifnot(identical(columns, columns2))  
+  x[, columns2]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.coordinates <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   y <- sf::st_coordinates(x$geometry) %>% 
     tibble::as_tibble(.)
   
@@ -358,108 +333,205 @@ assign_parameters.coordinates <- function(
   
   z <- x[, c("index", "Name")]
   
-  merge(z, y, by.x = "index", by.y = "index") %>% .[, c("Name", "X", "Y")]
+  merge(z, y, by.x = "index", by.y = "index") %>% 
+    .[, c("Name", "X", "Y")]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.outfalls <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   x$Elevation <- x$Bottom
-
+  
   defaults <- get_column_defaults()$outfalls
-
+  
   x <- add_columns_if_missing(x, defaults)
-
-  x[, c("Name", "Elevation", "Type", "StageData", "Gated", "RouteTo")]
+  
+  columns <- c("Name", "Elevation", "Type", "StageData", "Gated", "RouteTo")
+  
+  # Get column names from dictionary
+  d <- get_complete_dictionary()
+  columns2 <- replace_values(
+    d$int_shp_to_inp[d$section == "outfalls"], 
+    from = "Bottom", 
+    to = "Elevation"
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.conduits <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material, junction_parameters = NULL
-) {
-
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material, 
+    junction_parameters = NULL
+)
+{
   defaults <- get_column_defaults()$conduits
-
-  if (! all(names(defaults) %in% colnames(x))) {
+  
+  if (!all(names(defaults) %in% colnames(x))) {
     
-    if (! is.null(conduit_material)) {
+    x <- if (! is.null(conduit_material)) {
+      
       #... take values given in conduit_material
-      x <- dplyr::full_join(conduit_material, x, by = "Material")
+      dplyr::full_join(conduit_material, x, by = "Material")
+      
     } else {
+      
       #...take default value
-      x <- add_columns_if_missing(x, defaults, force = TRUE)
+      add_columns_if_missing(x, defaults, force = TRUE)
     }
   }
   
-  x[, c("Name", "FromNode", "ToNode", "Length", "Roughness", "InOffset", 
-        "OutOffset")]
+  columns <- c(
+    "Name", "FromNode", "ToNode", "Length", "Roughness", "InOffset", "OutOffset"
+  )
+  
+  # Get column names from dictionary
+  d <- get_complete_dictionary()
+  columns2 <- setdiff(
+    d$int_shp_to_inp[d$section == "conduit"], 
+    c("InitFlow", "MaxFlow")
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.xsections <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   #... rename Name of conduit to Link
   x$Link <- x$Name
   
   defaults <- get_column_defaults()$xsections
-
+  
   #... default is circular shape
   x <- add_columns_if_missing(x, defaults)
-
-  x[, c("Link", names(defaults))]
+  
+  columns <- c("Link", names(defaults))
+  
+  # Get column names from dictionary
+  d <- get_complete_dictionary()
+  columns2 <- c(
+    "Link", 
+    setdiff(d$int_shp_to_inp[d$section == "xsection"], "Culvert")
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.pumps <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   #...add default values ?
-  x[, c("Name", "FromNode", "ToNode", "Pcurve", "status", "Startup", "Shutoff")]
+  columns <- c(
+    "Name", "FromNode", "ToNode", "Pcurve", "status", "Startup", "Shutoff"
+  )
+  
+  # Get column names from dictionary
+  d <- get_complete_dictionary()
+  columns2 <- d$int_shp_to_inp[d$section == "pump"]
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.weirs <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   #...add default values ?
-  x[, c("Name", "FromNode", "ToNode", "Type", "CrestHt", "Cd",  "Gated", "EC", 
-        "Cd2", "Sur")]
+  columns <- c(
+    "Name", "FromNode", "ToNode", "Type", "CrestHt", "Cd",  "Gated", "EC", 
+    "Cd2", "Sur"
+  )
+  
+  # Get column names from dictionary
+  d <- get_complete_dictionary()
+  columns2 <- setdiff(
+    d$int_shp_to_inp[d$section == "weir"],
+    c("RoadWidth", "RoadSurf")
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.storage <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   #...add default values ?
-  x[, c("Name", "Elev", "Ymax", "Y0", "Shape", "Curve_Name", "N_A", "Fevap")]
+  columns <- c(
+    "Name", "Elev", "Ymax", "Y0", "Shape", "Curve_Name", "N_A", "Fevap"
+  )
+  
+  # Get column names from dictionary
+  d <- get_complete_dictionary()
+  columns2 <- setdiff(
+    d$int_shp_to_inp[d$section == "storage"], 
+    c("Psi", "Ksat", "IMD")
+  )
+  stopifnot(identical(columns, columns2))
+  
+  x[, columns2]
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.curves <- function(
-  x, infiltration = NULL, subcatchment = NULL, subcatchment_typologies = NULL, 
-  conduit_material = NULL, junction_parameters = NULL
-) {
-  
+    x, 
+    infiltration = NULL, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
+)
+{
   #... delete duplicated type descriptions
   x[duplicated(x$Type), 'Type'] <- ' '
   
