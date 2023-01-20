@@ -60,19 +60,19 @@ sections_to_shp <- function(x, name, path_out, quiet = FALSE)
   
   for (section in names(config)) {
     
-    section_config <- config[[section]]
-    conversion_function <- section_config[[1L]]
-    shape_name <- names(section_config)[1L]
-    
-    # ... convert section to sf if contained in x
     if (!section %in% names(x)) {
       msg(sprintf("section %s is missing", section))
       next
     }
     
+    section_config <- config[[section]]
+
+    # ... convert section to sf if contained in x
     suppressMessages(sf::st_write(
-      conversion_function(x), 
-      dsn = file.path(shape_dir, paste0(name, "_", shape_name, ".shp")), 
+      section_config[[1L]](x), 
+      dsn = file.path(shape_dir, paste0(
+        name, "_", names(section_config)[1L], ".shp"
+      )), 
       delete_dsn = delete_dsn,
       quiet = quiet
     ))
@@ -188,7 +188,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
   # unlist and save txt file
   writeLines(
     unlist(options_txt), 
-    con = file.path(path_out, paste0("txt/", name, "_options.txt"))
+    con = file.path(path_out, "txt", paste0(name, "_options.txt"))
   )
   
   msg(sprintf("*.txt file was written to %s/txt", path_out))
@@ -223,14 +223,11 @@ curves_to_txt <- function(x, name, path_out, quiet = FALSE)
   mapply(
     FUN = utils::write.table, 
     list_of_curves, 
-    file = paste0(
-      path_out, 
-      "/txt/", 
+    file = file.path(path_out, "txt", sprintf(
+      "%s_%s.txt", 
       name, 
-      "_", 
-      unlist(lapply(lapply(list_of_curves, "[[", 1), "[[", 1)), 
-      ".txt"
-    ), 
+      unlist(lapply(lapply(list_of_curves, "[[", 1), "[[", 1))
+    )), 
     sep = " ", 
     dec = ".", 
     col.names = FALSE, 
