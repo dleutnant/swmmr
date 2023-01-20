@@ -102,9 +102,9 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     create_dir_if_required(file.path(path_out, "txt"))
     
     # check sections and add sections in new format to list options_txt:
-
+    
     options_txt <- list()
-
+    
     if ("options" %in% names(x)) {
       options_txt[["[options]"]] <- x[["options"]] %>%
         apply(., 1, paste, collapse = "\t") %>%
@@ -120,7 +120,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
         apply(., 1, paste, collapse = "\t") %>%
         paste(names(.), ., sep = "\t") %>%
         c("[raingages]", .) %>%
-		gsub("TIMESERIES\t", "TIMESERIES ", .)
+        gsub("TIMESERIES\t", "TIMESERIES ", .)
     }
     if ("evaporation" %in% names(x)) {
       options_txt[["[evaporation]"]] <- x[["evaporation"]] %>%
@@ -169,12 +169,12 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
         c("[coverages]", .) %>%
 		gsub("NA", "", .)
     }
-
+    
     # unlist and save txt file
     writeLines(unlist(options_txt), con = file.path(path_out, paste0("txt/", name, "_options.txt")))
-
+    
     msg(sprintf("*.txt file was written to %s/txt", path_out))
-
+    
   } else {
     
     msg("section options is missing")
@@ -188,31 +188,31 @@ curves_to_txt <- function(x, name, path_out, quiet = FALSE)
   # if implemented: convert curves to txt files
   # check class and required elements
   stopifnot(inherits(x, "inp"))
-
+  
   # helper function
   msg <- function(...) if (!quiet) message(...)
   
   if ("curves" %in% names(x)) {
-
+    
     # ... check if txt folder exists in path_out otherwise create new directory
     if (!file.exists(file.path(path_out, "txt"))) {
       dir.create(file.path(path_out, "txt"))
     }
-
+    
     # ...replace NA with the most recent non-NA prior it
     x$curves <- zoo::na.locf(x$curves)
-
+    
     # ... split by curve name
     list_of_curves <- split(x$curves, x$curves$Name)
-
+    
     # write table for each curve
     mapply(utils::write.table, list_of_curves, 
            file = paste0(path_out, "/txt/", name, "_", 
                          unlist(lapply(lapply(list_of_curves, "[[", 1), "[[", 1)), ".txt"), 
            sep = " ", dec = ".", col.names = F, row.names = F, quote = F)
-
+    
     msg(sprintf("curve.txt files were written to %s/txt", path_out))
-
+    
   } else {
     
     msg("section curves is missing")
@@ -223,44 +223,56 @@ curves_to_txt <- function(x, name, path_out, quiet = FALSE)
 #' @keywords internal
 timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
 {
+  write_dat <- function(data, file) utils::write.table(
+    data, file, row.names = FALSE, col.names = FALSE, quote = FALSE
+  ) 
+  
   # if implemented: convert timeseries to dat files
   
   # check class and required elements
   stopifnot(inherits(x, "inp"))
-
+  
   # helper function
   msg <- function(...) if (!quiet) message(...)
   
-  if ("timeseries" %in% names(x)) {
-    # ... check if txt folder exists in path_out otherwise create new directory
-    if (!file.exists(file.path(path_out, "dat"))) {
-      dir.create(file.path(path_out, "dat"))
-    }
-    
-    # ... convert section timeseries to swmm timeseries *.dat format
-      # seperate timeseries
-      timeseries <- list(
-        start = which(duplicated(x$timeseries$Name) == F),
-        end = c(which(duplicated(x$timeseries$Name) == F) - 1, length(x$timeseries$Name))[-1],
-        name = x$timeseries$Name[duplicated(x$timeseries$Name) == F]
-      )
-      
-      # one *.dat file per timeseries
-      if(all(is.na(x$timeseries$Date))) {
-        # if no date is given:
-        mapply(function(start, end, ts) utils::write.table(x$timeseries[start:end, c("Time", "Value")], file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")), row.names = F, col.names = F, quote = F), start = timeseries$start, end = timeseries$end, ts = timeseries$name)
-      }else{
-        if(all(is.na(x$timeseries$Date) == F)){
-          # if date is given:
-          mapply(function(start, end, ts) utils::write.table(x$timeseries[start:end, c("Date","Time", "Value")], file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")), row.names = F, col.names = F, quote = F), start = timeseries$start, end = timeseries$end, ts = timeseries$name)
-        }
-      }
-      
-    msg(sprintf("timeseries.dat files were written to %s/dat", path_out))
-    
-  } else {
-    
+  if (!"timeseries" %in% names(x)) {
     msg("section timeseries is missing")
+    return()
+  }
+    
+  # ... check if txt folder exists in path_out otherwise create new directory
+  create_dir_if_required(file.path(path_out, "dat"))
+
+  # ... convert section timeseries to swmm timeseries *.dat format
+  # seperate timeseries
+  series_names <- x$timeseries$Name
+  starts <- which(!duplicated(series_names))
+  
+  timeseries <- list(
+    start = starts,
+    end = c(starts - 1L, length(series_names))[-1L],
+    name = series_names[starts]
+  )
+  
+  # one *.dat file per timeseries
+  none_has_date <- all(is.na(x$timeseries$Date))
+  all_have_date <- !anyNA(x$timeseries$Date)
+
+  if (none_has_date || all_have_date) {
+
+    columns <- c(if (all_have_date) "Date", "Time", "Value")
+
+    mapply(
+      FUN = function(start, end, ts) write_dat(
+        x$timeseries[start:end, columns], 
+        file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat"))
+      ),
+      start = timeseries$start, 
+      end = timeseries$end, 
+      ts = timeseries$name
+    )
+    
+    msg(sprintf("timeseries.dat files were written to %s/dat", path_out))
   }
 }
 
