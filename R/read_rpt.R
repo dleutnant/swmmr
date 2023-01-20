@@ -1,45 +1,47 @@
 # report section
 #' @keywords internal
-report_sections <- c("Element Count",
-                     "Pollutant Summary",
-                     "Landuse Summary",
-                     "Raingage Summary",
-                     "Subcatchment Summary",
-                     "Node Summary",
-                     "Link Summary",
-                     "Cross Section Summary",
-                     "Analysis Options",
-                     #"Rainfall File Summary",
-                     #"Rainfall Dependent I/I",
-                     #"Control Actions Taken",
-                     "Runoff Quantity Continuity", 
-                     "Runoff Quality Continuity",
-                     "Groundwater Continuity",
-                     "Flow Routing Continuity",
-                     "Quality Routing Continuity",
-                     "Highest Continuity Errors",
-                     "Time-Step Critical Elements",
-                     "Highest Flow Instability Indexes", 
-                     "Routing Time Step Summary", 
-                     #"Subcatchment Results",
-                     "Subcatchment Runoff Summary",
-                     "LID Performance Summary",
-                     "Subcatchment Washoff Summary",
-                     #"Node Results",
-                     "Node Depth Summary", 
-                     "Node Inflow Summary", 
-                     "Node Flooding Summary", 
-                     "Outfall Loading Summary", 
-                     #"Link Results",
-                     "Link Flow Summary", 
-                     "Conduit Surcharge Summary",
-                     "Link Pollutant Load Summary",
-                     "Pumping Summary",
-                     "Groundwater Summary", # example? 
-                     "LID Control Summary",
-                     "Node Surcharge Summary",
-                     "Storage Volume Summary",
-                     "Flow Classification Summary")
+report_sections <- c(
+  "Element Count",
+  "Pollutant Summary",
+  "Landuse Summary",
+  "Raingage Summary",
+  "Subcatchment Summary",
+  "Node Summary",
+  "Link Summary",
+  "Cross Section Summary",
+  "Analysis Options",
+  #"Rainfall File Summary",
+  #"Rainfall Dependent I/I",
+  #"Control Actions Taken",
+  "Runoff Quantity Continuity", 
+  "Runoff Quality Continuity",
+  "Groundwater Continuity",
+  "Flow Routing Continuity",
+  "Quality Routing Continuity",
+  "Highest Continuity Errors",
+  "Time-Step Critical Elements",
+  "Highest Flow Instability Indexes", 
+  "Routing Time Step Summary", 
+  #"Subcatchment Results",
+  "Subcatchment Runoff Summary",
+  "LID Performance Summary",
+  "Subcatchment Washoff Summary",
+  #"Node Results",
+  "Node Depth Summary", 
+  "Node Inflow Summary", 
+  "Node Flooding Summary", 
+  "Outfall Loading Summary", 
+  #"Link Results",
+  "Link Flow Summary", 
+  "Conduit Surcharge Summary",
+  "Link Pollutant Load Summary",
+  "Pumping Summary",
+  "Groundwater Summary", # example? 
+  "LID Control Summary",
+  "Node Surcharge Summary",
+  "Storage Volume Summary",
+  "Flow Classification Summary"
+)
 
 #' Read SWMM's .rpt file
 #'
@@ -54,15 +56,17 @@ report_sections <- c("Element Count",
 #' } 
 #' @rdname read_rpt
 #' @export
-read_rpt <- function(x, ...) {
-  
+read_rpt <- function(x, ...)
+{
   # read lines and trimws
   rpt_lines <- readr::read_lines(x, ...) %>% 
     trimws(.) %>% 
     .[!grepl("---------", .)]
   
   # which sections are available?
-  section_available <- purrr::map_lgl(report_sections, ~ any(grepl(., x = rpt_lines)))
+  section_available <- purrr::map_lgl(
+    report_sections, ~ any(grepl(., x = rpt_lines))
+  )
   
   # last three lines contain analysis_info data
   # remove lines and add analysis_info to final list
@@ -89,8 +93,12 @@ read_rpt <- function(x, ...) {
     names
   
   # find section start
-  section_start <- purrr::map(report_sections, ~ grep(., x = rpt_lines) - 1) %>%
-    purrr::map_if(., ~ identical(., integer(0)) | identical(., numeric(0)), ~ NA) %>% 
+  section_start <- report_sections %>%
+    purrr::map(~ grep(., x = rpt_lines) - 1) %>%
+    purrr::map_if(
+      ., 
+      ~ identical(., integer(0)) | identical(., numeric(0)), ~ NA
+    ) %>% 
     as.integer(.)
   
   # get end per section
@@ -115,9 +123,11 @@ read_rpt <- function(x, ...) {
   
   # remove empty sections (and skip section name)
   section_not_emtpy <- (section_end - section_start > 0)
-  section <- list(start = section_start[section_not_emtpy],
-                  end = section_end[section_not_emtpy], 
-                  name = report_sections[section_not_emtpy])
+  section <- list(
+    start = section_start[section_not_emtpy],
+    end = section_end[section_not_emtpy], 
+    name = report_sections[section_not_emtpy]
+  )
   
   # create list with sections  
   list_of_sections <- section %>% 
@@ -138,6 +148,5 @@ read_rpt <- function(x, ...) {
   # assign class attribute
   class(res) <- "rpt"
   
-  return(res)
-  
+  res
 }

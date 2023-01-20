@@ -20,29 +20,39 @@ add_column_if_missing <- function(df, column, default, force = FALSE)
   df
 }
 
-clean_stop <- function(...) {
-  
+# clean_stop -------------------------------------------------------------------
+clean_stop <- function(...)
+{
   stop(..., call. = FALSE)
 }
 
-clean_warning <- function(...) {
-  
+# clean_warning ----------------------------------------------------------------
+clean_warning <- function(...)
+{
   warning(..., call. = FALSE)
+  invisible(NULL)
 }
 
-create_dir_if_required <- function(path) {
+# create_dir_if_required -------------------------------------------------------
+create_dir_if_required <- function(path, silent = TRUE)
+{
   if (!file.exists(path)) {
-    cat("Creating directory", path, "\n")
+    if (!silent) {
+      cat("Creating directory", path, "\n")
+    }
     dir.create(path)
   }
 }
 
-in_brackets <- function(x) {
+# in_brackets ------------------------------------------------------------------
+in_brackets <- function(x)
+{
   paste0("[", x, "]")
 }
 
-stop_on_bad_index <- function(index, choices) {
-
+# stop_on_bad_index ------------------------------------------------------------
+stop_on_bad_index <- function(index, choices)
+{
   # Possible values for index
   values <- seq_along(choices) - 1
   
@@ -55,27 +65,25 @@ stop_on_bad_index <- function(index, choices) {
   }
 }
 
-stop_formatted <- function(fmt, ...) {
+# stop_formatted ---------------------------------------------------------------
+stop_formatted <- function(fmt, ...)
+{
   clean_stop(sprintf(fmt, ...))
 }
 
 #' Determine the OS
 #' @keywords internal
-.get_os <- function(){
-  
+.get_os <- function()
+{
   sysinf <- base::Sys.info()
   
-  if (!is.null(sysinf)) {
-    
-    os <- sysinf['sysname']
-    
+  os <- if (!is.null(sysinf)) {
+    sysinf['sysname']
   } else {
-    
-    os <- base::.Platform$OS.type
-    
+    base::.Platform$OS.type
   }
   
-  return(tolower(os))
+  tolower(os)
 }
 
 #' Determine the path to the latest swmm5 executable
@@ -97,7 +105,8 @@ stop_formatted <- function(fmt, ...) {
 
 #' Determine the latest swmm5.exe in the specified  program files folder
 #' @keywords internal
-.get_exec_on_windows <- function(path, prefix, exe) {
+.get_exec_on_windows <- function(path, prefix, exe)
+{
   # path = "c:/Program Files (x86)/", 
   # prefix = "EPA SWMM",
   # exe = "swmm5.exe"
@@ -133,14 +142,13 @@ stop_formatted <- function(fmt, ...) {
     full_name <- NULL
   }
   
-  return(full_name)
-  
+  full_name
 }
 
 #' Determine the latest swmm5.exe in the specified  program files folder
 #' @keywords internal
-.get_exec_on_linux_or_mac <- function(path, exe) {
-  
+.get_exec_on_linux_or_mac <- function(path, exe)
+{
   # create full name to swmm5 executable
   full_name <- file.path(path, exe)
   
@@ -155,6 +163,6 @@ stop_formatted <- function(fmt, ...) {
     message("SWMM executable not found.")
     full_name <- NULL
   }
-  return(full_name)
   
+  full_name
 }

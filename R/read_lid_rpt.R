@@ -13,14 +13,26 @@
 #' } 
 #' @rdname read_lid_rpt
 #' @export
-read_lid_rpt <- function(x, return_xts = TRUE, ...) { 
-  
+read_lid_rpt <- function(x, return_xts = TRUE, ...)
+{ 
   # set header
-  header <- c("Date", "Time",
-              "Elapsed Time", "Total Inflow", "Total Evap", "Surface Infil", 
-              "Pavement Perc", "Soil Perc", "Storage Exfil", "Surface Runoff",
-              "Drain OutFlow", "Surface Level", "Pavement Level",
-              "Soil Moisture", "Storage Level")
+  header <- c(
+    "Date", 
+    "Time",
+    "Elapsed Time", 
+    "Total Inflow", 
+    "Total Evap", 
+    "Surface Infil", 
+    "Pavement Perc", 
+    "Soil Perc", 
+    "Storage Exfil", 
+    "Surface Runoff",
+    "Drain OutFlow", 
+    "Surface Level", 
+    "Pavement Level",
+    "Soil Moisture", 
+    "Storage Level"
+  )
   
   # parse project and LID Unit
   meta_info <- readr::read_lines(file = x, skip = 2, n_max = 2) %>%
@@ -28,27 +40,30 @@ read_lid_rpt <- function(x, return_xts = TRUE, ...) {
     trimws()
   
   # get the data
-  lid_rpt <- readr::read_table2(file = x,  
-                                col_names = header, 
-                                col_types = "ccddddddddddddd",
-                                skip = 9, 
-                                ...) %>% 
+  lid_rpt <- readr::read_table2(
+    file = x,  
+    col_names = header, 
+    col_types = "ccddddddddddddd",
+    skip = 9, 
+    ...
+  ) %>% 
     # make one datetime col
     tidyr::unite(col = "DateTime", Date, Time, sep = " ") %>% 
-    dplyr::mutate(DateTime = as.POSIXct(DateTime, format = "%m/%d/%Y %H:%M:%S"), 
-                  Project = meta_info[1], 
-                  `LID Unit` = meta_info[2])
+    dplyr::mutate(
+      DateTime = as.POSIXct(DateTime, format = "%m/%d/%Y %H:%M:%S"), 
+      Project = meta_info[1], 
+      `LID Unit` = meta_info[2]
+    )
   
   # convert to xts
-  if (return_xts) lid_rpt <- xts::xts(x = dplyr::select(lid_rpt, 
-                                                        -DateTime,
-                                                        -Project, 
-                                                        -`LID Unit`),
-                                      order.by = dplyr::pull(lid_rpt, 
-                                                             DateTime),
-                                      Project = meta_info[1], 
-                                      `LID Unit` = meta_info[2])
+  if (return_xts) {
+    lid_rpt <- xts::xts(
+      x = dplyr::select(lid_rpt, -DateTime, -Project, -`LID Unit`),
+      order.by = dplyr::pull(lid_rpt, DateTime),
+      Project = meta_info[1], 
+      `LID Unit` = meta_info[2]
+    )
+  }
   
-  return(lid_rpt)
-  
+  lid_rpt
 }
