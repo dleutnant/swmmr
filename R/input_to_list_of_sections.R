@@ -64,12 +64,12 @@ input_to_list_of_sections <- function(
     )
 
     # check the structure of polygon file:
-    required_columns <- c("Name", "Outlet", "Area", "RouteTo")
+    required <- c("Name", "Outlet", "Area", "RouteTo")
     
-    if (!all(required_columns %in% colnames(subcatchment))) {
+    if (!all(required %in% colnames(subcatchment))) {
       clean_stop(
         "The polygon shape has to include at least the columns named: ", 
-        comma_space_collapsed(required_columns), 
+        comma_space_collapsed(required), 
         ". For optional column names check the documentation."
       )
     }
@@ -83,7 +83,7 @@ input_to_list_of_sections <- function(
     
     is_horton <- infiltration_model %in% c("Horton", "HORTON")
     is_green_ampt <- infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")
-    
+
     if (is_horton || is_green_ampt) {
       
       list_of_sections[['infiltration']] <- list(
@@ -101,27 +101,18 @@ input_to_list_of_sections <- function(
     # ... infiltration parameter
     if (is.null(infiltration)) {
       
-      if (is_horton) {
+      if (is_horton || is_green_ampt) {
         
-        required_columns <- c(
-          "MaxRate", "MinRate", "Decay", "DryTime", "MaxInfl"
-        )
-        
-        if (!all(required_columns %in% colnames(subcatchment))) {
-          clean_warning(
-            "All or some Horton infiltration parameters are not defined, ", 
-            "infiltration default values are taken."
-          )
+        required <- if (is_horton) {
+          c("MaxRate", "MinRate", "Decay", "DryTime", "MaxInfl")
+        } else {
+          c("Suction", "HydCon", "IMDmax")
         }
-      }
-      
-      if (is_green_ampt) {
-
-        required_columns <- c("Suction", "HydCon", "IMDmax")
         
-        if (!all(required_columns %in% colnames(subcatchment))) {
+        if (!all(required %in% colnames(subcatchment))) {
           clean_warning(
-            "All or some Green_Ampt infiltration parameters are not defined, ",
+            "All or some ", ifelse(is_horton, "Horton", "Green_Ampt"), 
+            " infiltration parameters are not defined, ", 
             "infiltration default values are taken."
           )
         }
@@ -137,16 +128,16 @@ input_to_list_of_sections <- function(
     # ... check for optional subcatchment_typologies:
     if (is.null(subcatchment_typologies)) {
 
-      required_columns <- c(
+      required <- c(
         "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero", "RouteTo", 
         "PctRouted", "Rain_Gage", "CurbLen", "Snowpack", "PercImperv", "Slope", 
         "Width"
       )
       
-      if (!all(required_columns %in% colnames(subcatchment))) {
+      if (!all(required %in% colnames(subcatchment))) {
         
         clean_warning(
-          comma_space_collapsed(required_columns), 
+          comma_space_collapsed(required), 
           "are not all defined in polygon.shp or Subcatchment_typologies. ", 
           "Check polygon shape for completeness, otherwise missing parameters ", 
           "in the sections subcatchment and subareas will be filled with ", 
@@ -174,20 +165,20 @@ input_to_list_of_sections <- function(
       )
     }
     
-    if ("Top" %in% colnames(junctions) | "Ymax" %in% colnames(junctions)) {
+    if (any(c("Top", "Ymax") %in% colnames(junctions))) {
       list_of_sections[["junctions"]] <- junctions
       list_of_sections[["coordinates"]] <- junctions[, c("Name", "geometry")]
     }
     
     if (is.null(junction_parameters)) {
       
-      if (!("Y" %in% colnames(junctions)) | 
-          !("Ysur" %in% colnames(junctions)) | 
-          !("Apond" %in% colnames(junctions))) {
-        
+      required <- c("Y", "Ysur", "Apond")
+      
+      if (!all(required %in% colnames(junctions))) {
         clean_warning(
-          " Y, Ysur or Apond are not defined in point.shp (or point_sf) or ", 
-          "junction_parameters. Check point shape for completeness otherwise ", 
+          "Not all of ", comma_space_collapsed(required), 
+          "are defined in point.shp (or point_sf) or junction_parameters. ", 
+          "Check point shape for completeness otherwise ", 
           "missing parameters in the section junctions will be filled with ", 
           "default values."
         )
@@ -198,12 +189,12 @@ input_to_list_of_sections <- function(
   if (!is.null(outfalls)) {
     
     # ... also do it for the outfall point shape: check for completeness
-    required_columns <- c("Name", "Bottom", "Type")
+    required <- c("Name", "Bottom", "Type")
     
-    if (!all(required_columns %in% colnames(outfalls))) {
+    if (!all(required %in% colnames(outfalls))) {
       clean_stop(
         "The outfall point shape has to include at least the columns named: ", 
-        comma_space_collapsed(required_columns), "."
+        comma_space_collapsed(required), "."
       )
     }
     
@@ -304,14 +295,14 @@ input_to_list_of_sections <- function(
   if (!is.null(conduits)) {
     
     # ... do the same for the conduit line shape: check column names
-    required_columns <- c(
+    required <- c(
       "Name", "Length", "Shape", "FromNode", "ToNode", "OutOffset", "Geom1"
     )
     
-    if (!all(required_columns %in% colnames(conduits))) {
+    if (!all(required %in% colnames(conduits))) {
       clean_stop(
         "The line shape has to include at least the columns named: ",
-        comma_space_collapsed(required_columns),
+        comma_space_collapsed(required),
         "."
       )
     }
