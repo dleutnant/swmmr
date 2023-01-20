@@ -8,6 +8,13 @@ clean_warning <- function(...) {
   warning(..., call. = FALSE)
 }
 
+create_dir_if_required <- function(path) {
+  if (!file.exists(path)) {
+    cat("Creating directory", path, "\n")
+    dir.create(path)
+  }
+}
+
 stop_on_bad_index <- function(index, choices) {
 
   # Possible values for index

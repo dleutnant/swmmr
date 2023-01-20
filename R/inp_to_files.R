@@ -83,25 +83,24 @@ sections_to_shp <- function(x, name, path_out, quiet = FALSE)
   msg(sprintf("*.shp files were written to %s", shape_dir))
 }
 
-#write_section_if_in_list <- function(x, section, conversion_function, file, ...)
-
 #' conversion helper
 #' @keywords internal
 options_to_txt <- function(x, name, path_out, quiet = FALSE)
 {
-  # convert section options, report, raingages, evaporation and if implemented: pollutant, landuse, buildup, washoff, coverage, (lid_controls lid_usage --> not in examples) to options.txt
+  # convert section options, report, raingages, evaporation and if implemented:
+  # pollutant, landuse, buildup, washoff, coverage, (lid_controls lid_usage -->
+  # not in examples) to options.txt
+  
   # check class and required elements
   stopifnot(inherits(x, "inp"))
-
-  # helper function
+  
+  # helper functions
   msg <- function(...) if (!quiet) message(...)
   
   if ("options" %in% names(x)) {
     # ... check if txt folder exists in path_out otherwise create new directory
-    if (!file.exists(file.path(path_out, "txt"))) {
-      dir.create(file.path(path_out, "txt"))
-    }
-
+    create_dir_if_required(file.path(path_out, "txt"))
+    
     # check sections and add sections in new format to list options_txt:
 
     options_txt <- list()
