@@ -92,13 +92,14 @@ input_to_list_of_sections <- function(
     # ... infiltration parameter
     if (is.null(infiltration)) {
       
-      if (infiltration_model == "Horton" | infiltration_model == "HORTON") {
+      if (infiltration_model %in% c("Horton", "HORTON")) {
         
         if (!("MaxRate" %in% colnames(subcatchment)) | 
             !("MinRate" %in% colnames(subcatchment)) | 
             !("Decay" %in% colnames(subcatchment)) | 
             !("DryTime" %in% colnames(subcatchment)) | 
             !("MaxInfl" %in% colnames(subcatchment))) {
+          
           clean_warning(
             "All or some Horton infiltration parameters are not defined, ", 
             "infiltration default values are taken."
@@ -106,12 +107,12 @@ input_to_list_of_sections <- function(
         }
       }
       
-      if (infiltration_model == "Green_Ampt" | 
-          infiltration_model == "GREEN_AMPT") {
+      if (infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")) {
         
         if (!("Suction" %in% colnames(subcatchment)) | 
             !("HydCon" %in% colnames(subcatchment)) | 
             !("IMDmax" %in% colnames(subcatchment))) {
+          
           clean_warning(
             "All or some Green_Ampt infiltration parameters are not defined, ",
             "infiltration default values are taken."
