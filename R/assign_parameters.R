@@ -182,86 +182,71 @@ assign_parameters.polygons <- function(
 #' conversion helper
 #' @keywords internal
 assign_parameters.infiltration <- function(
-  x, 
-  infiltration, 
-  subcatchment = NULL, 
-  subcatchment_typologies = NULL, 
-  conduit_material = NULL, 
-  junction_parameters = NULL
+    x, 
+    infiltration, 
+    subcatchment = NULL, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
 )
 {
   # separate model and subcatchment
   model <- x[[1]]
   x <- x[[2]]
   
+  infiltration_defaults <- if (model %in% c("Horton", "Green_Ampt")) {
+    
+    #...take default values
+    element <- ifelse(
+      model == "Horton", 
+      "infiltration_horton", 
+      "infiltration_green_ampt"
+    )
+
+    get_column_defaults()[[element]]
+    
+  } # else NULL implicitly    
+  
   if (! is.null(infiltration)) {
     
     x$Subcatchment <- x$Name
+    
     #...take values defined in infiltration
     x <- dplyr::full_join(x, infiltration, by = "Soil")
     
     #... fill missing columns with default and select infiltration columns
-    if (model == "Horton") {
-
-      #...take default values
-      defaults <- get_column_defaults()$infiltration_horton
+    if (!is.null(infiltration_defaults)) {
       
-      x <- add_columns_if_missing(x, defaults)
-
-      #... select infiltration columns
-      x <- x[, c('Subcatchment', names(defaults))]
-    }
-    
-    if (model == "Green_Ampt") {
-      
-      #...take default values
-      defaults <- get_column_defaults()$infiltration_green_ampt
-      
-      x <- add_columns_if_missing(x, defaults)
-
-      #... select infiltration columns
-      x <- x[, c('Subcatchment', names(defaults))]
+      # Add default columns and select infiltration columns
+      x <- add_columns_if_missing(x, infiltration_defaults)
+      x <- x[, c('Subcatchment', names(infiltration_defaults))]
     }
     
   } else {
-
-    if (model == "Horton") {
-      
-        x$Subcatchment <- x$Name
     
-        #...take default values
-        defaults <- get_column_defaults()$infiltration_horton
-
-        x <- add_columns_if_missing(x, defaults)
-
-        x <- x[, c('Subcatchment', names(defaults))]
-    }
-    
-    if (model == "Green_Ampt") {
+    if (!is.null(infiltration_defaults)) {
       
       x$Subcatchment <- x$Name
       
-      #...take default values
-      defaults <- get_column_defaults()$infiltration_green_ampt
-
-      x <- add_columns_if_missing(x, defaults)
-
-      x <- x[, c('Subcatchment', names(defaults))]
+      # Add default columns and select infiltration columns
+      x <- add_columns_if_missing(x, infiltration_defaults)
+      x <- x[, c('Subcatchment', names(infiltration_defaults))]
     }
+    
   }
-
+  
   x
 }
 
 #' conversion helper
 #' @keywords internal
 assign_parameters.coverages <- function(
-  x, 
-  infiltration = NULL, 
-  subcatchment, 
-  subcatchment_typologies = NULL, 
-  conduit_material = NULL, 
-  junction_parameters = NULL
+    x, 
+    infiltration = NULL, 
+    subcatchment, 
+    subcatchment_typologies = NULL, 
+    conduit_material = NULL, 
+    junction_parameters = NULL
 )
 {
   if (is.null(subcatchment)) {
