@@ -193,10 +193,10 @@ assign_parameters.infiltration <- function(
   # separate model and subcatchment
   model <- x[[1]]
   x <- x[[2]]
-  
+
+  # Provide defaults for infiltration-related columns (if applicable, else NULL)
   infiltration_defaults <- if (model %in% c("Horton", "Green_Ampt")) {
     
-    #...take default values
     element <- ifelse(
       model == "Horton", 
       "infiltration_horton", 
@@ -207,6 +207,14 @@ assign_parameters.infiltration <- function(
     
   } # else NULL implicitly    
   
+  add_defaults_or_skip <- function(x, defaults) {
+    if (is.null(defaults)) {
+      return(x)
+    }
+    # Add default columns and select infiltration columns
+    add_columns_if_missing(x, defaults)[, c('Subcatchment', names(defaults))]
+  }
+  
   if (! is.null(infiltration)) {
     
     x$Subcatchment <- x$Name
@@ -215,12 +223,7 @@ assign_parameters.infiltration <- function(
     x <- dplyr::full_join(x, infiltration, by = "Soil")
     
     #... fill missing columns with default and select infiltration columns
-    if (!is.null(infiltration_defaults)) {
-      
-      # Add default columns and select infiltration columns
-      x <- add_columns_if_missing(x, infiltration_defaults)
-      x <- x[, c('Subcatchment', names(infiltration_defaults))]
-    }
+    x <- add_defaults_or_skip(x, infiltration_defaults)
     
   } else {
     
@@ -228,11 +231,9 @@ assign_parameters.infiltration <- function(
       
       x$Subcatchment <- x$Name
       
-      # Add default columns and select infiltration columns
-      x <- add_columns_if_missing(x, infiltration_defaults)
-      x <- x[, c('Subcatchment', names(infiltration_defaults))]
+      #... fill missing columns with default and select infiltration columns
+      x <- add_defaults_or_skip(x, infiltration_defaults)
     }
-    
   }
   
   x
