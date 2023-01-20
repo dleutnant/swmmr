@@ -987,7 +987,7 @@ parse_section.rpt_error <- function(x, ...)
   x <- dplyr::slice(x, -1L)
   
   # each error has two rows: error type and section
-  remainders <- dplyr::row_number() %% 2L
+  remainders <- dplyr::row_number(x) %% 2L
   odd <- dplyr::filter(x, remainders == 1L) %>% dplyr::pull(value)
   even <- dplyr::filter(x, remainders == 0L) %>% dplyr::pull(value)
   
