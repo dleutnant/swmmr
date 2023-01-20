@@ -59,20 +59,17 @@ input_to_list_of_sections <- function(
     # check the structure of polygon file:
     required_columns <- c("Name", "Outlet", "Area", "RouteTo")
     
-    if (all(required_columns %in% colnames(subcatchment))) {
-      
-      list_of_sections[['subcatchments']]  <- subcatchment
-      list_of_sections[['subareas']] <- subcatchment
-      list_of_sections[['polygons']] <- subcatchment
-      
-    } else {
-      
+    if (!all(required_columns %in% colnames(subcatchment))) {
       clean_stop(
         "The polygon shape has to include at least the columns named: ", 
         paste(required_columns, collapse = ", "), 
         ". For optional column names check the documentation."
       )
     }
+    
+    list_of_sections[['subcatchments']]  <- subcatchment
+    list_of_sections[['subareas']] <- subcatchment
+    list_of_sections[['polygons']] <- subcatchment
     
     # check infiltration model
     infiltration_model <- list_of_sections$options$INFILTRATION
