@@ -1,8 +1,6 @@
-
-#' import helper
-#' @keywords internal
-compare_to_dictionary <- function(shp = NULL, sf = NULL) {
-
+# get_complete_dictionary ------------------------------------------------------
+get_complete_dictionary <- function()
+{
   # ...complete dictionary with all column names given in swmmr:
   text <- c(
     "section,org_swmm,shp_abb,int_shp_to_inp",
@@ -87,10 +85,18 @@ compare_to_dictionary <- function(shp = NULL, sf = NULL) {
     "storage,IMD,IMD,IMD"
   )
   
-  dictionary_complete <- tibble::as_tibble(read.csv(text = text)[, c(2:4, 1L)])
-  
+  tibble::as_tibble(read.csv(text = text)[, c(2:4, 1L)])
+}
+
+#' import helper
+#' @keywords internal
+compare_to_dictionary <- function(shp = NULL, sf = NULL) {
+
+  # ...complete dictionary with all column names given in swmmr:
+  dictionary_complete <- get_complete_dictionary()
+
   # -----
-  if(!is.null(shp)){
+  if (!is.null(shp)) {
     # cut dictionary to column names abbreviated and internal in shp_to_inp that differ:
     dictionary <- dictionary_complete[-which(duplicated(dictionary_complete$shp_abb) == T), ]
     dictionary <- subset(dictionary, dictionary$shp_abb != dictionary$int_shp_to_inp)
@@ -109,7 +115,7 @@ compare_to_dictionary <- function(shp = NULL, sf = NULL) {
     return(shp)
   }
   
-  if(!is.null(sf)){
+  if (!is.null(sf)) {
      # cut dictionary to column names original and internal in sf_to_inp that differ:
     dictionary <- dictionary_complete[-which(duplicated(dictionary_complete$org_swmm) == T), ]
     dictionary <- subset(dictionary, dictionary$org_swmm != dictionary$int_shp_to_inp)
@@ -124,7 +130,5 @@ compare_to_dictionary <- function(shp = NULL, sf = NULL) {
 
     return(sf)
   }
-  
- 
   
 }
