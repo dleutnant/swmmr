@@ -97,6 +97,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
   # helper functions
   msg <- function(...) if (!quiet) message(...)
   tab_collapsed_rows <- function(x) apply(x, 1L, paste, collapse = "\t")
+  tab_prepend_names <- function(x) paste(names(x), x, sep = "\t")
   add_section_name <- function(x, name) c(in_brackets(name), x)
   remove_na <- function(x) gsub("NA", "", x)
   
@@ -124,7 +125,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     if ("raingages" %in% names(x)) {
       options_txt[["[raingages]"]] <- t(x[["raingages"]]) %>%
         tab_collapsed_rows() %>%
-        paste(names(.), ., sep = "\t") %>%
+        tab_prepend_names() %>%
         add_section_name("raingages") %>%
         gsub("TIMESERIES\t", "TIMESERIES ", .)
     }
@@ -138,7 +139,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     if ("pollutants" %in% names(x)) {
       options_txt[["pollutants"]] <- t(x[["pollutants"]]) %>%
         tab_collapsed_rows() %>%
-        paste(names(.), ., sep = "\t") %>%
+        tab_prepend_names() %>%
         add_section_name("pollutants") %>%
         remove_na()
     }
@@ -146,7 +147,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     if ("landuses" %in% names(x)) {
       options_txt[["landuses"]] <- t(x[["landuses"]]) %>%
         tab_collapsed_rows() %>%
-        paste(names(.), ., sep = "\t") %>%
+        tab_prepend_names() %>%
         add_section_name("landuses") %>%
         remove_na()
     }
@@ -154,7 +155,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     if ("coverages" %in% names(x)) {
       options_txt[["coverages"]] <- t(x[["coverages"]]) %>%
         tab_collapsed_rows() %>%
-        paste(names(.), ., sep = "\t") %>%
+        tab_prepend_names() %>%
         add_section_name("coverages") %>%
         remove_na()
     }
@@ -162,7 +163,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     if ("buildup" %in% names(x)) {
       options_txt[["buildup"]] <- t(x[["buildup"]]) %>%
         tab_collapsed_rows() %>%
-        paste(names(.), ., sep = "\t") %>%
+        tab_prepend_names() %>%
         add_section_name("buildup") %>%
         remove_na()
     }
@@ -170,7 +171,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     if ("washoff" %in% names(x)) {
       options_txt[["washoff"]] <- t(x[["washoff"]]) %>%
         tab_collapsed_rows() %>%
-        paste(names(.), ., sep = "\t") %>%
+        tab_prepend_names() %>%
         add_section_name("washoff") %>%
         remove_na()
     }
@@ -178,7 +179,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     if ("coverages" %in% names(x)) {
       options_txt[["coverages"]] <- t(x[["coverages"]]) %>%
         tab_collapsed_rows() %>%
-        paste(names(.), ., sep = "\t") %>%
+        tab_prepend_names() %>%
         add_section_name("coverages") %>%
         remove_na()
     }
