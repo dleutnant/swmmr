@@ -49,21 +49,13 @@ input_to_list_of_sections <- function(
     # special case which should only occur if an inp has been exported using
     # swmmr. in this case Area_subcatchment is Ar_sbct and Area_LID_usage is
     # Ar_ld_s. Function was required to allow automatic tests with Example4.inp.
-    if ("Ar_sbct" %in% colnames(subcatchment)) {
-      colnames(subcatchment) <- gsub(
-        pattern = "Ar_sbct", 
-        replacement = "Area", 
-        x = colnames(subcatchment))
-    }
-    
-    if ("Area.subcatchment" %in% colnames(subcatchment)) {
-      colnames(subcatchment) <- gsub(
-        pattern = "Area.subcatchment", 
-        replacement = "Area", 
-        x = colnames(subcatchment)
-      )
-    }
-    
+    #subcatchment <- data.frame(Ar_sbct = 1, b = 2, Area.subcatchment = 3)
+    colnames(subcatchment) <- replace_values(
+      x = colnames(subcatchment), 
+      from = c("Ar_sbct", "Area.subcatchment"),
+      to = c("Area", "Area")
+    )
+
     # check the structure of polygon file:
     required_columns <- c("Name", "Outlet", "Area", "RouteTo")
     
