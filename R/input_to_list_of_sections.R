@@ -1,84 +1,41 @@
-#' Reads input data and checks data for completeness, returns a list_of_sections which can be processed further.
+#' Reads input data and checks data for completeness, returns a list_of_sections
+#' which can be processed further.
 #'
 #' @keywords internal 
-input_to_list_of_sections <- function(path_options, 
-                                      subcatchment = NULL,
-                                      subcatchment_typologies = NULL, 
-                                      junctions = NULL,
-                                      junction_parameters = NULL, 
-                                      outfalls = NULL,
-                                      conduits = NULL,
-                                      conduit_material = NULL, 
-                                      path_timeseries = NULL, 
-                                      infiltration = NULL, 
-                                      pumps = NULL, 
-                                      path_pump_curve = NULL, 
-                                      weirs = NULL,
-                                      storage = NULL,
-                                      path_storage_curve = NULL){
-  # ... check missing arguments, add default or generate error messages, in some cases default values are added later...
+input_to_list_of_sections <- function(
+    path_options, 
+    subcatchment = NULL,
+    subcatchment_typologies = NULL, 
+    junctions = NULL,
+    junction_parameters = NULL, 
+    outfalls = NULL,
+    conduits = NULL,
+    conduit_material = NULL, 
+    path_timeseries = NULL, 
+    infiltration = NULL, 
+    pumps = NULL, 
+    path_pump_curve = NULL, 
+    weirs = NULL,
+    storage = NULL,
+    path_storage_curve = NULL
+)
+{
+  # check missing arguments, add default or generate error messages, in some
+  # cases default values are added later...
   
-  # check if options are available, otherwise add default:
+  # if options are not available, add default values for sections "options",
+  # "report", "evaporation"
+  
   if (is.null(path_options)) {
+    
     warning("Options are missing, default values are taken.")
-    list_of_sections <- list()
     
-    # ... add default values for sections options, report, evaporation
-    # options
-    list_of_sections[["options"]] <- tibble::tibble(
-      FLOW_UNITS = "CMS",
-      INFILTRATION = "HORTON", # capital letters!
-      FLOW_ROUTING = "KINWAVE",
-      LINK_OFFSETS = "DEPTH",
-      FORCE_MAIN_EQUATION = "H-W",
-      IGNORE_RAINFALL = "NO",
-      IGNORE_SNOWMELT = "YES",
-      IGNORE_GROUNDWATER = "YES",
-      IGNORE_RDII = "YES",
-      IGNORE_ROUTING = "YES",
-      IGNORE_QUALITY = "YES",
-      ALLOW_PONDING = "NO",
-      SKIP_STEADY_STATE = "NO",
-      SYS_FLOW_TOL = "5",
-      LAT_FLOW_TOL = "5",
-      START_DATE = "1/1/2017",
-      START_TIME = "0:00:00",
-      END_DATE = "1/1/2017",
-      END_TIME = "1:00:00",
-      REPORT_START_DATE = "1/1/2017",
-      REPORT_START_TIME = "1:00:00",
-      SWEEP_START = "1/1",
-      SWEEP_END = "12/31",
-      DRY_DAYS = "14",
-      REPORT_STEP = "0:15:00",
-      WET_STEP = "0:05:00",
-      DRY_STEP = "1:00:00",
-      ROUTING_STEP = "0:00:05",
-      LENGTHENING_STEP = "0",
-      VARIABLE_STEP = "0",
-      MINIMUM_STEP = "0.5",
-      INERTIAL_DAMPING = "NONE",
-      NORMAL_FLOW_LIMITED = "BOTH",
-      MIN_SURFAREA = "0",
-      MIN_SLOPE = "0",
-      MAX_TRIALS = "8",
-      HEAD_TOLERANCE = "0.0015",
-      THREADS = "1",
-      TEMPDIR = " "
+    list_of_sections <- list(
+      options = default_options(),
+      report = default_report(),
+      evaporation = default_evaporation()
     )
     
-    list_of_sections[["report"]] <- tibble::tibble(
-      INPUT = "NO",
-      CONTROLS = "NO",
-      SUBCATCHMENTS = "ALL",
-      NODES = "ALL",
-      LINKS = "ALL"
-    )
-    
-    list_of_sections[["evaporation"]] <- tibble::tibble(
-      CONSTANT = 0,
-      DRY_ONLY = 0
-    )
   } else {
     # ...use information from options (option.txt)
     options <- readLines(path_options)
@@ -240,11 +197,11 @@ input_to_list_of_sections <- function(path_options,
   }
   
   # ...add Pumps section if path_pump or pumps_sf exists
-  if(!is.null(pumps)){
+  if (!is.null(pumps)) {
     # add a section to list_of_sections
     list_of_sections[["pumps"]] <- pumps
   }
-
+  
   # ... add pump curve
   if (!is.null(path_pump_curve)) {
     # add table of pump curves
@@ -256,9 +213,9 @@ input_to_list_of_sections <- function(path_options,
     # add section to list_of_sections
     list_of_sections[["weirs"]] <- weirs
   }
-
+  
   # ...add storages if path_storage or storage_sf exists
-  if(!is.null(storage)){
+  if (!is.null(storage)){
     # add section
     list_of_sections[["storage"]] <- storage
     list_of_sections[["coordinates"]] <- rbind(list_of_sections[["coordinates"]], storage[, c("Name", "geometry")])
@@ -279,11 +236,14 @@ input_to_list_of_sections <- function(path_options,
   if(!is.null(conduits)){
     # ... do the same for the conduit line shape:
     # check column names
-    if (all(c("Name", "Length", "Shape", "FromNode", "ToNode", "OutOffset", "Geom1") %in% colnames(conduits))) {
+    if (all(c(
+      "Name", "Length", "Shape", "FromNode", "ToNode", "OutOffset", "Geom1"
+    ) %in% colnames(conduits))) {
       list_of_sections[["conduits"]] <- conduits
       list_of_sections[["xsections"]] <- conduits
     } else {
-      stop("The line shape has to include at least the columns named: Name, Length, Shape, FromNode, ToNode, OutOffset, Geom1.")
+      stop("The line shape has to include at least the columns named: ",
+           "Name, Length, Shape, FromNode, ToNode, OutOffset, Geom1.")
     }
     
     # ...check for material properties:
@@ -298,8 +258,72 @@ input_to_list_of_sections <- function(path_options,
     }
   }
   
-  
+  list_of_sections
+}
 
-  
-  return(list_of_sections)
+# default_options --------------------------------------------------------------
+default_options <- function()
+{
+  tibble::tibble(
+    FLOW_UNITS = "CMS",
+    INFILTRATION = "HORTON", # capital letters!
+    FLOW_ROUTING = "KINWAVE",
+    LINK_OFFSETS = "DEPTH",
+    FORCE_MAIN_EQUATION = "H-W",
+    IGNORE_RAINFALL = "NO",
+    IGNORE_SNOWMELT = "YES",
+    IGNORE_GROUNDWATER = "YES",
+    IGNORE_RDII = "YES",
+    IGNORE_ROUTING = "YES",
+    IGNORE_QUALITY = "YES",
+    ALLOW_PONDING = "NO",
+    SKIP_STEADY_STATE = "NO",
+    SYS_FLOW_TOL = "5",
+    LAT_FLOW_TOL = "5",
+    START_DATE = "1/1/2017",
+    START_TIME = "0:00:00",
+    END_DATE = "1/1/2017",
+    END_TIME = "1:00:00",
+    REPORT_START_DATE = "1/1/2017",
+    REPORT_START_TIME = "1:00:00",
+    SWEEP_START = "1/1",
+    SWEEP_END = "12/31",
+    DRY_DAYS = "14",
+    REPORT_STEP = "0:15:00",
+    WET_STEP = "0:05:00",
+    DRY_STEP = "1:00:00",
+    ROUTING_STEP = "0:00:05",
+    LENGTHENING_STEP = "0",
+    VARIABLE_STEP = "0",
+    MINIMUM_STEP = "0.5",
+    INERTIAL_DAMPING = "NONE",
+    NORMAL_FLOW_LIMITED = "BOTH",
+    MIN_SURFAREA = "0",
+    MIN_SLOPE = "0",
+    MAX_TRIALS = "8",
+    HEAD_TOLERANCE = "0.0015",
+    THREADS = "1",
+    TEMPDIR = " "
+  )
+}
+
+# default_report ---------------------------------------------------------------
+default_report <- function()
+{
+  tibble::tibble(
+    INPUT = "NO",
+    CONTROLS = "NO",
+    SUBCATCHMENTS = "ALL",
+    NODES = "ALL",
+    LINKS = "ALL"
+  )
+}
+
+# default_evaporation ----------------------------------------------------------
+default_evaporation <- function()
+{
+  tibble::tibble(
+    CONSTANT = 0,
+    DRY_ONLY = 0
+  )
 }
