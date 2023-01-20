@@ -31,11 +31,11 @@ input_to_list_of_sections <- function(
   # if options are not available, add default values for sections "options",
   # "report", "evaporation"
   
-  if (is.null(path_options)) {
+  list_of_sections <- if (is.null(path_options)) {
     
     clean_warning("Options are missing, default values are taken.")
     
-    list_of_sections <- list(
+    list(
       options = default_options(),
       report = default_report(),
       evaporation = default_evaporation()
@@ -43,7 +43,7 @@ input_to_list_of_sections <- function(
     
   } else {
     
-    list_of_sections <- read_list_of_sections(path_options)
+    read_list_of_sections(path_options)
   }
   
   if (!is.null(subcatchment)) {
