@@ -1,25 +1,26 @@
 #' Convert swmm objects to simple feature geometries
 #'
-#' * `junctions_to_sf()`: converts junctions to simple features (required 
-#' sections: `junctions` and `coordinates`)
-#' * `outfalls_to_sf()`: converts junctions to simple features (required 
-#' sections: `outfalls` and `coordinates`)
-#' * `links_to_sf()`: converts links to simple features (required sections:
-#' `conduits` and `coordinates`)
-#' * `subcatchments_to_sf()`: converts subcatchments to simple features (required 
-#' sections: `subcatchments`, `subareas`, `infiltration` and `polygons`)
-#' * `raingages_to_sf() `: converts raingages to simple features (required 
-#' sections: `raingages` and `symbols`)
-#' * `storages_to_sf()`: converts storages to simple features (required sections:
-#' `storage` and `coordinates`)
-#' * `weirs_to_sf()`: converts weirs to simple features (required sections:
-#' `weirs` and `coordinates`)
-#' * `orifices_to_sf()`: converts orifices to simple features (required sections:
-#' `orifices` and `coordinates`)
-#' * `pumps_to_sf()`: converts pumps to simple features (required sections:
-#' `pumps` and `coordinates`)
-#' * `inp_to_sf()`: converts junctions, outfalls, links, storages, weirs, 
-#' orifices, pumps, subcatchments and raingages to a list of simple features
+#' * `junctions_to_sf()`: converts junctions to simple features 
+#'   (required sections: `junctions` and `coordinates`)
+#' * `outfalls_to_sf()`: converts junctions to simple features 
+#'   (required sections: `outfalls` and `coordinates`)
+#' * `links_to_sf()`: converts links to simple features 
+#'   (required sections: `conduits` and `coordinates`)
+#' * `subcatchments_to_sf()`: converts subcatchments to simple features 
+#'   (required sections: `subcatchments`, `subareas`, `infiltration` and 
+#'   `polygons`)
+#' * `raingages_to_sf() `: converts raingages to simple features 
+#'   (required sections: `raingages` and `symbols`)
+#' * `storages_to_sf()`: converts storages to simple features 
+#'   (required sections: `storage` and `coordinates`)
+#' * `weirs_to_sf()`: converts weirs to simple features 
+#'   (required sections: `weirs` and `coordinates`)
+#' * `orifices_to_sf()`: converts orifices to simple features 
+#'   (required sections: `orifices` and `coordinates`)
+#' * `pumps_to_sf()`: converts pumps to simple features 
+#'   (required sections: `pumps` and `coordinates`)
+#' * `inp_to_sf()`: converts junctions, outfalls, links, storages, weirs,
+#'   orifices, pumps, subcatchments and raingages to a list of simple features
 #'
 #' @param x An object of class 'inp', created by \code{\link{read_inp}}.
 #' @param remove_invalid Should invalid sf geometries be removed?
