@@ -34,10 +34,12 @@ clean_warning <- function(...)
 }
 
 # create_dir_if_required -------------------------------------------------------
-create_dir_if_required <- function(path)
+create_dir_if_required <- function(path, silent = TRUE)
 {
   if (!file.exists(path)) {
-    cat("Creating directory", path, "\n")
+    if (!silent) {
+      cat("Creating directory", path, "\n")
+    }
     dir.create(path)
   }
 }
