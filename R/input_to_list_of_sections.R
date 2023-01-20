@@ -20,6 +20,11 @@ input_to_list_of_sections <- function(
     path_storage_curve = NULL
 )
 {
+  # Helper function
+  silently_read_table <- function(file, col_names) {
+    suppressMessages(readr::read_table2(file = file, col_names = col_names))
+  }
+  
   # check missing arguments, add default or generate error messages, in some
   # cases default values are added later...
   
@@ -242,10 +247,10 @@ input_to_list_of_sections <- function(
   # ... add pump curve
   if (!is.null(path_pump_curve)) {
     # add table of pump curves
-    list_of_sections[["curves"]] <- suppressMessages(readr::read_table2(
+    list_of_sections[["curves"]] <- silently_read_table(
       file = path_pump_curve, 
       col_names = c("Name", "Type", "X", "Y")
-    ))
+    )
   }
   
   # ...add weirs if path_weirs or weirs_sf exists
@@ -272,10 +277,10 @@ input_to_list_of_sections <- function(
     if ("curves" %in% names(list_of_sections)) {
       
       # add table of storage curves to existing curve table
-      storage_curves <- suppressMessages(readr::read_table2(
+      storage_curves <- silently_read_table(
         file = path_storage_curve, 
         col_names = c("Name", "Type", "X", "Y")
-      ))
+      )
       
       list_of_sections[["curves"]] <- rbind(
         list_of_sections[["curves"]], 
@@ -285,10 +290,10 @@ input_to_list_of_sections <- function(
     } else {
       
       # add table of storage curves to a new list entry
-      list_of_sections[["curves"]] <- suppressMessages(readr::read_table2(
+      list_of_sections[["curves"]] <- silently_read_table(
         file = path_storage_curve, 
         col_names = c("Name", "Type", "X", "Y")
-      ))
+      )
     }
   }
   
