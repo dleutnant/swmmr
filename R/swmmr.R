@@ -43,8 +43,10 @@ check_pkg_avail <- function(x) {
   }
 
   if (!requireNamespace(x, quietly = TRUE, versionCheck = vc)) {
-    clean_stop("Package ", ifelse(!is.null(vc), paste(x, vc$op, vc$version), x),
-         " needed for this function to work. Please install it.")
+    stop_formatted(
+      "Package %s needed for this function to work. Please install it.",
+      ifelse(!is.null(vc), paste(x, vc$op, vc$version), x)
+    )
   }
   
 }

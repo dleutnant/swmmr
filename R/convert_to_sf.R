@@ -55,10 +55,10 @@ check_package_and_class <- function(x, package = "sf", class = "inp") {
   
   # check class and required elements
   if (!inherits(x, class)) {
-    clean_stop(sprintf(
+    stop_formatted(
       "%s does not inherit from class '%s' as expected.",
       deparse(substitute(x, env = parent.frame(n = 1L))), class
-    ))
+    )
   }
 }
 
