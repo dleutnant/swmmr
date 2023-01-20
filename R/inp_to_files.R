@@ -96,8 +96,12 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
   
   # helper functions
   msg <- function(...) if (!quiet) message(...)
+  tab_collapsed_rows <- function(x) apply(x, 1L, paste, collapse = "\t")
+  add_section_name <- function(x, name) c(in_brackets(name), x)
+  remove_na <- function(x) gsub("NA", "", x)
   
   if ("options" %in% names(x)) {
+    
     # ... check if txt folder exists in path_out otherwise create new directory
     create_dir_if_required(file.path(path_out, "txt"))
     
@@ -107,71 +111,83 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     
     if ("options" %in% names(x)) {
       options_txt[["[options]"]] <- x[["options"]] %>%
-        apply(., 1, paste, collapse = "\t") %>%
-        c("[options]", .)
+        tab_collapsed_rows() %>%
+        add_section_name("options")
     }
+    
     if ("report" %in% names(x)) {
       options_txt[["[report]"]] <- x[["report"]] %>%
-        apply(., 1, paste, collapse = "\t") %>%
-        c("[report]", .)
+        tab_collapsed_rows() %>%
+        add_section_name("report")
     }
+    
     if ("raingages" %in% names(x)) {
       options_txt[["[raingages]"]] <- t(x[["raingages"]]) %>%
-        apply(., 1, paste, collapse = "\t") %>%
+        tab_collapsed_rows() %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[raingages]", .) %>%
+        add_section_name("raingages") %>%
         gsub("TIMESERIES\t", "TIMESERIES ", .)
     }
+    
     if ("evaporation" %in% names(x)) {
       options_txt[["[evaporation]"]] <- x[["evaporation"]] %>%
-        apply(., 1, paste, collapse = "\t") %>%
-        c("[evaporation]", .)
+        tab_collapsed_rows() %>%
+        add_section_name("evaporation")
     }
+    
     if ("pollutants" %in% names(x)) {
       options_txt[["pollutants"]] <- t(x[["pollutants"]]) %>%
-        apply(., 1, paste, collapse = "\t") %>%
+        tab_collapsed_rows() %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[pollutants]", .) %>%
-		gsub("NA", "", .)
+        add_section_name("pollutants") %>%
+        remove_na()
     }
+    
     if ("landuses" %in% names(x)) {
       options_txt[["landuses"]] <- t(x[["landuses"]]) %>%
-        apply(., 1, paste, collapse = "\t") %>%
+        tab_collapsed_rows() %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[landuses]", .) %>%
-		gsub("NA", "", .)
+        add_section_name("landuses") %>%
+        remove_na()
     }
+    
     if ("coverages" %in% names(x)) {
       options_txt[["coverages"]] <- t(x[["coverages"]]) %>%
-        apply(., 1, paste, collapse = "\t") %>%
+        tab_collapsed_rows() %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[coverages]", .) %>%
-		gsub("NA", "", .)
+        add_section_name("coverages") %>%
+        remove_na()
     }
+    
     if ("buildup" %in% names(x)) {
       options_txt[["buildup"]] <- t(x[["buildup"]]) %>%
-        apply(., 1, paste, collapse = "\t") %>%
+        tab_collapsed_rows() %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[buildup]", .) %>%
-		gsub("NA", "", .)
+        add_section_name("buildup") %>%
+        remove_na()
     }
+    
     if ("washoff" %in% names(x)) {
       options_txt[["washoff"]] <- t(x[["washoff"]]) %>%
-        apply(., 1, paste, collapse = "\t") %>%
+        tab_collapsed_rows() %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[washoff]", .) %>%
-		gsub("NA", "", .)
+        add_section_name("washoff") %>%
+        remove_na()
     }
+    
     if ("coverages" %in% names(x)) {
       options_txt[["coverages"]] <- t(x[["coverages"]]) %>%
-        apply(., 1, paste, collapse = "\t") %>%
+        tab_collapsed_rows() %>%
         paste(names(.), ., sep = "\t") %>%
-        c("[coverages]", .) %>%
-		gsub("NA", "", .)
+        add_section_name("coverages") %>%
+        remove_na()
     }
     
     # unlist and save txt file
-    writeLines(unlist(options_txt), con = file.path(path_out, paste0("txt/", name, "_options.txt")))
+    writeLines(
+      unlist(options_txt), 
+      con = file.path(path_out, paste0("txt/", name, "_options.txt"))
+    )
     
     msg(sprintf("*.txt file was written to %s/txt", path_out))
     
@@ -239,10 +255,10 @@ timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
     msg("section timeseries is missing")
     return()
   }
-    
+  
   # ... check if txt folder exists in path_out otherwise create new directory
   create_dir_if_required(file.path(path_out, "dat"))
-
+  
   # ... convert section timeseries to swmm timeseries *.dat format
   # seperate timeseries
   series_names <- x$timeseries$Name
@@ -257,11 +273,11 @@ timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
   # one *.dat file per timeseries
   none_has_date <- all(is.na(x$timeseries$Date))
   all_have_date <- !anyNA(x$timeseries$Date)
-
+  
   if (none_has_date || all_have_date) {
-
+    
     columns <- c(if (all_have_date) "Date", "Time", "Value")
-
+    
     mapply(
       FUN = function(start, end, ts) write_dat(
         x$timeseries[start:end, columns], 
