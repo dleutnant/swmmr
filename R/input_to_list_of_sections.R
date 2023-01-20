@@ -129,32 +129,27 @@ input_to_list_of_sections <- function(
     
     # ... check for optional subcatchment_typologies:
     if (is.null(subcatchment_typologies)) {
+
+      required_columns <- c(
+        "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero", "RouteTo", 
+        "PctRouted", "Rain_Gage", "CurbLen", "Snowpack", "PercImperv", "Slope", 
+        "Width"
+      )
       
-      if (!("N_Imperv" %in% colnames(subcatchment)) | 
-          !("N_Perv" %in% colnames(subcatchment)) | 
-          !("S_Imperv" %in% colnames(subcatchment)) | 
-          !("S_Perv" %in% colnames(subcatchment)) | 
-          !("Pct_Zero" %in% colnames(subcatchment)) | 
-          !("RouteTo" %in% colnames(subcatchment)) | 
-          !("PctRouted" %in% colnames(subcatchment)) | 
-          !("Rain_Gage" %in% colnames(subcatchment)) | 
-          !("CurbLen" %in% colnames(subcatchment)) | 
-          !("Snowpack" %in% colnames(subcatchment)) | 
-          !("PercImperv" %in% colnames(subcatchment)) | 
-          !("Slope" %in% colnames(subcatchment)) | 
-          !("Width" %in% colnames(subcatchment))) {
+      if (!all(required_columns %in% colnames(subcatchment))) {
         
         clean_warning(
-          "N_Imperv, N_Perv, S_Imperv, S_Perv, Rain_Gage, CurbLen, Snowpack, ", 
-          "PercImperv, Slope or Width are not defined in polygon.shp or ", 
-          "Subcatchment_typologies. Check polygon shape for completeness ", 
-          "otherwise missing parameters in the sections subcatchment and ", 
-          "subareas will be filled with default values."
+          paste(required_columns, collapse = ", "), 
+          "are not all defined in polygon.shp or Subcatchment_typologies. ", 
+          "Check polygon shape for completeness, otherwise missing parameters ", 
+          "in the sections subcatchment and subareas will be filled with ", 
+          "default values."
         )
       }
     }
     
     if (!(is.null(subcatchment_typologies))) {
+      
       if (!("Type" %in% colnames(subcatchment))) {
         clean_stop("column Type is missing in polygon shape")
       }
@@ -162,6 +157,7 @@ input_to_list_of_sections <- function(
   }
   
   if (!is.null(junctions)) {
+    
     # ... and for the junction point shape:
     # check column names:
     if (all(c("Name", "Bottom") %in% colnames(junctions))) {
@@ -172,6 +168,7 @@ input_to_list_of_sections <- function(
       }
       
     } else {
+      
       clean_stop(
         "The point shape has to include at least the columns named: ", 
         "Name, Bottom and Top or Ymax."
