@@ -20,10 +20,12 @@ input_to_list_of_sections <- function(
     path_storage_curve = NULL
 )
 {
-  # Helper function
+  # Define helper functions
   silently_read_table <- function(file, col_names) {
     suppressMessages(readr::read_table2(file = file, col_names = col_names))
   }
+  
+  comma_space_collapsed <- function(x) paste(x, collapse = ", ")
   
   # check missing arguments, add default or generate error messages, in some
   # cases default values are added later...
@@ -67,7 +69,7 @@ input_to_list_of_sections <- function(
     if (!all(required_columns %in% colnames(subcatchment))) {
       clean_stop(
         "The polygon shape has to include at least the columns named: ", 
-        paste(required_columns, collapse = ", "), 
+        comma_space_collapsed(required_columns), 
         ". For optional column names check the documentation."
       )
     }
@@ -144,7 +146,7 @@ input_to_list_of_sections <- function(
       if (!all(required_columns %in% colnames(subcatchment))) {
         
         clean_warning(
-          paste(required_columns, collapse = ", "), 
+          comma_space_collapsed(required_columns), 
           "are not all defined in polygon.shp or Subcatchment_typologies. ", 
           "Check polygon shape for completeness, otherwise missing parameters ", 
           "in the sections subcatchment and subareas will be filled with ", 
@@ -196,10 +198,12 @@ input_to_list_of_sections <- function(
   if (!is.null(outfalls)) {
     
     # ... also do it for the outfall point shape: check for completeness
-    if (!all(c("Name", "Bottom", "Type") %in% colnames(outfalls))) {
+    required_columns <- c("Name", "Bottom", "Type")
+    
+    if (!all(required_columns %in% colnames(outfalls))) {
       clean_stop(
         "The outfall point shape has to include at least the columns named: ", 
-        "Name, Bottom, Type."
+        comma_space_collapsed(required_columns), "."
       )
     }
     
@@ -307,7 +311,7 @@ input_to_list_of_sections <- function(
     if (!all(required_columns %in% colnames(conduits))) {
       clean_stop(
         "The line shape has to include at least the columns named: ",
-        paste(required_columns, collapse = ", "),
+        comma_space_collapsed(required_columns),
         "."
       )
     }
