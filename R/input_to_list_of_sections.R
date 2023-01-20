@@ -81,13 +81,15 @@ input_to_list_of_sections <- function(
     # check infiltration model
     infiltration_model <- list_of_sections$options$INFILTRATION
     
-    if (infiltration_model %in% c("Horton", "HORTON")) {
+    is_horton <- infiltration_model %in% c("Horton", "HORTON")
+    is_green_ampt <- infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")
+    
+    if (is_horton || is_green_ampt) {
       
-      list_of_sections[['infiltration']] <- list("Horton", subcatchment)
-      
-    } else if (infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")) {
-      
-      list_of_sections[['infiltration']] <- list("Green_Ampt", subcatchment)
+      list_of_sections[['infiltration']] <- list(
+        ifelse(is_horton, "Horton", "Green_Ampt"), 
+        subcatchment
+      )
       
     } else {
       
@@ -99,7 +101,7 @@ input_to_list_of_sections <- function(
     # ... infiltration parameter
     if (is.null(infiltration)) {
       
-      if (infiltration_model %in% c("Horton", "HORTON")) {
+      if (is_horton) {
         
         if (!("MaxRate" %in% colnames(subcatchment)) | 
             !("MinRate" %in% colnames(subcatchment)) | 
@@ -114,7 +116,7 @@ input_to_list_of_sections <- function(
         }
       }
       
-      if (infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")) {
+      if (is_green_ampt) {
         
         if (!("Suction" %in% colnames(subcatchment)) | 
             !("HydCon" %in% colnames(subcatchment)) | 
