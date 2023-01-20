@@ -240,10 +240,6 @@ curves_to_txt <- function(x, name, path_out, quiet = FALSE)
 #' @keywords internal
 timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
 {
-  write_dat <- function(data, file) utils::write.table(
-    data, file, row.names = FALSE, col.names = FALSE, quote = FALSE
-  ) 
-  
   # if implemented: convert timeseries to dat files
   
   # check class and required elements
@@ -280,9 +276,12 @@ timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
     columns <- c(if (all_have_date) "Date", "Time", "Value")
     
     mapply(
-      FUN = function(start, end, ts) write_dat(
+      FUN = function(start, end, ts) utils::write.table(
         x$timeseries[start:end, columns], 
-        file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat"))
+        file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")),
+        row.names = FALSE, 
+        col.names = FALSE, 
+        quote = FALSE
       ),
       start = timeseries$start, 
       end = timeseries$end, 
