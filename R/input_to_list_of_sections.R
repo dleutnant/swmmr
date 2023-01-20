@@ -59,6 +59,7 @@ input_to_list_of_sections <- function(
     
     # check the structure of polygon file:
     required_columns <- c("Name", "Outlet", "Area", "RouteTo")
+    
     if (all(required_columns %in% colnames(subcatchment))) {
       
       list_of_sections[['subcatchments']]  <- subcatchment # subcatchment_typologies
@@ -75,24 +76,31 @@ input_to_list_of_sections <- function(
     }
     
     # check infiltration model
-    if (list_of_sections$options$INFILTRATION == "Horton" | list_of_sections$options$INFILTRATION == "HORTON") {
-      list_of_sections[['infiltration']] <- list("Horton", subcatchment) # infiltration
+    infiltration_model <- list_of_sections$options$INFILTRATION
+    
+    if (infiltration_model %in% c("Horton", "HORTON")) {
+      
+      list_of_sections[['infiltration']] <- list("Horton", subcatchment)
+      
+    } else if (infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")) {
+      
+      list_of_sections[['infiltration']] <- list("Green_Ampt", subcatchment)
+      
     } else {
-      if (list_of_sections$options$INFILTRATION == "Green_Ampt" | list_of_sections$options$INFILTRATION == "GREEN_AMPT") {
-        list_of_sections[['infiltration']] <- list("Green_Ampt", subcatchment)
-      } else {
-        clean_warning("Function is only running with Horton or Green_Ampt infiltration.")
-      }
-    } 
+      
+      clean_warning(
+        "Function is only running with Horton or Green_Ampt infiltration."
+      )
+    }
     
     # ... infiltration parameter
     if (is.null(infiltration)) {
-      if (list_of_sections$options$INFILTRATION == "Horton" | list_of_sections$options$INFILTRATION == "HORTON") {
+      if (infiltration_model == "Horton" | infiltration_model == "HORTON") {
         if (!("MaxRate" %in% colnames(subcatchment)) | !("MinRate" %in% colnames(subcatchment)) | !("Decay" %in% colnames(subcatchment)) | !("DryTime" %in% colnames(subcatchment)) | !("MaxInfl" %in% colnames(subcatchment))) {
           clean_warning("All or some Horton infiltration parameters are not defined, infiltration default values are taken.")
         }
       }
-      if (list_of_sections$options$INFILTRATION == "Green_Ampt" | list_of_sections$options$INFILTRATION == "GREEN_AMPT") {
+      if (infiltration_model == "Green_Ampt" | infiltration_model == "GREEN_AMPT") {
         if (!("Suction" %in% colnames(subcatchment)) | !("HydCon" %in% colnames(subcatchment)) | !("IMDmax" %in% colnames(subcatchment))) {
           clean_warning("All or some Green_Ampt infiltration parameters are not defined, infiltration default values are taken.")
         }
@@ -146,8 +154,6 @@ input_to_list_of_sections <- function(
     }
   }
   
-  
-  
   # ... checking, reading or adding default values for optional function arguments:
   
   # ... timeseries
@@ -178,16 +184,21 @@ input_to_list_of_sections <- function(
   }
   
   # ...add weirs if path_weirs or weirs_sf exists
-  if(!is.null(weirs)){
+  if (!is.null(weirs)) {
     # add section to list_of_sections
     list_of_sections[["weirs"]] <- weirs
   }
   
   # ...add storages if path_storage or storage_sf exists
   if (!is.null(storage)){
+    
     # add section
     list_of_sections[["storage"]] <- storage
-    list_of_sections[["coordinates"]] <- rbind(list_of_sections[["coordinates"]], storage[, c("Name", "geometry")])
+    
+    list_of_sections[["coordinates"]] <- rbind(
+      list_of_sections[["coordinates"]], 
+      storage[, c("Name", "geometry")]
+    )
   }
   
   # ... add storage curve
