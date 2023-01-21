@@ -342,20 +342,17 @@ read_list_of_sections <- function(path_options)
   # Split text lines at [section headers]
   text_blocks <- extract_sections(options)
   
-  # Create list to store sections
-  list_of_sections <- vector(length = length(text_blocks), mode = "list")
-  names(list_of_sections) <- names(text_blocks)
-  
   # Process each section: make a tibble and transpose it
-  for (i in seq_along(text_blocks)) {
+  lapply(text_blocks, function(text_block) {
+
+    #text_block <- text_blocks[[1L]]
     
     # Create tibble    
-    list_of_sections[[i]] <- text_blocks[[i]] %>%
-      cbind(list_of_sections[[i]]) %>%
-      tibble::as_tibble(.) %>%
+    result <- text_block %>%
+      cbind(NULL) %>%
+      tibble::as_tibble() %>%
       tidyr::separate(
-        data = ., 
-        col = 1, 
+        col = 1L, 
         into = c("Variable", "Value"), 
         sep = "\t", 
         extra = "merge", 
@@ -363,27 +360,22 @@ read_list_of_sections <- function(path_options)
       )
     
     # Define column vector to keep the order later
-    cols <- list_of_sections[[i]][, 1] %>% 
-      unlist(.) %>% 
-      as.character(.)
+    cols <- dplyr::pull(result, 1L)
     
     # Transpose and keep order of original data
-    list_of_sections[[i]] <- list_of_sections[[i]] %>%
+    result <- result %>%
       tidyr::gather(Variable, Value) %>%
       tidyr::spread(names(.)[1], "Value") %>%
       .[, cols]
-    
+
     # Separate rows with multiple entries (e.g. in pollution section)
-    if (any(grepl("\t", list_of_sections[[i]]))) {
-      list_of_sections[[i]] <- list_of_sections[[i]] %>%
-        tidyr::separate_rows(
-          seq_len(ncol(list_of_sections[[i]])), 
-          sep = "\t"
-        )
+    if (any(grepl("\t", result))) {
+      result <- result %>%
+        tidyr::separate_rows(seq_len(ncol(result)), sep = "\t")
     }
-  }
-  
-  list_of_sections
+    
+    result
+  })
 }
 
 # extract_sections -------------------------------------------------------------
