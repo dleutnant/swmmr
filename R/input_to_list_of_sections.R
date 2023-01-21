@@ -36,11 +36,10 @@ input_to_list_of_sections <- function(
   list_of_sections <- if (is.null(path_options)) {
     
     clean_warning("Options are missing, default values are taken.")
-    
-    list(
-      options = tibble::as_tibble(get_column_defaults()$options),
-      report = tibble::as_tibble(get_column_defaults()$report),
-      evaporation = tibble::as_tibble(get_column_defaults()$evaporation)
+
+    lapply(
+      X = get_column_defaults()[c("options", "report", "evaporation")],
+      FUN = tibble::as_tibble
     )
     
   } else {
