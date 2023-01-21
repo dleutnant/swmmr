@@ -40,12 +40,3 @@ rename_columns_using_dict <- function(df, from, to = "int_shp_to_inp")
   
   df
 }
-
-# replace_values ---------------------------------------------------------------
-replace_values <- function(x, from, to)
-{
-  indices <- match(x, from)
-  is_match <- !is.na(indices)
-  x[is_match] <- to[indices[is_match]]
-  x
-}
