@@ -350,13 +350,7 @@ read_list_of_sections <- function(path_options)
     # Create tibble    
     result <- text_block %>%
       tibble::as_tibble() %>%
-      tidyr::separate(
-        col = 1L, 
-        into = c("Variable", "Value"), 
-        sep = "\t", 
-        extra = "merge", 
-        fill = "left"
-      )
+      separate_into(c("Variable", "Value"), sep = "\t", col = 1L)
     
     # Define column vector to keep the order later
     cols <- dplyr::pull(result, 1L)
