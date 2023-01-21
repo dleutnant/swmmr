@@ -349,7 +349,6 @@ read_list_of_sections <- function(path_options)
     
     # Create tibble    
     result <- text_block %>%
-      cbind(NULL) %>%
       tibble::as_tibble() %>%
       tidyr::separate(
         col = 1L, 
