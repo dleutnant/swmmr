@@ -2,7 +2,8 @@
 % Please edit documentation in R/list_of_sections_to_inp.R
 \name{list_of_sections_to_inp}
 \alias{list_of_sections_to_inp}
-\title{Reads input data which was checked for completeness and converts/processes them to an object of class inp.}
+\title{Reads input data which was checked for completeness and converts/processes
+them to an object of class inp.}
 \usage{
 list_of_sections_to_inp(
   list_of_sections,
@@ -13,6 +14,7 @@ list_of_sections_to_inp(
 )
 }
 \description{
-Reads input data which was checked for completeness and converts/processes them to an object of class inp.
+Reads input data which was checked for completeness and converts/processes
+them to an object of class inp.
 }
 \keyword{internal}
