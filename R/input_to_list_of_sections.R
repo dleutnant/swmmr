@@ -62,7 +62,7 @@ input_to_list_of_sections <- function(
       from = c("Ar_sbct", "Area.subcatchment"),
       to = c("Area", "Area")
     )
-
+    
     # check the structure of polygon file:
     required <- c("Name", "Outlet", "Area", "RouteTo")
     
@@ -83,7 +83,7 @@ input_to_list_of_sections <- function(
     
     is_horton <- infiltration_model %in% c("Horton", "HORTON")
     is_green_ampt <- infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")
-
+    
     if (is_horton || is_green_ampt) {
       
       list_of_sections[['infiltration']] <- list(
@@ -127,7 +127,7 @@ input_to_list_of_sections <- function(
     
     # ... check for optional subcatchment_typologies:
     if (is.null(subcatchment_typologies)) {
-
+      
       required <- c(
         "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero", "RouteTo", 
         "PctRouted", "Rain_Gage", "CurbLen", "Snowpack", "PercImperv", "Slope", 
@@ -423,24 +423,40 @@ read_list_of_sections <- function(path_options)
   names(list_of_sections) <- section_names
   
   # make tibble and transpose it
-  for (i in 1:length(section_starts)) {
+  for (i in seq_along(section_starts)) {
     
-    list_of_sections[[i]] <- options[(section_starts[i] + 1):(section_ends[i])] %>%
+    row_range <- (section_starts[i] + 1):(section_ends[i])
+    
+    list_of_sections[[i]] <- options[row_range] %>%
       cbind(list_of_sections[[i]]) %>%
       tibble::as_tibble(.) %>%
-      tidyr::separate(., 1, c("Variable", "Value"), "\t", extra = "merge", fill = "left")
+      tidyr::separate(
+        data = ., 
+        col = 1, 
+        into = c("Variable", "Value"), 
+        sep = "\t", 
+        extra = "merge", 
+        fill = "left"
+      )
     
     # define column vector to keep the order later
-    cols <- list_of_sections[[i]][, 1] %>% unlist(.) %>% as.character(.)
+    cols <- list_of_sections[[i]][, 1] %>% 
+      unlist(.) %>% 
+      as.character(.)
     
     # transpose and keep order of original data
-    list_of_sections[[i]] <- tidyr::gather(list_of_sections[[i]], Variable, Value) %>%
+    list_of_sections[[i]] <- list_of_sections[[i]] %>%
+      tidyr::gather(Variable, Value) %>%
       tidyr::spread(names(.)[1], "Value") %>%
       .[, cols]
     
     # separate rows with more than one entry (e.g. in pollution section)
     if (any(grepl("\t", list_of_sections[[i]]))) {
-      list_of_sections[[i]] <- tidyr::separate_rows(list_of_sections[[i]], (1:ncol(list_of_sections[[i]])), sep = "\t")
+      list_of_sections[[i]] <- list_of_sections[[i]] %>%
+        tidyr::separate_rows(
+          seq_len(ncol(list_of_sections[[i]])), 
+          sep = "\t"
+        )
     }
   }
   
