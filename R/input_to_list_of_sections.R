@@ -38,9 +38,9 @@ input_to_list_of_sections <- function(
     clean_warning("Options are missing, default values are taken.")
     
     list(
-      options = default_options(),
-      report = default_report(),
-      evaporation = default_evaporation()
+      options = tibble::as_tibble(get_column_defaults()$options),
+      report = tibble::as_tibble(get_column_defaults()$report),
+      evaporation = tibble::as_tibble(get_column_defaults()$evaporation)
     )
     
   } else {
@@ -329,24 +329,6 @@ input_to_list_of_sections <- function(
   }
   
   list_of_sections
-}
-
-# default_options --------------------------------------------------------------
-default_options <- function()
-{
-  tibble::as_tibble(get_column_defaults()$options)
-}
-
-# default_report ---------------------------------------------------------------
-default_report <- function()
-{
-  tibble::as_tibble(get_column_defaults()$report)
-}
-
-# default_evaporation ----------------------------------------------------------
-default_evaporation <- function()
-{
-  tibble::as_tibble(get_column_defaults()$evaporation)
 }
 
 # read_list_of_sections --------------------------------------------------------
