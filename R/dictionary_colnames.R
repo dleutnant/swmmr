@@ -1,8 +1,8 @@
-# get_complete_dictionary ------------------------------------------------------
+# get_column_dictionary --------------------------------------------------------
 
 #' @importFrom tibble as_tibble
 #' @importFrom utils read.csv
-get_complete_dictionary <- function()
+get_column_dictionary <- function()
 {
   file <- system_file("extdata/dictionary.csv")
   tibble::as_tibble(read.csv(file))
@@ -25,7 +25,7 @@ compare_to_dictionary <- function(shp = NULL, sf = NULL)
 rename_columns_using_dict <- function(df, from, to = "int_shp_to_inp")
 {
   # complete dictionary with all column names given in swmmr:
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   
   # cut dictionary to column names 
   # - abbreviated and internal in shp_to_inp() or

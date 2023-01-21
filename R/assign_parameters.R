@@ -109,7 +109,7 @@ assign_parameters.subcatchments <- function(
   )
   
   # Lookup column names in dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- d$int_shp_to_inp[d$section == "subcatchment"]
   stopifnot(identical(columns, columns2))
   
@@ -148,7 +148,7 @@ assign_parameters.subareas <- function(
   )
   
   # Lookup column names in dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- c("Subcatchment", d$int_shp_to_inp[d$section == "subarea"])
   stopifnot(identical(columns, columns2))
   
@@ -304,7 +304,7 @@ assign_parameters.junctions <- function(
   columns <- c("Name", "Elevation", "Ymax", names(defaults))
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- replace_values(
     d$int_shp_to_inp[d$section == "junction"],
     from = "Bottom",
@@ -357,7 +357,7 @@ assign_parameters.outfalls <- function(
   columns <- c("Name", "Elevation", "Type", "StageData", "Gated", "RouteTo")
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- replace_values(
     d$int_shp_to_inp[d$section == "outfalls"], 
     from = "Bottom", 
@@ -400,7 +400,7 @@ assign_parameters.conduits <- function(
   )
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- setdiff(
     d$int_shp_to_inp[d$section == "conduit"], 
     c("InitFlow", "MaxFlow")
@@ -432,7 +432,7 @@ assign_parameters.xsections <- function(
   columns <- c("Link", names(defaults))
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- c(
     "Link", 
     setdiff(d$int_shp_to_inp[d$section == "xsection"], "Culvert")
@@ -459,7 +459,7 @@ assign_parameters.pumps <- function(
   )
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- d$int_shp_to_inp[d$section == "pump"]
   stopifnot(identical(columns, columns2))
   
@@ -484,7 +484,7 @@ assign_parameters.weirs <- function(
   )
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- setdiff(
     d$int_shp_to_inp[d$section == "weir"],
     c("RoadWidth", "RoadSurf")
@@ -511,7 +511,7 @@ assign_parameters.storage <- function(
   )
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- setdiff(
     d$int_shp_to_inp[d$section == "storage"], 
     c("Psi", "Ksat", "IMD")
