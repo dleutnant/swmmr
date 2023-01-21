@@ -33,3 +33,8 @@ column_defaults2 <- lapply(tables, function(x) {
 })
 
 identical(column_defaults, column_defaults2)
+
+writeLines(con = "inst/extdata/sections.csv", c(
+  paste0("input,", swmmr:::input_sections),
+  paste0("report,", swmmr:::report_sections)
+))
