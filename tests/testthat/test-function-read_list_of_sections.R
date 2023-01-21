@@ -19,6 +19,6 @@ test_that("read_list_of_sections() works", {
   
   expect_identical(
     result$options, 
-    tibble::tibble(a = "1", b = "2")
+    tibble::tibble(a = 1L, b = 2L)
   )
 })
