@@ -340,7 +340,7 @@ read_list_of_sections <- function(path_options)
   options <- options[options != ""]
   
   # find section lines
-  section_section_names <- grep("\\[", options)
+  section_starts <- grep("\\[", options)
   section_ends <- c(section_starts[-1] - 1, length(options))
   
   # separate section title
