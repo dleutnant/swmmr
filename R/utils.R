@@ -33,6 +33,12 @@ clean_warning <- function(...)
   invisible(NULL)
 }
 
+# convert_to_type --------------------------------------------------------------
+convert_to_type <- function(x, type)
+{
+  do.call(paste0("as.", type), list(x))
+}
+
 # create_dir_if_required -------------------------------------------------------
 create_dir_if_required <- function(path, silent = TRUE)
 {
