@@ -408,24 +408,24 @@ read_list_of_sections <- function(path_options)
   options <- options[options != ""]
   
   # find section lines
-  section_lines <- grep("\\[", options, value = F)
-  section_end <- c(section_lines[-1] - 1, length(options))
+  section_section_names <- grep("\\[", options)
+  section_ends <- c(section_starts[-1] - 1, length(options))
   
   # separate section title
-  section_title <- gsub(
+  section_names <- gsub(
     pattern = "\\[|\\]",
     replacement = "",
-    x = options[section_lines]
+    x = options[section_starts]
   )
   
   # list all section blocks
-  list_of_sections <- vector(length = length(section_lines), mode = "list")
-  names(list_of_sections) <- section_title
+  list_of_sections <- vector(length = length(section_starts), mode = "list")
+  names(list_of_sections) <- section_names
   
   # make tibble and transpose it
-  for (i in 1:length(section_lines)) {
+  for (i in 1:length(section_starts)) {
     
-    list_of_sections[[i]] <- options[(section_lines[i] + 1):(section_end[i])] %>%
+    list_of_sections[[i]] <- options[(section_starts[i] + 1):(section_ends[i])] %>%
       cbind(list_of_sections[[i]]) %>%
       tibble::as_tibble(.) %>%
       tidyr::separate(., 1, c("Variable", "Value"), "\t", extra = "merge", fill = "left")
