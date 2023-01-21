@@ -44,6 +44,13 @@ create_dir_if_required <- function(path, silent = TRUE)
   }
 }
 
+# get_section_names ------------------------------------------------------------
+get_section_names <- function(type)
+{
+  section_info <- read.csv(system_file("extdata/sections.csv"))
+  section_info$section[section_info$type == type]
+}
+
 # in_brackets ------------------------------------------------------------------
 in_brackets <- function(x)
 {
@@ -69,6 +76,12 @@ stop_on_bad_index <- function(index, choices)
 stop_formatted <- function(fmt, ...)
 {
   clean_stop(sprintf(fmt, ...))
+}
+
+# system_file ------------------------------------------------------------------
+system_file <- function(...)
+{
+  system.file(..., package = "swmmr")
 }
 
 #' Determine the OS

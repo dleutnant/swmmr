@@ -16,10 +16,9 @@ create_temp_paths <- function(n)
 # example_input_files ----------------------------------------------------------
 example_input_files <- function(ids = 1:6)
 {
-  system.file(
+  system_file(
     "extdata", 
     paste0("Example", ids, ".inp"), 
-    package = "swmmr", 
     mustWork = TRUE
   )
 }

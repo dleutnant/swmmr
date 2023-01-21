@@ -4,7 +4,7 @@
 #' @importFrom utils read.csv
 get_complete_dictionary <- function()
 {
-  file <- system.file("extdata/dictionary.csv", package = "swmmr")
+  file <- system_file("extdata/dictionary.csv")
   tibble::as_tibble(read.csv(file))
 }
 
