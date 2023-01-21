@@ -75,23 +75,9 @@ read_inp <- function(x, rm.comment = TRUE, ...)
   
   # delete leading whitespaces in strings
   inp_lines <- gsub("^\\s+", "", inp_lines)
-  
-  # find section start
-  section_start <- grep("\\[", inp_lines, value = F)
-  
-  # get section names
-  section_names <- gsub("\\[|\\]", "", inp_lines[section_start])
-  
-  # get end per section
-  section_end <- c(section_start[-1]-2, length(inp_lines))
-  
-  # remove empty sections (and skip section name)
-  section_not_emtpy <- (section_end-section_start > 0)
-  section <- list(
-    start = section_start[section_not_emtpy] + 1,
-    end = section_end[section_not_emtpy], 
-    name = section_names[section_not_emtpy]
-  )
+
+  # get information on the sections in the file (line ranges)  
+  section <- get_section_info(inp_lines)
   
   # create list with sections  
   list_of_sections <- section %>% 
@@ -125,4 +111,26 @@ read_inp <- function(x, rm.comment = TRUE, ...)
   class(res) <- "inp"
   
   res
+}
+
+# get_section_info -------------------------------------------------------------
+get_section_info <- function(x)
+{
+  # find section start
+  starts <- grep("\\[", x)
+  
+  # get section names
+  sections <- gsub("\\[|\\]", "", x[starts])
+  
+  # get end per section
+  ends <- c(starts[-1L] - 2L, length(x))
+  
+  # remove empty sections (and skip section name)
+  is_not_empty <- (ends > starts)
+  
+  list(
+    start = starts[is_not_empty] + 1L,
+    end = ends[is_not_empty], 
+    name = sections[is_not_empty]
+  )
 }

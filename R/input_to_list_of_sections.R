@@ -36,11 +36,10 @@ input_to_list_of_sections <- function(
   list_of_sections <- if (is.null(path_options)) {
     
     clean_warning("Options are missing, default values are taken.")
-    
-    list(
-      options = default_options(),
-      report = default_report(),
-      evaporation = default_evaporation()
+
+    lapply(
+      X = get_column_defaults()[c("options", "report", "evaporation")],
+      FUN = tibble::as_tibble
     )
     
   } else {
@@ -62,7 +61,7 @@ input_to_list_of_sections <- function(
       from = c("Ar_sbct", "Area.subcatchment"),
       to = c("Area", "Area")
     )
-
+    
     # check the structure of polygon file:
     required <- c("Name", "Outlet", "Area", "RouteTo")
     
@@ -83,7 +82,7 @@ input_to_list_of_sections <- function(
     
     is_horton <- infiltration_model %in% c("Horton", "HORTON")
     is_green_ampt <- infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")
-
+    
     if (is_horton || is_green_ampt) {
       
       list_of_sections[['infiltration']] <- list(
@@ -127,7 +126,7 @@ input_to_list_of_sections <- function(
     
     # ... check for optional subcatchment_typologies:
     if (is.null(subcatchment_typologies)) {
-
+      
       required <- c(
         "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero", "RouteTo", 
         "PctRouted", "Rain_Gage", "CurbLen", "Snowpack", "PercImperv", "Slope", 
@@ -331,118 +330,43 @@ input_to_list_of_sections <- function(
   list_of_sections
 }
 
-# default_options --------------------------------------------------------------
-default_options <- function()
-{
-  tibble::tibble(
-    FLOW_UNITS = "CMS",
-    INFILTRATION = "HORTON", # capital letters!
-    FLOW_ROUTING = "KINWAVE",
-    LINK_OFFSETS = "DEPTH",
-    FORCE_MAIN_EQUATION = "H-W",
-    IGNORE_RAINFALL = "NO",
-    IGNORE_SNOWMELT = "YES",
-    IGNORE_GROUNDWATER = "YES",
-    IGNORE_RDII = "YES",
-    IGNORE_ROUTING = "YES",
-    IGNORE_QUALITY = "YES",
-    ALLOW_PONDING = "NO",
-    SKIP_STEADY_STATE = "NO",
-    SYS_FLOW_TOL = "5",
-    LAT_FLOW_TOL = "5",
-    START_DATE = "1/1/2017",
-    START_TIME = "0:00:00",
-    END_DATE = "1/1/2017",
-    END_TIME = "1:00:00",
-    REPORT_START_DATE = "1/1/2017",
-    REPORT_START_TIME = "1:00:00",
-    SWEEP_START = "1/1",
-    SWEEP_END = "12/31",
-    DRY_DAYS = "14",
-    REPORT_STEP = "0:15:00",
-    WET_STEP = "0:05:00",
-    DRY_STEP = "1:00:00",
-    ROUTING_STEP = "0:00:05",
-    LENGTHENING_STEP = "0",
-    VARIABLE_STEP = "0",
-    MINIMUM_STEP = "0.5",
-    INERTIAL_DAMPING = "NONE",
-    NORMAL_FLOW_LIMITED = "BOTH",
-    MIN_SURFAREA = "0",
-    MIN_SLOPE = "0",
-    MAX_TRIALS = "8",
-    HEAD_TOLERANCE = "0.0015",
-    THREADS = "1",
-    TEMPDIR = " "
-  )
-}
-
-# default_report ---------------------------------------------------------------
-default_report <- function()
-{
-  tibble::tibble(
-    INPUT = "NO",
-    CONTROLS = "NO",
-    SUBCATCHMENTS = "ALL",
-    NODES = "ALL",
-    LINKS = "ALL"
-  )
-}
-
-# default_evaporation ----------------------------------------------------------
-default_evaporation <- function()
-{
-  tibble::tibble(
-    CONSTANT = 0,
-    DRY_ONLY = 0
-  )
-}
-
 # read_list_of_sections --------------------------------------------------------
 read_list_of_sections <- function(path_options)
 {
-  # ...use information from options (option.txt)
+  # Read options file
   options <- readLines(path_options)
   
-  # ...delete empty lines
+  # Remove empty lines
   options <- options[options != ""]
   
-  # find section lines
-  section_lines <- grep("\\[", options, value = F)
-  section_end <- c(section_lines[-1] - 1, length(options))
+  # Split text lines at [section headers]
+  text_blocks <- extract_sections(options)
   
-  # separate section title
-  section_title <- gsub(
-    pattern = "\\[|\\]",
-    replacement = "",
-    x = options[section_lines]
-  )
-  
-  # list all section blocks
-  list_of_sections <- vector(length = length(section_lines), mode = "list")
-  names(list_of_sections) <- section_title
-  
-  # make tibble and transpose it
-  for (i in 1:length(section_lines)) {
+  # Process each section: make a tibble and transpose it
+  lapply(text_blocks, function(text_block) {
+
+    #text_block <- text_blocks[[1L]]
     
-    list_of_sections[[i]] <- options[(section_lines[i] + 1):(section_end[i])] %>%
-      cbind(list_of_sections[[i]]) %>%
-      tibble::as_tibble(.) %>%
-      tidyr::separate(., 1, c("Variable", "Value"), "\t", extra = "merge", fill = "left")
+    # Create tibble    
+    result <- text_block %>%
+      tibble::as_tibble() %>%
+      separate_into(c("Variable", "Value"), sep = "\t", col = 1L)
     
-    # define column vector to keep the order later
-    cols <- list_of_sections[[i]][, 1] %>% unlist(.) %>% as.character(.)
+    # Define column vector to keep the order later
+    cols <- dplyr::pull(result, 1L)
     
-    # transpose and keep order of original data
-    list_of_sections[[i]] <- tidyr::gather(list_of_sections[[i]], Variable, Value) %>%
+    # Transpose and keep order of original data
+    result <- result %>%
+      tidyr::gather(Variable, Value) %>%
       tidyr::spread(names(.)[1], "Value") %>%
       .[, cols]
-    
-    # separate rows with more than one entry (e.g. in pollution section)
-    if (any(grepl("\t", list_of_sections[[i]]))) {
-      list_of_sections[[i]] <- tidyr::separate_rows(list_of_sections[[i]], (1:ncol(list_of_sections[[i]])), sep = "\t")
+
+    # Separate rows with multiple entries (e.g. in pollution section)
+    if (any(grepl("\t", result))) {
+      result <- result %>%
+        tidyr::separate_rows(seq_len(ncol(result)), sep = "\t")
     }
-  }
-  
-  list_of_sections
+    
+    result
+  })
 }

@@ -60,6 +60,61 @@ get_column_defaults <- function()
       Geom3 = 0,
       Geom4 = 0,
       Barrels = 1
+    ),
+    
+    options = list(
+      FLOW_UNITS = "CMS",
+      INFILTRATION = "HORTON", # capital letters!
+      FLOW_ROUTING = "KINWAVE",
+      LINK_OFFSETS = "DEPTH",
+      FORCE_MAIN_EQUATION = "H-W",
+      IGNORE_RAINFALL = "NO",
+      IGNORE_SNOWMELT = "YES",
+      IGNORE_GROUNDWATER = "YES",
+      IGNORE_RDII = "YES",
+      IGNORE_ROUTING = "YES",
+      IGNORE_QUALITY = "YES",
+      ALLOW_PONDING = "NO",
+      SKIP_STEADY_STATE = "NO",
+      SYS_FLOW_TOL = "5",
+      LAT_FLOW_TOL = "5",
+      START_DATE = "1/1/2017",
+      START_TIME = "0:00:00",
+      END_DATE = "1/1/2017",
+      END_TIME = "1:00:00",
+      REPORT_START_DATE = "1/1/2017",
+      REPORT_START_TIME = "1:00:00",
+      SWEEP_START = "1/1",
+      SWEEP_END = "12/31",
+      DRY_DAYS = "14",
+      REPORT_STEP = "0:15:00",
+      WET_STEP = "0:05:00",
+      DRY_STEP = "1:00:00",
+      ROUTING_STEP = "0:00:05",
+      LENGTHENING_STEP = "0",
+      VARIABLE_STEP = "0",
+      MINIMUM_STEP = "0.5",
+      INERTIAL_DAMPING = "NONE",
+      NORMAL_FLOW_LIMITED = "BOTH",
+      MIN_SURFAREA = "0",
+      MIN_SLOPE = "0",
+      MAX_TRIALS = "8",
+      HEAD_TOLERANCE = "0.0015",
+      THREADS = "1",
+      TEMPDIR = " "
+    ),
+    
+    report = list(
+      INPUT = "NO",
+      CONTROLS = "NO",
+      SUBCATCHMENTS = "ALL",
+      NODES = "ALL",
+      LINKS = "ALL"
+    ),
+    
+    evaporation = list(
+      CONSTANT = 0,
+      DRY_ONLY = 0
     )
   )
 }
