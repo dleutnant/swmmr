@@ -333,32 +333,34 @@ input_to_list_of_sections <- function(
 # read_list_of_sections --------------------------------------------------------
 read_list_of_sections <- function(path_options)
 {
-  # ...use information from options (option.txt)
+  # Read options file
   options <- readLines(path_options)
   
-  # ...delete empty lines
+  # Remove empty lines
   options <- options[options != ""]
   
-  # find section lines
+  # Find section lines
   section_starts <- grep("\\[", options)
   section_ends <- c(section_starts[-1] - 1, length(options))
   
-  # separate section title
+  # Get section names
   section_names <- gsub(
     pattern = "\\[|\\]",
     replacement = "",
     x = options[section_starts]
   )
   
-  # list all section blocks
+  # Create list to store sections
   list_of_sections <- vector(length = length(section_starts), mode = "list")
   names(list_of_sections) <- section_names
   
-  # make tibble and transpose it
+  # Process each section: make a tibble and transpose it
   for (i in seq_along(section_starts)) {
     
+    # Get row range for current section
     row_range <- (section_starts[i] + 1):(section_ends[i])
-    
+
+    # Create tibble    
     list_of_sections[[i]] <- options[row_range] %>%
       cbind(list_of_sections[[i]]) %>%
       tibble::as_tibble(.) %>%
@@ -371,18 +373,18 @@ read_list_of_sections <- function(path_options)
         fill = "left"
       )
     
-    # define column vector to keep the order later
+    # Define column vector to keep the order later
     cols <- list_of_sections[[i]][, 1] %>% 
       unlist(.) %>% 
       as.character(.)
     
-    # transpose and keep order of original data
+    # Transpose and keep order of original data
     list_of_sections[[i]] <- list_of_sections[[i]] %>%
       tidyr::gather(Variable, Value) %>%
       tidyr::spread(names(.)[1], "Value") %>%
       .[, cols]
     
-    # separate rows with more than one entry (e.g. in pollution section)
+    # Separate rows with multiple entries (e.g. in pollution section)
     if (any(grepl("\t", list_of_sections[[i]]))) {
       list_of_sections[[i]] <- list_of_sections[[i]] %>%
         tidyr::separate_rows(
