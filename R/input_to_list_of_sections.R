@@ -339,29 +339,18 @@ read_list_of_sections <- function(path_options)
   # Remove empty lines
   options <- options[options != ""]
   
-  # Find section lines
-  section_starts <- grep("\\[", options)
-  section_ends <- c(section_starts[-1] - 1, length(options))
-  
-  # Get section names
-  section_names <- gsub(
-    pattern = "\\[|\\]",
-    replacement = "",
-    x = options[section_starts]
-  )
+  # Split text lines at [section headers]
+  text_blocks <- extract_sections(options)
   
   # Create list to store sections
-  list_of_sections <- vector(length = length(section_starts), mode = "list")
-  names(list_of_sections) <- section_names
+  list_of_sections <- vector(length = length(text_blocks), mode = "list")
+  names(list_of_sections) <- names(text_blocks)
   
   # Process each section: make a tibble and transpose it
-  for (i in seq_along(section_starts)) {
+  for (i in seq_along(text_blocks)) {
     
-    # Get row range for current section
-    row_range <- (section_starts[i] + 1):(section_ends[i])
-
     # Create tibble    
-    list_of_sections[[i]] <- options[row_range] %>%
+    list_of_sections[[i]] <- text_blocks[[i]] %>%
       cbind(list_of_sections[[i]]) %>%
       tibble::as_tibble(.) %>%
       tidyr::separate(
@@ -395,4 +384,24 @@ read_list_of_sections <- function(path_options)
   }
   
   list_of_sections
+}
+
+# extract_sections -------------------------------------------------------------
+extract_sections <- function(x)
+{
+  stopifnot(is.character(x))
+  
+  # Find row ranges of sections
+  starts <- grep("\\[", x)
+  ends <- c(starts[-1L] - 1L, length(x))
+  
+  # Get section names
+  section_names <- x[starts] %>%
+    gsub(pattern = "\\[|\\]", replacement = "")
+  
+  sections <- lapply(seq_along(starts), function(i) {
+    x[seq.int(starts[i] + 1L, ends[i])]
+  })
+  
+  stats::setNames(sections, section_names)
 }
