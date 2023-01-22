@@ -1,6 +1,6 @@
-test_that("get_complete_dictionary() works", {
+test_that("get_column_dictionary() works", {
 
-  f <- swmmr:::get_complete_dictionary
+  f <- swmmr:::get_column_dictionary
   
   result <- f()
 

@@ -2,49 +2,50 @@
 #' @keywords internal
 section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL)
 {
-  # remove header lines 
+  # Remove header lines 
   x <- x[!startsWith(x, ";;")]
   
-  # remove comments
-  if (rm.comment) x <- x[!startsWith(x, ";")]
+  # Remove comments
+  if (rm.comment) {
+    x <- x[!startsWith(x, ";")]
+  }
   
-  # convert character vector to tibble
+  # Convert character vector to tibble
   # todo:
   #Calling `as_tibble()` on a vector is discouraged, 
   #because the behavior is likely to change in the future. 
   #Use `enframe(name = NULL)` instead.
   x <- tibble::as_tibble(x) %>% 
-    # remove empty lines
-    dplyr::filter(value != "")
-  
-  # add section as class to prepare generic parser
-  class(x) <- c(section_name, class(x))
+    # Remove empty lines
+    dplyr::filter(value != "") %>%
+    # Add section as class to prepare generic parser
+    add_class(section_name)
   
   # generic parser
-  if (section_name == "infiltration") {
-    x <- parse_section(x, inf_model = tolower(options$INFILTRATION))
+  x <- if (section_name == "infiltration") {
+    parse_section(x, inf_model = tolower(options$INFILTRATION))
   } else {
-    x <- parse_section(x)
+    parse_section(x)
   }
   
   # if a section is not parsed, we return NULL
-  if (is.null(x)) return(NULL)
-  
-  # remove dummy columns which names starts with *tab 
+  if (is.null(x)) {
+    return(NULL)
+  }
+
+  # remove dummy columns of which names start with *tab 
   x <- x[, !grepl("^tab", colnames(x))]
   
   # remove rows with NA's only
   x <- x[rowSums(is.na(x)) != ncol(x), ]
   
   # make sure ID columns are of type character
-  chr_cols <- c("Name", "Link", "Links", "Subcatchment", "Outlet",
-                "Node", "From Node", "To Node", "Gage", "Pump")
-  
-  for (chr_col in chr_cols) {
-    if (chr_col %in% colnames(x)) {
-      x <- dplyr::mutate_at(x, chr_col, as.character)
-    }
-  }
+  chr_cols <- intersect(names(x), c(
+    "Name", "Link", "Links", "Subcatchment", "Outlet", "Node", "From Node", 
+    "To Node", "Gage", "Pump"
+  ))
+
+  x[chr_cols] <- lapply(x[chr_cols], as.character)
   
   # trimws of character columns
   x <- dplyr::mutate_if(x, is.character, trimws)
@@ -95,20 +96,13 @@ separate_into <- function(
   )
 }
 
-#' helper function skippting the first n rows of a data frame
-#' @keywords internal
-skip_head <- function(df, n)
-{
-  df[-seq_len(n), ]
-}
-
 # input sections ---------------------------------------------------------------
 
 #' import helper
 #' @keywords internal
 parse_section.options <- function(x, ...)
 {
-  separate_into(x, c("Option", "Value"))
+  parse_standard(x, "options")
 }
 
 #' import helper
@@ -122,26 +116,26 @@ parse_section.title <- function(x, ...)
 #' @keywords internal
 parse_section.raingages <- function(x, ...)
 {
-  separate_into(x, section_columns("raingages"))
+  parse_standard(x, "raingages")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.hydrographs <- function(x, ...)
 {
-  separate_into(x, section_columns("hydrographs"))
+  parse_standard(x, "hydrographs")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.temperature <- function(x, ...)
 {
-  separate_into(
-    x = x, 
+  parse_standard(
+    x, 
+    "temperature", 
     sep = base::cumsum(c(18, 1)), 
     extra = "warn", 
-    fill = "warn",  
-    into = c("Data Element", "tab1", "Values")
+    fill = "warn"
   )
 }
 
@@ -149,32 +143,26 @@ parse_section.temperature <- function(x, ...)
 #' @keywords internal
 parse_section.evaporation <- function(x, ...)
 {
-  separate_into(x, c("Data Source", "Parameters"))
+  parse_standard(x, "evaporation")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.events <- function(x, ...)
 {
-  separate_into(
-    x = x, 
-    sep = 19, 
-    extra = "warn", 
-    fill = "warn", 
-    into = c("Start Date", "End Date")
-  )
+  parse_standard(x, "events", sep = 19, extra = "warn", fill = "warn")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.subcatchments <- function(x, ...)
 {
-  separate_into(
-    x = x, 
+  parse_standard(
+    x, 
+    "subcatchments", 
     sep = "\\s+", 
     extra = "warn", 
-    fill = "warn", 
-    into = section_columns("subcatchments")
+    fill = "warn"
   )
 }
 
@@ -223,14 +211,14 @@ parse_section.aquifers <- function(x, ...)
 #' @keywords internal
 parse_section.snowpacks <- function(x, ...)
 {
-  separate_into(x, c("Name", "Surface", "Parameters"))
+  parse_standard(x, "snowpacks")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.junctions <- function(x, ...)
 {
-  separate_into(x, sep = "\\s+", fill = "warn", section_columns("junctions"))
+  parse_standard(x, "junctions", sep = "\\s+", fill = "warn")
 }
 
 #' import helper
@@ -251,7 +239,7 @@ parse_section.outfalls <- function(x, ...)
 #' @keywords internal
 parse_section.dividers <- function(x, ...)
 {
-  separate_into(x, section_columns("dividers"))
+  parse_standard(x, "dividers")
 }
 
 #' import helper
@@ -267,21 +255,21 @@ parse_section.storage <- function(x, ...)
 #' @keywords internal
 parse_section.conduits <- function(x, ...)
 {
-  separate_into(x, sep = "\\s+", fill = "warn", section_columns("conduits"))
+  parse_standard(x, "conduits", sep = "\\s+", fill = "warn")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.pumps <- function(x, ...)
 {
-  separate_into(x, section_columns("pumps"))
+  parse_standard(x, "pumps")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.orifices <- function(x, ...)
 {
-  separate_into(x, section_columns("orifices"))
+  parse_standard(x, "orifices")
 }
 
 #' import helper
@@ -297,7 +285,7 @@ parse_section.weirs <- function(x, ...)
 #' @keywords internal
 parse_section.outlets <- function(x, ...)
 {
-  separate_into(x, section_columns("outlets"))
+  parse_standard(x, "outlets")
 }
 
 #' import helper
@@ -313,7 +301,7 @@ parse_section.xsections <- function(x, ...)
 #' @keywords internal
 parse_section.losses <- function(x, ...)
 {
-  separate_into(x, section_columns("losses"))
+  parse_standard(x, "losses")
 }
 
 #' import helper
@@ -327,7 +315,7 @@ parse_section.controls <- function(x, ...)
 #' @keywords internal
 parse_section.pollutants <- function(x, ...)
 {
-  separate_into(x, fill = "right", section_columns("pollutants"))
+  parse_standard(x, "pollutants", fill = "right")
 }
 
 #' import helper
@@ -343,35 +331,35 @@ parse_section.landuses <- function(x, ...)
 #' @keywords internal
 parse_section.buildup <- function(x, ...)
 {
-  separate_into(x, section_columns("buildup"))
+  parse_standard(x, "buildup")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.washoff <- function(x, ...)
 {
-  separate_into(x, section_columns("washoff"))
+  parse_standard(x, "washoff")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.coverages <- function(x, ...)
 {
-  separate_into(x, section_columns("coverages"))
+  parse_standard(x, "coverages")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.loadings <- function(x, ...)
 {
-  separate_into(x, section_columns("loadings"))
+  parse_standard(x, "loadings")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.treatment <- function(x, ...)
 {
-  separate_into(x, section_columns("treatment"))
+  parse_standard(x, "treatment")
 }
 
 #' import helper
@@ -387,21 +375,21 @@ parse_section.inflows <- function(x, ...)
 #' @keywords internal
 parse_section.dwf <- function(x, ...)
 {
-  separate_into(x, section_columns("dwf"))
+  parse_standard(x, "dwf")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.iiflows <- function(x, ...)
 {
-  separate_into(x, section_columns("iiflows"))
+  parse_standard(x, "iiflows")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.patterns <- function(x, ...)
 {
-  separate_into(x, section_columns("patterns"))
+  parse_standard(x, "patterns")
 }
 
 #' import helper
@@ -542,11 +530,7 @@ parse_section.lid_controls <- function(x, ...)
 #' @keywords internal
 parse_section.lid_usage <- function(x, ...)
 {
-  separate_into(
-    x = x, 
-    fill = "right", 
-    into = section_columns("lid_usage")
-  )
+  parse_standard(x, "lid_usage", fill = "right")
 }
 
 #' import helper
@@ -592,77 +576,49 @@ parse_section.element_count <- function(x, ...)
 #' @keywords internal
 parse_section.pollutant_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    fill = "right", 
-    into = section_columns("pollutant_summary")
-  )
+  parse_standard(x, "pollutant_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.landuse_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    fill = "right", 
-    into = section_columns("landuse_summary")
-  )
+  parse_standard(x, "landuse_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.raingage_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    fill = "right", 
-    into = section_columns("raingage_summary")
-  )
+  parse_standard(x, "raingage_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.subcatchment_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    fill = "right", 
-    into = section_columns("subcatchment_summary")
-  )
+  parse_standard(x, "subcatchment_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.node_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    fill = "right", 
-    into = section_columns("node_summary")
-  )
+  parse_standard(x, "node_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.link_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    fill = "right", 
-    into = section_columns("link_summary")
-  )
+  parse_standard(x, "link_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.cross_section_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    fill = "right", 
-    into = section_columns("cross_section_summary")
-  )
+  parse_standard(x, "cross_section_summary", fill = "right")
 }
 
 #' import helper
@@ -801,20 +757,14 @@ parse_section.routing_time_step_summary <- function(x, ...)
 #' @keywords internal
 parse_section.subcatchment_runoff_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 6), 
-    into = section_columns("subcatchment_runoff_summary")
-  )
+  parse_standard(x, "subcatchment_runoff_summary")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.lid_performance_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 6), 
-    into = section_columns("lid_performance_summary")
-  )
+  parse_standard(x, "lid_performance_summary")
 }
 
 #' import helper
@@ -834,30 +784,21 @@ parse_section.subcatchment_washoff_summary <- function(x, ...)
 #' @keywords internal
 parse_section.node_depth_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 6), 
-    into = section_columns("node_depth_summary")
-  )
+  parse_standard(x, "node_depth_summary")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.node_inflow_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 7), 
-    into = section_columns("node_inflow_summary")
-  )
+  parse_standard(x, "node_inflow_summary")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.node_flooding_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 8), 
-    into = section_columns("node_flooding_summary")
-  )
+  parse_standard(x, "node_flooding_summary")
 }
 
 #' import helper
@@ -885,21 +826,14 @@ parse_section.outfall_loading_summary <- function(x, ...)
 #' @keywords internal
 parse_section.link_flow_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 6), 
-    fill = "right", 
-    into = section_columns("link_flow_summary")
-  )
+  parse_standard(x, "link_flow_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.conduit_surcharge_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    into = section_columns("conduit_surcharge_summary")
-  )
+  parse_standard(x, "conduit_surcharge_summary")
 }
 
 #' import helper
@@ -919,60 +853,42 @@ parse_section.link_pollutant_load_summary <- function(x, ...)
 #' @keywords internal
 parse_section.pumping_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 6), 
-    into = section_columns("pumping_summary")
-  )
+  parse_standard(x, "pumping_summary")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.groundwater_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 7), 
-    into = section_columns("groundwater_summary")
-  )
+  parse_standard(x, "groundwater_summary")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.node_surcharge_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 7), 
-    into = section_columns("node_surcharge_summary")
-  )
+  parse_standard(x, "node_surcharge_summary")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.flow_classification_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    into = section_columns("flow_classification_summary")
-  )
+  parse_standard(x, "flow_classification_summary")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.storage_volume_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 6), 
-    into = section_columns("storage_volume_summary")
-  )
+  parse_standard(x, "storage_volume_summary")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.lid_control_summary <- function(x, ...)
 {
-  separate_into(
-    x = skip_head(x, 5), 
-    into = section_columns("lid_control_summary")
-  )
+  parse_standard(x, "lid_control_summary")
 }
 
 #' import helper
@@ -981,16 +897,33 @@ parse_section.rpt_error <- function(x, ...)
 {
   # first line contains version string
   # currently not used (evtl. message?)
-  version <- dplyr::slice(x, 1L) %>% dplyr::pull(value)
+  version <- dplyr::slice(x, 1L) %>% 
+    dplyr::pull(value)
   
   # remove version string
   x <- dplyr::slice(x, -1L)
   
   # each error has two rows: error type and section
   remainders <- dplyr::row_number(x) %% 2L
-  odd <- dplyr::filter(x, remainders == 1L) %>% dplyr::pull(value)
-  even <- dplyr::filter(x, remainders == 0L) %>% dplyr::pull(value)
+  
+  odd <- dplyr::filter(x, remainders == 1L) %>% 
+    dplyr::pull(value)
+  
+  even <- dplyr::filter(x, remainders == 0L) %>% 
+    dplyr::pull(value)
   
   # return tibble with all error put in one row
   tibble::tibble(value = paste(odd, even))
+}
+
+# parse_standard ---------------------------------------------------------------
+parse_standard <- function(x, key, ...)
+{
+  n_skip <- section_info(key)$n_skip
+  
+  if (n_skip > 0L) {
+    x <- skip_head(x, n_skip)
+  }
+  
+  separate_into(x, into = section_columns(key), ...)
 }

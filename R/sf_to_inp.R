@@ -76,9 +76,9 @@ sf_to_inp <- function(
     compare_to_dictionary(sf = tibble::as_tibble(x))
   }
   
-  # read spatial data:
+  # Read spatial data
   
-  # check if polygon shape is available, return error message or read shape:
+  # Check if polygon shape is available, return error message or read shape
   subcatchment <- if (given(polygon_sf)) {
     as_normalised_tibble(polygon_sf)
   } else {
@@ -91,7 +91,7 @@ sf_to_inp <- function(
     # assign_parameters.coverages
   }
   
-  # ... and for the junction point shape:
+  # And for the junction point shape
   junctions <- if (given(point_sf)) {
     as_normalised_tibble(point_sf)
   } else {
@@ -104,7 +104,7 @@ sf_to_inp <- function(
     # message in junction_parameters
   }
   
-  # ... also do it for the outfall point shape:
+  # Also do it for the outfall point shape
   outfalls <- if (given(outfall_sf)) {
     as_normalised_tibble(outfall_sf)
   } else {
@@ -114,22 +114,22 @@ sf_to_inp <- function(
     )
   }
   
-  # ...add Pumps section if pumps_sf exists
+  # Add Pumps section if pumps_sf exists, otherwise pumps is NULL
   pumps <- if (given(pumps_sf)) {
     as_normalised_tibble(pumps_sf)
-  } # else NULL implicitly
+  }
   
-  # ...add weirs if path_weirs or weirs_sf exists
+  # Add weirs if path_weirs or weirs_sf exists, otherwise weirs is NULL
   weirs <- if (given(weirs_sf)) {
     as_normalised_tibble(weirs_sf)
-  } # else NULL implicitly
+  }
   
-  # ...add storages if path_storage or storage_sf exists
+  # Add storages if path_storage or storage_sf exists, otherwise storage is NULL
   storage <- if (given(storage_sf)) {
     as_normalised_tibble(storage_sf)
-  } # else NULL implicitly
+  }
   
-  # ...do the same for the conduit line shape:
+  # Do the same for the conduit line shape
   conduits <- if (given(line_sf)) {
     as_normalised_tibble(line_sf)
   } else {
@@ -141,8 +141,8 @@ sf_to_inp <- function(
     # message in conduit_material
   }
   
-  # read supplementary data and check data for completeness, return a
-  # list_of_sections:
+  # Read supplementary data and check data for completeness, return a list of 
+  # sections
   list_of_sections <- input_to_list_of_sections(
     path_options, 
     subcatchment,
@@ -161,7 +161,7 @@ sf_to_inp <- function(
     path_storage_curve
   )
   
-  # process data stores in list_of_sections and return an object of class inp:
+  # Process data stores in list_of_sections and return an object of class inp
   list_of_sections_to_inp(
     list_of_sections, 
     infiltration, 

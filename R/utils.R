@@ -1,3 +1,11 @@
+# add_class --------------------------------------------------------------------
+add_class <- function(x, cls)
+{
+  set_class(x, c(cls, class(x)))
+}
+
+# add_columns_if_missing -------------------------------------------------------
+
 #' Add Columns With Default Values if Not in Data Frame
 #' @keywords internal
 add_columns_if_missing <- function(df, defaults, force = FALSE)
@@ -8,6 +16,8 @@ add_columns_if_missing <- function(df, defaults, force = FALSE)
   
   df
 }
+
+# add_column_if_missing --------------------------------------------------------
 
 #' Add Column With Default Value if Not in Data Frame
 #' @keywords internal
@@ -33,6 +43,18 @@ clean_warning <- function(...)
   invisible(NULL)
 }
 
+# comma_space_collapsed --------------------------------------------------------
+comma_space_collapsed <- function(x)
+{
+  paste(x, collapse = ", ")
+}
+
+# convert_to_type --------------------------------------------------------------
+convert_to_type <- function(x, type)
+{
+  do.call(paste0("as.", type), list(x))
+}
+
 # create_dir_if_required -------------------------------------------------------
 create_dir_if_required <- function(path, silent = TRUE)
 {
@@ -44,10 +66,92 @@ create_dir_if_required <- function(path, silent = TRUE)
   }
 }
 
+# get_column_dictionary --------------------------------------------------------
+
+#' @importFrom tibble as_tibble
+#' @importFrom utils read.csv
+get_column_dictionary <- function()
+{
+  file <- system_file("extdata/dictionary.csv")
+  tibble::as_tibble(read.csv(file))
+}
+
+# get_section_names ------------------------------------------------------------
+get_section_names <- function(type)
+{
+  info <- section_info()
+  
+  info$section[info$type == type]
+}
+
+# given ------------------------------------------------------------------------
+given <- function(x)
+{
+  !is.null(x)
+}
+
 # in_brackets ------------------------------------------------------------------
 in_brackets <- function(x)
 {
   paste0("[", x, "]")
+}
+
+# is_empty ---------------------------------------------------------------------
+is_empty <- function(x)
+{
+  is.na(x) | x == "" | grepl("^\\s+$", x)
+}
+
+# remove_at_indices ------------------------------------------------------------
+remove_at_indices <- function(x, indices)
+{
+  if (length(indices) > 0L) x[-indices] else x
+}
+
+# replace_values ---------------------------------------------------------------
+replace_values <- function(x, from, to)
+{
+  indices <- match(x, from)
+  is_match <- !is.na(indices)
+  x[is_match] <- to[indices[is_match]]
+  x
+}
+
+# section_info -----------------------------------------------------------------
+section_info <- function(key = NULL)
+{
+  file <- system_file("extdata/sections.csv")
+  
+  info <- read.csv(file)
+  #info  <- read.csv(file = "inst/extdata/sections.csv")
+  
+  if (is.null(key)) {
+    return(info)
+  }
+  
+  index <- which(info$key == key)
+  
+  if (length(index) != 1L) {
+    stop_formatted("No such key '%s' or key is not unique in '%s'.", key, file)
+  }
+  
+  info[index, ]
+}
+
+# set_class --------------------------------------------------------------------
+set_class <- function(x, cls)
+{
+  class(x) <- cls
+  x
+}
+
+# skip_head --------------------------------------------------------------------
+
+#' helper function skippting the first n rows of a data frame
+#' @keywords internal
+skip_head <- function(df, n)
+{
+  df[-seq_len(n), ]
 }
 
 # stop_on_bad_index ------------------------------------------------------------
@@ -69,6 +173,51 @@ stop_on_bad_index <- function(index, choices)
 stop_formatted <- function(fmt, ...)
 {
   clean_stop(sprintf(fmt, ...))
+}
+
+# stop_if_out_of_range ---------------------------------------------------------
+stop_if_out_of_range <- function(x, a, b)
+{
+  if (x < a || x > b) {
+    stop_formatted(
+      "%s must be a value between %d and %d!",
+      deparse(substitute(x)), a, b
+    )
+  }
+}
+
+# system_file ------------------------------------------------------------------
+system_file <- function(...)
+{
+  system.file(..., package = "swmmr")
+}
+
+# trim_vector ------------------------------------------------------------------
+trim_vector <- function(x, trim = "both")
+{
+  trim <- match.arg(trim, c("head", "tail", "both", "none"))
+ 
+  if (trim %in% c("head", "both")) {
+    x <- remove_at_indices(x, which_first(is_empty(x)))
+  }
+  
+  if (trim %in% c("tail", "both")) {
+    x <- remove_at_indices(x, which_last(is_empty(x)))
+  }
+  
+  x
+}
+
+# unload_dll -------------------------------------------------------------------
+unload_dll <- function()
+{
+  dyn.unload(system_file("libs/x64/swmmr.dll"))
+}
+
+# warn_formatted ---------------------------------------------------------------
+warn_formatted <- function(fmt, ...)
+{
+  clean_warning(sprintf(fmt, ...))
 }
 
 #' Determine the OS
@@ -165,4 +314,29 @@ stop_formatted <- function(fmt, ...)
   }
   
   full_name
+}
+
+# which_first ------------------------------------------------------------------
+which_first <- function(x)
+{
+  which_marginal(x, first = TRUE)
+}
+
+# which_last -------------------------------------------------------------------
+which_last <- function(x)
+{
+  which_marginal(x, first = FALSE)
+}
+
+# which_marginal ---------------------------------------------------------------
+which_marginal <- function(x, first)
+{
+  stopifnot(is.logical(x))
+  stopifnot(identical(first, TRUE) || identical(first, FALSE))
+  
+  i <- which(x)
+  
+  start <- ifelse(first, 1L, length(x) - length(i) + 1L)
+  
+  i[i == seq.int(start, along.with = i)]
 }

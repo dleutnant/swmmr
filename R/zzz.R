@@ -16,7 +16,17 @@
   toset <- !(names(op.swmmr) %in% names(op))
   
   # save options
-  if (any(toset)) options(op.swmmr[toset])
+  if (any(toset)) {
+    options(op.swmmr[toset])
+  }
   
   invisible()
 }
+
+# input sections
+#' @keywords internal
+input_sections <- get_section_names("input")
+
+# report sections
+#' @keywords internal
+report_sections <- get_section_names("report")

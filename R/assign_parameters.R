@@ -26,11 +26,10 @@ assign_parameters.default <- function(
   tibble::as_tibble(x)
 }
 
-#' helper function
+#' helper function: Transpose tibble of options
 #' @keywords internal
 assign_option_value <- function(x)
 {
-  # transpose tibble of options
   rbind(Option = colnames(x), Value = x[1L, ]) %>% 
     t() %>% 
     tibble::as_tibble()
@@ -61,7 +60,6 @@ assign_parameters.report <- function(
     junction_parameters = NULL
 )
 {
-  # transpose tibble of report
   assign_option_value(x)
 }
 
@@ -95,10 +93,10 @@ assign_parameters.subcatchments <- function(
   if (!all(names(defaults) %in% colnames(x))) {
     
     x <- if (is.null(subcatchment_typologies)) {
-      #... take default values for missing columns
+      # Take default values for missing columns
       add_columns_if_missing(x, defaults)
     } else {
-      #...take parameters defined in subcatchment_typologies
+      # Take parameters defined in subcatchment_typologies
       dplyr::full_join(x, subcatchment_typologies, by = "Type")
     }
   }
@@ -109,7 +107,7 @@ assign_parameters.subcatchments <- function(
   )
   
   # Lookup column names in dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- d$int_shp_to_inp[d$section == "subcatchment"]
   stopifnot(identical(columns, columns2))
   
@@ -134,10 +132,10 @@ assign_parameters.subareas <- function(
   if (!all(names(defaults) %in% colnames(x))) {
     
     x <- if (is.null(subcatchment_typologies)) {
-      #...take default values for missing columns
+      # Take default values for missing columns
       add_columns_if_missing(x, defaults)
     } else {
-      #...take values defined in subcatchment_typologies
+      # Take values defined in subcatchment_typologies
       dplyr::full_join(x, subcatchment_typologies, by = "Type")
     }
   }
@@ -148,7 +146,7 @@ assign_parameters.subareas <- function(
   )
   
   # Lookup column names in dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- c("Subcatchment", d$int_shp_to_inp[d$section == "subarea"])
   stopifnot(identical(columns, columns2))
   
@@ -164,8 +162,8 @@ assign_parameters.polygons <- function(
     subcatchment_typologies = NULL, 
     conduit_material = NULL, 
     junction_parameters = NULL
-) {
-  
+)
+{
   y <- sf::st_coordinates(x$geometry) %>% 
     .[, c(1, 2, ncol(.))] %>% 
     tibble::as_tibble(.)
@@ -173,9 +171,8 @@ assign_parameters.polygons <- function(
   colnames(y) <- c("X", "Y", "index")
   
   x$index <- seq_along(x$Name)
-  z <- x[, c("index", "Name")]
-  
-  merge(z, y, by.x = "index", by.y = "index") %>% 
+
+  merge(x[, c("index", "Name")], y, by = "index") %>% 
     .[, c("Name", "X", "Y")]
 }
 
@@ -219,10 +216,10 @@ assign_parameters.infiltration <- function(
     
     x$Subcatchment <- x$Name
     
-    #...take values defined in infiltration
+    # Take values defined in infiltration
     x <- dplyr::full_join(x, infiltration, by = "Soil")
     
-    #... fill missing columns with default and select infiltration columns
+    # Fill missing columns with default and select infiltration columns
     x <- add_defaults_or_skip(x, infiltration_defaults)
     
   } else {
@@ -231,7 +228,7 @@ assign_parameters.infiltration <- function(
       
       x$Subcatchment <- x$Name
       
-      #... fill missing columns with default and select infiltration columns
+      # Fill missing columns with default and select infiltration columns
       x <- add_defaults_or_skip(x, infiltration_defaults)
     }
   }
@@ -255,9 +252,7 @@ assign_parameters.coverages <- function(
     if ("Type" %in% colnames(subcatchment)) {
       
       x <- dplyr::full_join(subcatchment, x, by = c("Type" = "SurfaceType"))
-      x <- x[! is.na(x$LandUse), c("Name", "LandUse", "PercentCoverage")]
-      
-      return(x) 
+      return(x[!is.na(x$LandUse), c("Name", "LandUse", "PercentCoverage")]) 
     }
     
   } else {
@@ -278,11 +273,11 @@ assign_parameters.junctions <- function(
 )
 {
   if ("Top" %in% colnames(x)) {
-    #... calculate maximum depth
+    # Calculate maximum depth
     x$Ymax <- x$Top - x$Bottom
   }
   
-  #... set invert elevation
+  # Set invert elevation
   x$Elevation <- x$Bottom
   
   defaults <- get_column_defaults()$junction
@@ -291,12 +286,12 @@ assign_parameters.junctions <- function(
     
     x <- if (! is.null(junction_parameters)) {
       
-      #...merge with values defined in junction_parameters
+      # Merge with values defined in junction_parameters
       dplyr::full_join(x, junction_parameters, by = "Name")
       
     } else {
       
-      #...take default values
+      # Take default values
       add_columns_if_missing(x, defaults, force = TRUE)
     }
   }
@@ -304,7 +299,7 @@ assign_parameters.junctions <- function(
   columns <- c("Name", "Elevation", "Ymax", names(defaults))
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- replace_values(
     d$int_shp_to_inp[d$section == "junction"],
     from = "Bottom",
@@ -331,9 +326,7 @@ assign_parameters.coordinates <- function(
   x$index <- seq_along(x$Name)
   y$index <- seq_along(y$X)
   
-  z <- x[, c("index", "Name")]
-  
-  merge(z, y, by.x = "index", by.y = "index") %>% 
+  merge(x[, c("index", "Name")], y, by = "index") %>% 
     .[, c("Name", "X", "Y")]
 }
 
@@ -357,7 +350,7 @@ assign_parameters.outfalls <- function(
   columns <- c("Name", "Elevation", "Type", "StageData", "Gated", "RouteTo")
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- replace_values(
     d$int_shp_to_inp[d$section == "outfalls"], 
     from = "Bottom", 
@@ -385,12 +378,12 @@ assign_parameters.conduits <- function(
     
     x <- if (! is.null(conduit_material)) {
       
-      #... take values given in conduit_material
+      # Take values given in conduit_material
       dplyr::full_join(conduit_material, x, by = "Material")
       
     } else {
       
-      #...take default value
+      # Take default value
       add_columns_if_missing(x, defaults, force = TRUE)
     }
   }
@@ -400,7 +393,7 @@ assign_parameters.conduits <- function(
   )
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- setdiff(
     d$int_shp_to_inp[d$section == "conduit"], 
     c("InitFlow", "MaxFlow")
@@ -421,18 +414,18 @@ assign_parameters.xsections <- function(
     junction_parameters = NULL
 )
 {
-  #... rename Name of conduit to Link
+  # Rename Name of conduit to Link
   x$Link <- x$Name
   
   defaults <- get_column_defaults()$xsections
   
-  #... default is circular shape
+  # Default is circular shape
   x <- add_columns_if_missing(x, defaults)
   
   columns <- c("Link", names(defaults))
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- c(
     "Link", 
     setdiff(d$int_shp_to_inp[d$section == "xsection"], "Culvert")
@@ -453,13 +446,13 @@ assign_parameters.pumps <- function(
     junction_parameters = NULL
 )
 {
-  #...add default values ?
+  # Add default values?
   columns <- c(
     "Name", "FromNode", "ToNode", "Pcurve", "status", "Startup", "Shutoff"
   )
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- d$int_shp_to_inp[d$section == "pump"]
   stopifnot(identical(columns, columns2))
   
@@ -477,14 +470,14 @@ assign_parameters.weirs <- function(
     junction_parameters = NULL
 )
 {
-  #...add default values ?
+  # Add default values?
   columns <- c(
     "Name", "FromNode", "ToNode", "Type", "CrestHt", "Cd",  "Gated", "EC", 
     "Cd2", "Sur"
   )
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- setdiff(
     d$int_shp_to_inp[d$section == "weir"],
     c("RoadWidth", "RoadSurf")
@@ -505,13 +498,13 @@ assign_parameters.storage <- function(
     junction_parameters = NULL
 )
 {
-  #...add default values ?
+  # Add default values ?
   columns <- c(
     "Name", "Elev", "Ymax", "Y0", "Shape", "Curve_Name", "N_A", "Fevap"
   )
   
   # Get column names from dictionary
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   columns2 <- setdiff(
     d$int_shp_to_inp[d$section == "storage"], 
     c("Psi", "Ksat", "IMD")
@@ -532,7 +525,7 @@ assign_parameters.curves <- function(
     junction_parameters = NULL
 )
 {
-  #... delete duplicated type descriptions
+  # Delete duplicated type descriptions
   x[duplicated(x$Type), 'Type'] <- ' '
   
   x

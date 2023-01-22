@@ -30,7 +30,7 @@ Imports:
     ggplot2,
     purrr (>= 0.2.4),
     readr (>= 1.1.1),
-    Rcpp,
+    Rcpp (>= 1.0.5),
     tibble (>= 1.2.4),
     tidyr (>= 1.2.0),
     utils,

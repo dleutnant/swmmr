@@ -1,13 +1,3 @@
-# get_complete_dictionary ------------------------------------------------------
-
-#' @importFrom tibble as_tibble
-#' @importFrom utils read.csv
-get_complete_dictionary <- function()
-{
-  file <- system.file("extdata/dictionary.csv", package = "swmmr")
-  tibble::as_tibble(read.csv(file))
-}
-
 #' import helper
 #' @keywords internal
 compare_to_dictionary <- function(shp = NULL, sf = NULL)
@@ -25,7 +15,7 @@ compare_to_dictionary <- function(shp = NULL, sf = NULL)
 rename_columns_using_dict <- function(df, from, to = "int_shp_to_inp")
 {
   # complete dictionary with all column names given in swmmr:
-  d <- get_complete_dictionary()
+  d <- get_column_dictionary()
   
   # cut dictionary to column names 
   # - abbreviated and internal in shp_to_inp() or
@@ -36,16 +26,5 @@ rename_columns_using_dict <- function(df, from, to = "int_shp_to_inp")
   
   # set internal column names for abbreviated ones in data frame (representing
   # shp-file or sf-object)
-  colnames(df) <- replace_values(colnames(df), d[[from]], d[[to]])
-  
-  df
-}
-
-# replace_values ---------------------------------------------------------------
-replace_values <- function(x, from, to)
-{
-  indices <- match(x, from)
-  is_match <- !is.na(indices)
-  x[is_match] <- to[indices[is_match]]
-  x
+  stats::setNames(df, replace_values(names(df), d[[from]], d[[to]]))
 }

@@ -116,12 +116,10 @@ read_out <- function(
   }
 
   # check if water pollutants are available
-  PollNames <- if (identical(character(0), list_of_results$pollutants$names)) {
-    NULL  
-  } else {
+  PollNames <- if (!identical(character(0), list_of_results$pollutants$names)) {
     list_of_results$pollutants$names
-  } 
-                      
+  } # else NULL implicitly  
+
   # make selection of results more convenient
   iType <- .get_iType(iType = iType)$iType
   
@@ -250,17 +248,6 @@ read_out <- function(
   stats::setNames(result, indexObjects[[indexNames[1]]]$names)
 }
 
-# stop_if_out_of_range ---------------------------------------------------------
-stop_if_out_of_range <- function(x, a, b)
-{
-  if (x < a || x > b) {
-    stop_formatted(
-      "%s must be a value between %d and %d!",
-      deparse(substitute(x)), a, b
-    )
-  }
-}
-
 #' Get the swmm version the .out file was generated with
 #' 
 #' This function opens an .out file and extract the swmm version the file was 
@@ -276,13 +263,13 @@ stop_if_out_of_range <- function(x, a, b)
 #' } 
 #' @rdname get_out_version
 #' @export
-get_out_version <- function(file = "") {
-  
+get_out_version <- function(file = "")
+{
   # get the content
-  list_of_results <- get_out_content(file)
+  result <- get_out_content(file)
   
   # return version information
-  list_of_results$meta$version
+  result$meta$version
 }
 
 #' Get the content of an .out file.
@@ -301,18 +288,18 @@ get_out_version <- function(file = "") {
 #' } 
 #' @rdname get_out_content
 #' @export
-get_out_content <- function(file = "") {
-  
+get_out_content <- function(file = "")
+{
   # open swmm out file
-  list_of_results <- OpenSwmmOutFile(outFile = file)
+  result <- OpenSwmmOutFile(outFile = file)
   
   # close swmm out file
   on.exit(CloseSwmmOutFile())
   
   # check error
-  if (exists("error", list_of_results)) {
+  if (exists("error", result)) {
     warning("error reading out file")
   }
   
-  list_of_results
+  result
 }

@@ -6,8 +6,6 @@ test_that("inp_to_sf() works", {
 
   x <- swmmr:::read_example_input_files(ids = 1L)[[1L]]
   
-  class(x) <- "inp"
-  
   suppressWarnings(result <- f(x))
   
   expected_elements <- c(

@@ -1,5 +1,5 @@
 # extract_sections -------------------------------------------------------------
-extract_sections <- function(x)
+extract_sections <- function(x, trim = NULL)
 {
   stopifnot(is.character(x))
   
@@ -8,12 +8,16 @@ extract_sections <- function(x)
   ends <- c(starts[-1L] - 1L, length(x))
   
   # Get section names
-  section_names <- x[starts] %>%
-    gsub(pattern = "\\[|\\]", replacement = "")
+  section_names <- gsub("\\[|\\]", "", x[starts])
+
+  # Cut the lines between the section headers in [brackets]
+  sections <- seq_along(starts) %>%
+    lapply(function(i) x[seq.int(starts[i] + 1L, ends[i])]) %>%
+    stats::setNames(section_names)
   
-  sections <- lapply(seq_along(starts), function(i) {
-    x[seq.int(starts[i] + 1L, ends[i])]
-  })
-  
-  stats::setNames(sections, section_names)
+  if (is.null(trim)) {
+    return(sections)
+  }
+
+  lapply(sections, trim_vector, trim = trim)
 }

@@ -13,13 +13,10 @@ list_of_sections_to_inp <- function(
   subcatchment <- list_of_sections[["subcatchments"]]
   
   # ...further processing of entries in list_of_sections...
-  res <- list_of_sections %>%
-    # define classes
-    purrr::imap(function(.x, .y) {
-      class(.x) <- c(.y, class(.x))
-      return(.x)
-    }) %>%
-    # assign section parameters individually
+  result <- list_of_sections %>%
+    # Set class according to the name of the element in the list
+    purrr::imap(add_class) %>%
+    # Assign section parameters individually
     purrr::map(., ~ assign_parameters(
       .x, 
       infiltration, 
@@ -28,59 +25,25 @@ list_of_sections_to_inp <- function(
       conduit_material, 
       junction_parameters
     )) %>%
-    # reclass to tibbles for consistency
-    purrr::map( ~ {
-      class(.x) <- c("tbl_df", "tbl", "data.frame")
-      .x
-    })
+    # Reclass to tibbles for consistency
+    purrr::map( ~ set_class(.x, c("tbl_df", "tbl", "data.frame")))
   
-  # adjust order of sections
-  section_order <-  c(
-    "title", 
-    "options", 
-    "evaporation", 
-    "raingages", 
-    "subcatchments",
-    "subareas", 
-    "infiltration", 
-    "aquifers", 
-    "groundwater", 
-    "LID_controls", 
-    "LID_usage",
-    "junctions", 
-    "outfalls", 
-    "storage", 
-    "conduits", 
-    "pumps", 
-    "weirs", 
-    "xsections", 
-    "controls", 
-    "DWF", 
-    "pollutants", 
-    "landuses", 
-    "coverages", 
-    "loadings", 
-    "buildup", 
-    "washoff", 
-    "inflows", 
-    "timeseries", 
-    "curves", 
-    "patterns",
-    "report", 
-    "tags", 
-    "map", 
-    "coordinates", 
-    "vertices", 
-    "polygons", 
-    "labels", 
-    "symbols", 
-    "backdrop"
-  )
-  
-  res <- res[section_order[section_order %in% names(res)]]
+  # Select/order sections
+  # TODO: warn about sections that get lost here!
+  result <- result[intersect(get_section_names_for_input(), names(result))]
   
   # assign class attribute
-  class(res) <- "inp"
+  set_class(result, "inp")
+}
+
+# get_section_names_for_input --------------------------------------------------
+get_section_names_for_input <- function()
+{
+  # Read section names from "sections.csv"  
+  info <- section_info()
+  info <- info[!is.na(info$input), ]
   
-  res
+  # Order section names by number in column "input" first
+  # and by the section name second
+  info$section[order(info$input, info$section)]
 }
