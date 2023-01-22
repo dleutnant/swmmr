@@ -2,11 +2,11 @@
 % Please edit documentation in R/assign_parameters.R
 \name{assign_option_value}
 \alias{assign_option_value}
-\title{helper function}
+\title{helper function: Transpose tibble of options}
 \usage{
 assign_option_value(x)
 }
 \description{
-helper function
+helper function: Transpose tibble of options
 }
 \keyword{internal}
