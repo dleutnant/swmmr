@@ -26,7 +26,5 @@ rename_columns_using_dict <- function(df, from, to = "int_shp_to_inp")
   
   # set internal column names for abbreviated ones in data frame (representing
   # shp-file or sf-object)
-  colnames(df) <- replace_values(colnames(df), d[[from]], d[[to]])
-  
-  df
+  stats::setNames(df, replace_values(names(df), d[[from]], d[[to]]))
 }
