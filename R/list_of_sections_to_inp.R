@@ -40,7 +40,7 @@ list_of_sections_to_inp <- function(
 get_section_names_for_input <- function()
 {
   # Read section names from "sections.csv"  
-  info <- swmmr:::section_info()
+  info <- section_info()
   info <- info[!is.na(info$input), ]
   
   # Order section names by number in column "input" first
