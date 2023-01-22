@@ -43,7 +43,7 @@ read_lid_rpt <- function(x, return_xts = TRUE, ...)
   lid_unit <- meta_info[2L]
   
   # get the data
-  lid_rpt <- readr::read_table2(
+  lid_report <- readr::read_table2(
     file = x,  
     col_names = header, 
     col_types = "ccddddddddddddd",
@@ -59,14 +59,14 @@ read_lid_rpt <- function(x, return_xts = TRUE, ...)
     )
   
   # convert to xts
-  if (return_xts) {
-    lid_rpt <- xts::xts(
-      x = dplyr::select(lid_rpt, -DateTime, -Project, -`LID Unit`),
-      order.by = dplyr::pull(lid_rpt, DateTime),
-      Project = project, 
-      `LID Unit` = lid_unit
-    )
+  if (!return_xts) {
+    return(lid_report)
   }
   
-  lid_rpt
+  xts::xts(
+    x = dplyr::select(lid_report, -DateTime, -Project, -`LID Unit`),
+    order.by = dplyr::pull(lid_report, DateTime),
+    Project = project, 
+    `LID Unit` = lid_unit
+  )
 }
