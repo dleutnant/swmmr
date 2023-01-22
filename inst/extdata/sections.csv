@@ -9,8 +9,8 @@ input,coverages,coverages,0
 input,curves
 input,dividers,dividers,0
 input,dwf,dwf,0
-input,evaporation
-input,events
+input,evaporation,evaporation,0
+input,events,events,0
 input,files
 input,groundwater
 input,hydrographs,hydrographs,0
@@ -25,7 +25,7 @@ input,lid_usage,lid_usage,0
 input,loadings,loadings,0
 input,losses,losses,0
 input,map
-input,options
+input,options,options,0
 input,orifices,pumps,0
 input,outfalls
 input,outlets,outlets,0
@@ -36,13 +36,13 @@ input,profiles
 input,pumps,pumps,0
 input,raingages,raingages,0
 input,report
-input,snowpacks
+input,snowpacks,snowpacks,0
 input,storage
 input,subareas
 input,subcatchments,subcatchments,0
 input,symbols
 input,tags
-input,temperature
+input,temperature,temperature,0
 input,timeseries
 input,title
 input,treatment,treatment,0

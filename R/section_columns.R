@@ -87,6 +87,16 @@ section_columns <- function(section_name = NULL)
       "Patterns"
     ),
     
+    evaporation = c(
+      "Data Source", 
+      "Parameters"
+    ),
+    
+    events = c(
+      "Start Date", 
+      "End Date"
+    ),
+    
     flow_classification_summary = c(
       "Conduit", 
       "Adjusted_Actual_Length", 
@@ -303,6 +313,11 @@ section_columns <- function(section_name = NULL)
       "Min_Depth_Below_Rim_Feet"
     ),
     
+    options = c(
+      "Option", 
+      "Value"
+    ),
+      
     orifices = c(
       "Name", 
       "From Node", 
@@ -404,6 +419,12 @@ section_columns <- function(section_name = NULL)
       "Recording_Interval"
     ),
     
+    snowpacks = c(
+      "Name", 
+      "Surface", 
+      "Parameters"
+    ),
+    
     storage = c(
       "Elev.", 
       "MaxDepth", 
@@ -476,6 +497,12 @@ section_columns <- function(section_name = NULL)
       "Perc_Slope", 
       "Rain_Gage", 
       "Outlet"
+    ),
+    
+    temperature = c(
+      "Data Element", 
+      "tab1", 
+      "Values"
     ),
     
     timeseries = c(

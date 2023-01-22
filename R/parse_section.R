@@ -100,7 +100,7 @@ separate_into <- function(
 #' @keywords internal
 parse_section.options <- function(x, ...)
 {
-  separate_into(x, c("Option", "Value"))
+  parse_standard(x, "options")
 }
 
 #' import helper
@@ -128,12 +128,12 @@ parse_section.hydrographs <- function(x, ...)
 #' @keywords internal
 parse_section.temperature <- function(x, ...)
 {
-  separate_into(
-    x = x, 
+  parse_standard(
+    x, 
+    "temperature", 
     sep = base::cumsum(c(18, 1)), 
     extra = "warn", 
-    fill = "warn",  
-    into = c("Data Element", "tab1", "Values")
+    fill = "warn"
   )
 }
 
@@ -141,27 +141,27 @@ parse_section.temperature <- function(x, ...)
 #' @keywords internal
 parse_section.evaporation <- function(x, ...)
 {
-  separate_into(x, c("Data Source", "Parameters"))
+  parse_standard(x, "evaporation")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.events <- function(x, ...)
 {
-  separate_into(
-    x = x, 
-    sep = 19, 
-    extra = "warn", 
-    fill = "warn", 
-    into = c("Start Date", "End Date")
-  )
+  parse_standard(x, "events", sep = 19, extra = "warn", fill = "warn")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.subcatchments <- function(x, ...)
 {
-  parse_standard(x, "subcatchments", sep = "\\s+", extra = "warn", fill = "warn")
+  parse_standard(
+    x, 
+    "subcatchments", 
+    sep = "\\s+", 
+    extra = "warn", 
+    fill = "warn"
+  )
 }
 
 #' import helper
@@ -209,7 +209,7 @@ parse_section.aquifers <- function(x, ...)
 #' @keywords internal
 parse_section.snowpacks <- function(x, ...)
 {
-  separate_into(x, c("Name", "Surface", "Parameters"))
+  parse_standard(x, "snowpacks")
 }
 
 #' import helper
