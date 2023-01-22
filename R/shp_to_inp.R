@@ -72,8 +72,7 @@ shp_to_inp <- function(
     path_storage_curve = NULL
 ) 
 {
-  # helper functions
-  given <- function(x) !is.null(x)
+  # Helper functions
   read_and_normalise <- function(path, quiet = TRUE) {
     path %>%
       sf::st_read(stringsAsFactors = FALSE, quiet = quiet) %>% 
@@ -81,9 +80,9 @@ shp_to_inp <- function(
       compare_to_dictionary(shp = .)
   }
 
-  # read spatial data:
-  
-  # check if polygon shape is available, return error message or read shape:
+  # Read spatial data
+
+  # Check if polygon shape is available, return error message or read shape:
   subcatchment <- if (given(path_polygon)) {
     read_and_normalise(path_polygon)
   } else {
@@ -96,7 +95,7 @@ shp_to_inp <- function(
     # assign_parameters.coverages
   }
   
-  # ... and for the junction point shape:
+  # And for the junction point shape
   junctions <- if (given(path_point)) {
     read_and_normalise(path_point)
   } else {
@@ -109,7 +108,7 @@ shp_to_inp <- function(
     # message in junction_parameters
   }
   
-  # ... also do it for the outfall point shape:
+  # Also do it for the outfall point shape
   outfalls <- if (given(path_outfall)) {
     read_and_normalise(path_outfall)
   } else {
@@ -119,22 +118,22 @@ shp_to_inp <- function(
     )
   }
   
-  # ...add Pumps section if pumps_sf exists
+  # Add Pumps section if pumps_sf exists, otherwise pumps is NULL
   pumps <- if (given(path_pumps)) {
     read_and_normalise(path_pumps)
-  } # else NULL implicitly
+  }
   
-  # ...add weirs if path_weirs or weirs_sf exists
+  # Add weirs if path_weirs or weirs_sf exists, otherwise weirs is NULL
   weirs <- if (given(path_weirs)) {
     read_and_normalise(path_weirs)
-  } # else NULL implicitly
+  }
   
-  # ...add storages if path_storage or storage_sf exists
+  # Add storages if path_storage or storage_sf exists, otherwise storage is NULL
   storage <- if (given(path_storage)) {
     read_and_normalise(path_storage)
-  } # else NULL implicitly
+  }
   
-  # ...do the same for the conduit line shape:
+  # Do the same for the conduit line shape:
   conduits <- if (given(path_line)) {
     read_and_normalise(path_line)
   } else {
@@ -146,8 +145,8 @@ shp_to_inp <- function(
     # message in conduit_material
   }
   
-  # read supplementary data and check data for completeness, return a
-  # list_of_sections:
+  # Read supplementary data and check data for completeness, return a list of 
+  # sections
   list_of_sections <- input_to_list_of_sections(
     path_options, 
     subcatchment,

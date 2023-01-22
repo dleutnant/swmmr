@@ -84,6 +84,12 @@ get_section_names <- function(type)
   info$section[info$type == type]
 }
 
+# given ------------------------------------------------------------------------
+given <- function(x)
+{
+  !is.null(x)
+}
+
 # in_brackets ------------------------------------------------------------------
 in_brackets <- function(x)
 {
