@@ -70,8 +70,9 @@ create_dir_if_required <- function(path, silent = TRUE)
 # get_section_names ------------------------------------------------------------
 get_section_names <- function(type)
 {
-  section_info <- read.csv(system_file("extdata/sections.csv"))
-  section_info$section[section_info$type == type]
+  info <- section_info()
+  
+  info$section[info$type == type]
 }
 
 # in_brackets ------------------------------------------------------------------
@@ -87,6 +88,27 @@ replace_values <- function(x, from, to)
   is_match <- !is.na(indices)
   x[is_match] <- to[indices[is_match]]
   x
+}
+
+# section_info -----------------------------------------------------------------
+section_info <- function(key = NULL)
+{
+  file <- system_file("extdata/sections.csv")
+  
+  info <- read.csv(file)
+  #info  <- read.csv(file = "inst/extdata/sections.csv")
+  
+  if (is.null(key)) {
+    return(info)
+  }
+  
+  index <- which(info$key == key)
+  
+  if (length(index) != 1L) {
+    stop_formatted("No such key '%s' or key is not unique in '%s'.", key, file)
+  }
+  
+  info[index, ]
 }
 
 # skip_head --------------------------------------------------------------------
