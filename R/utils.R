@@ -67,6 +67,16 @@ create_dir_if_required <- function(path, silent = TRUE)
   }
 }
 
+# get_column_dictionary --------------------------------------------------------
+
+#' @importFrom tibble as_tibble
+#' @importFrom utils read.csv
+get_column_dictionary <- function()
+{
+  file <- system_file("extdata/dictionary.csv")
+  tibble::as_tibble(read.csv(file))
+}
+
 # get_section_names ------------------------------------------------------------
 get_section_names <- function(type)
 {

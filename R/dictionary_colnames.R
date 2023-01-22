@@ -1,13 +1,3 @@
-# get_column_dictionary --------------------------------------------------------
-
-#' @importFrom tibble as_tibble
-#' @importFrom utils read.csv
-get_column_dictionary <- function()
-{
-  file <- system_file("extdata/dictionary.csv")
-  tibble::as_tibble(read.csv(file))
-}
-
 #' import helper
 #' @keywords internal
 compare_to_dictionary <- function(shp = NULL, sf = NULL)
