@@ -18,7 +18,7 @@ summary.inp <- function(object, ...)
   # infiltration_model
   # flow_units
   # flow_routing
-  vec_opts <- c(
+  option_names <- c(
     "infiltration", 
     "flow_units", 
     "flow_routing", 
@@ -26,48 +26,33 @@ summary.inp <- function(object, ...)
     "end_date"
   )
   
-  opts <- vec_opts %>% 
+  swmm_options <- option_names %>% 
     purrr::map_chr(
       ~ x$options$Value[which(tolower(x$options$Option) == .x)]
     ) %>% 
-    purrr::set_names(vec_opts) %>% 
+    purrr::set_names(option_names) %>% 
     tolower()
   
-  # define sections which are of interest
-  vec_sects <- c(
-    "raingages", 
-    "subcatchments", 
-    "aquifers", 
-    "snowpacks",
-    "junctions", 
-    "outfalls", 
-    "dividers", 
-    "storage", 
-    "conduits",
-    "pumps", 
-    "orifices", 
-    "weirs", 
-    "outlets",
-    "controls", 
-    "pollutants", 
-    "landuses",
-    # Inflows
-    "lid_controls", 
-    "treatment"
-  )
+  # Define sections which are of interest. Use those sections that have a number 
+  # in column "summary" of "sections.csv"
+  info <- section_info()
+  info <- info[info$type == "input" & !is.na(info$summary), ]
+  
+  # Order by number in summary column first and by section name second
+  section_names <- info$section[order(info$summary, info$section)]
   
   #todo: controls are not correctly interpreted
   
   # get length of unique elements per sections
-  sects <- vec_sects %>% 
+  swmm_sections <- section_names %>% 
     #wrong: purrr::map_dbl( ~ nrow(x[[.]]) %||% 0) %>%
     purrr::map_int( ~ length(unique(x[[.]][[1]])) %||% 0) %>% 
-    purrr::set_names(vec_sects)
+    purrr::set_names(section_names)
   
   cat(
     "\n** summary of swmm model structure **", 
-    paste0("\n", sprintf("%-14s : %10s", names(opts), opts)), 
-    paste0("\n", sprintf("%-14s : %10s", names(sects), sects)), 
+    paste0("\n", sprintf("%-14s : %10s", names(swmm_options), swmm_options)), 
+    paste0("\n", sprintf("%-14s : %10s", names(swmm_sections), swmm_sections)), 
     "\n*************************************\n"
   )
   
