@@ -90,6 +90,18 @@ in_brackets <- function(x)
   paste0("[", x, "]")
 }
 
+# is_empty ---------------------------------------------------------------------
+is_empty <- function(x)
+{
+  is.na(x) | x == "" | grepl("^\\s+$", x)
+}
+
+# remove_at_indices ------------------------------------------------------------
+remove_at_indices <- function(x, indices)
+{
+  if (length(indices) > 0L) x[-indices] else x
+}
+
 # replace_values ---------------------------------------------------------------
 replace_values <- function(x, from, to)
 {
@@ -161,6 +173,28 @@ stop_formatted <- function(fmt, ...)
 system_file <- function(...)
 {
   system.file(..., package = "swmmr")
+}
+
+# trim_vector ------------------------------------------------------------------
+trim_vector <- function(x, trim = "both")
+{
+  trim <- match.arg(trim, c("head", "tail", "both", "none"))
+ 
+  if (trim %in% c("head", "both")) {
+    x <- remove_at_indices(x, which_first(is_empty(x)))
+  }
+  
+  if (trim %in% c("tail", "both")) {
+    x <- remove_at_indices(x, which_last(is_empty(x)))
+  }
+  
+  x
+}
+
+# unload_dll -------------------------------------------------------------------
+unload_dll <- function()
+{
+  dyn.unload(system_file("libs/x64/swmmr.dll"))
 }
 
 # warn_formatted ---------------------------------------------------------------
@@ -263,4 +297,29 @@ warn_formatted <- function(fmt, ...)
   }
   
   full_name
+}
+
+# which_first ------------------------------------------------------------------
+which_first <- function(x)
+{
+  which_marginal(x, first = TRUE)
+}
+
+# which_last -------------------------------------------------------------------
+which_last <- function(x)
+{
+  which_marginal(x, first = FALSE)
+}
+
+# which_marginal ---------------------------------------------------------------
+which_marginal <- function(x, first)
+{
+  stopifnot(is.logical(x))
+  stopifnot(identical(first, TRUE) || identical(first, FALSE))
+  
+  i <- which(x)
+  
+  start <- ifelse(first, 1L, length(x) - length(i) + 1L)
+  
+  i[i == seq.int(start, along.with = i)]
 }

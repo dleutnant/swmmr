@@ -1,5 +1,5 @@
 # extract_sections -------------------------------------------------------------
-extract_sections <- function(x)
+extract_sections <- function(x, trim = NULL)
 {
   stopifnot(is.character(x))
   
@@ -14,6 +14,10 @@ extract_sections <- function(x)
   sections <- lapply(seq_along(starts), function(i) {
     x[seq.int(starts[i] + 1L, ends[i])]
   })
+
+  if (!is.null(trim)) {
+    sections <- lapply(sections, trim_vector, trim = trim)
+  }
   
   stats::setNames(sections, section_names)
 }
