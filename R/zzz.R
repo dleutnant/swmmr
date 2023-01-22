@@ -16,7 +16,9 @@
   toset <- !(names(op.swmmr) %in% names(op))
   
   # save options
-  if (any(toset)) options(op.swmmr[toset])
+  if (any(toset)) {
+    options(op.swmmr[toset])
+  }
   
   invisible()
 }
