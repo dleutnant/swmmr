@@ -18,4 +18,9 @@ test_that("assign_parameters.curves() works", {
   
   expect_identical(result$Type, c("Pump1", " ", "Pump2", " ", "Pump3"))
   
+  #inp <- list(curves = result)
+  #class(inp) <- "inp"
+  #file <- tempfile(fileext = ".inp")
+  #swmmr:::write_inp(inp, file)
+  #writeLines(readLines(file))
 })
