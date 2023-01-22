@@ -21,13 +21,27 @@ read_inp <- function(x, rm.comment = TRUE, ...)
   inp_lines <- gsub("^\\s+", "", inp_lines)
 
   # get information on the sections in the file (line ranges)  
-  section <- get_section_info(inp_lines)
+  section_info <- get_section_info(inp_lines)
   
   # create list with sections  
-  list_of_sections <- section %>% 
+  list_of_sections <- section_info %>% 
     purrr::transpose() %>% 
     purrr::map( ~ inp_lines[.$start:.$end]) %>% 
-    purrr::set_names(base::tolower(section$name))
+    purrr::set_names(base::tolower(section_info$name))
+  
+  # extract_sections(trim = "both") will remove empty lines at the start and at 
+  # the end of each section (whereas get_section_info() assumed that there is 
+  # exactly one empty line at the end of each section that needs to be skipped)
+  list_of_sections_2 <- swmmr:::extract_sections(inp_lines, trim = "both") %>%
+    stats::setNames(tolower(names(.))) %>%
+    `[`(lengths(.) > 0L)
+
+  # Check that both methods return the same (after skipping empty lines at start 
+  # and end of each section)  
+  stopifnot(identical(
+    lapply(list_of_sections, trim_vector, trim = "both"),
+    list_of_sections_2
+  ))
   
   # get options
   options <- if (is.null(list_of_sections$options)) {
