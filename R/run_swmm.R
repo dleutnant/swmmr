@@ -35,7 +35,8 @@ run_swmm <- function(
   # check if inp and exec exists
   stopifnot(file.exists(inp), file.exists(exec))
   
-  # get the name of the directory which is used to create rpt and out files if not provided.
+  # get the name of the directory which is used to create rpt and out files if
+  # not provided.
   dirn <- base::dirname(inp)
   
   # get the name of the inp file
@@ -43,12 +44,12 @@ run_swmm <- function(
   
   # if rpt file is not provided, create one next to the inp file.
   if (is.null(rpt)) {
-    rpt <-  file.path(dirn, paste(filename, "rpt", sep = "."))
+    rpt <-  file.path(dirn, paste0(filename, ".rpt"))
   }
   
   # if out file is not provided, create one next to the inp file.
   if (is.null(out)) {
-    out <-  file.path(dirn, paste(filename, "out", sep = "."))
+    out <-  file.path(dirn, paste0(filename, ".out"))
   }
   
   # Current working directory 
