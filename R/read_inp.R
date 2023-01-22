@@ -32,7 +32,7 @@ read_inp <- function(x, rm.comment = TRUE, ...)
   # extract_sections(trim = "both") will remove empty lines at the start and at 
   # the end of each section (whereas get_section_info() assumed that there is 
   # exactly one empty line at the end of each section that needs to be skipped)
-  list_of_sections_2 <- swmmr:::extract_sections(inp_lines, trim = "both") %>%
+  list_of_sections_2 <- extract_sections(inp_lines, trim = "both") %>%
     stats::setNames(tolower(names(.))) %>%
     `[`(lengths(.) > 0L)
 
