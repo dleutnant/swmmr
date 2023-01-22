@@ -1,8 +1,7 @@
 # add_class --------------------------------------------------------------------
 add_class <- function(x, cls)
 {
-  class(x) <- c(cls, class(x))
-  x
+  set_class(x, c(cls, class(x)))
 }
 
 # add_columns_if_missing -------------------------------------------------------
@@ -119,6 +118,13 @@ section_info <- function(key = NULL)
   }
   
   info[index, ]
+}
+
+# set_class --------------------------------------------------------------------
+set_class <- function(x, cls)
+{
+  class(x) <- cls
+  x
 }
 
 # skip_head --------------------------------------------------------------------

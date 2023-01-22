@@ -13,13 +13,10 @@ list_of_sections_to_inp <- function(
   subcatchment <- list_of_sections[["subcatchments"]]
   
   # ...further processing of entries in list_of_sections...
-  res <- list_of_sections %>%
-    # define classes
-    purrr::imap(function(.x, .y) {
-      class(.x) <- c(.y, class(.x))
-      return(.x)
-    }) %>%
-    # assign section parameters individually
+  result <- list_of_sections %>%
+    # Set class according to the name of the element in the list
+    purrr::imap(add_class) %>%
+    # Assign section parameters individually
     purrr::map(., ~ assign_parameters(
       .x, 
       infiltration, 
@@ -28,14 +25,22 @@ list_of_sections_to_inp <- function(
       conduit_material, 
       junction_parameters
     )) %>%
-    # reclass to tibbles for consistency
-    purrr::map( ~ {
-      class(.x) <- c("tbl_df", "tbl", "data.frame")
-      .x
-    })
+    # Reclass to tibbles for consistency
+    purrr::map( ~ set_class(.x, c("tbl_df", "tbl", "data.frame")))
   
   # adjust order of sections
-  section_order <-  c(
+  section_order <- get_section_order_for_input()
+  
+  result <- result[section_order[section_order %in% names(result)]]
+  
+  # assign class attribute
+  set_class(result, "inp")
+}
+
+# get_section_order_for_input ---------------------------------------------------
+get_section_order_for_input <- function()
+{
+  sections <- c(
     "title", 
     "options", 
     "evaporation", 
@@ -76,11 +81,16 @@ list_of_sections_to_inp <- function(
     "symbols", 
     "backdrop"
   )
+
+  # Instead: read section names from "sections.csv"  
+  info <- swmmr:::section_info()
+  info <- info[!is.na(info$input), ]
   
-  res <- res[section_order[section_order %in% names(res)]]
+  # Order section names by number in column "input" first
+  # and by the section name second
+  sections2 <- info$section[order(info$input, info$section)]
   
-  # assign class attribute
-  class(res) <- "inp"
+  stopifnot(identical(section2, tolower(sections)))
   
-  res
+  sections
 }
