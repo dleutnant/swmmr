@@ -27,20 +27,15 @@ autoplot.inp <- function(x, ...)
   p <- ggplot2::ggplot()
   
   # walk through the list
-  for (i in seq_along(sff)) {
+  for (name in names(sff)) {
+    
+    data <- sff[[name]]
     
     # create extra shape for raingages
-    p <- p + if ("raingages" != names(sff)[i]) {
-      
-      ggplot2::geom_sf(data = sff[[i]])
-      
+    p <- p + if (name == "raingages") {
+      ggplot2::geom_sf(data = data, shape = 10, show.legend = FALSE)
     } else {
-      
-      ggplot2::geom_sf(
-        data = sff[[i]],
-        shape = 10,
-        show.legend = FALSE
-      )
+      ggplot2::geom_sf(data = data)
     }
   }
   
