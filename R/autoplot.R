@@ -21,15 +21,15 @@ autoplot.inp <- function(x, ...)
   
   # create list with simple feature objects for
   # subcatchments, junctions, links and raingages
-  sff <- inp_to_sf(x)
+  simple_features <- inp_to_sf(x)
   
   # init ggplot obj
   p <- ggplot2::ggplot()
   
   # walk through the list
-  for (name in names(sff)) {
+  for (name in names(simple_features)) {
     
-    data <- sff[[name]]
+    data <- simple_features[[name]]
     
     # create extra shape for raingages
     p <- p + if (name == "raingages") {
