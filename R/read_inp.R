@@ -56,19 +56,17 @@ read_inp <- function(x, rm.comment = TRUE, ...)
   }
   
   # parse sections individually
-  res <- purrr::imap(
+  result <- purrr::imap(
     list_of_sections, 
     ~ section_to_tbl(.x, .y, rm.comment = rm.comment, options = options)
   ) %>% 
     # discard nulls (nulls are returned if section is not parsed)
     purrr::discard(is.null) %>% 
     # discard empty tibbles (sections were parsed but empty)
-    purrr::discard( ~ nrow(.) < 1)
+    purrr::discard( ~ nrow(.) < 1L)
   
   # assign class attribute
-  class(res) <- "inp"
-  
-  res
+  set_class(result, "inp")
 }
 
 # get_section_info -------------------------------------------------------------
