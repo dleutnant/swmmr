@@ -526,7 +526,9 @@ assign_parameters.curves <- function(
 )
 {
   # Delete duplicated type descriptions
-  x[duplicated(x$Type), 'Type'] <- ' '
+  is_duplicated <- duplicated(x[, c("Name", "Type")])
+  
+  x[["Type"]][is_duplicated] <- " "
   
   x
 }
