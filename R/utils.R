@@ -44,6 +44,12 @@ clean_warning <- function(...)
   invisible(NULL)
 }
 
+# comma_space_collapsed --------------------------------------------------------
+comma_space_collapsed <- function(x)
+{
+  paste(x, collapse = ", ")
+}
+
 # convert_to_type --------------------------------------------------------------
 convert_to_type <- function(x, type)
 {
@@ -83,6 +89,15 @@ replace_values <- function(x, from, to)
   x
 }
 
+# skip_head --------------------------------------------------------------------
+
+#' helper function skippting the first n rows of a data frame
+#' @keywords internal
+skip_head <- function(df, n)
+{
+  df[-seq_len(n), ]
+}
+
 # stop_on_bad_index ------------------------------------------------------------
 stop_on_bad_index <- function(index, choices)
 {
@@ -108,6 +123,12 @@ stop_formatted <- function(fmt, ...)
 system_file <- function(...)
 {
   system.file(..., package = "swmmr")
+}
+
+# warn_formatted ---------------------------------------------------------------
+warn_formatted <- function(fmt, ...)
+{
+  clean_warning(sprintf(fmt, ...))
 }
 
 #' Determine the OS

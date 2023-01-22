@@ -25,8 +25,6 @@ input_to_list_of_sections <- function(
     suppressMessages(readr::read_table2(file = file, col_names = col_names))
   }
   
-  comma_space_collapsed <- function(x) paste(x, collapse = ", ")
-  
   # check missing arguments, add default or generate error messages, in some
   # cases default values are added later...
   
