@@ -162,8 +162,8 @@ assign_parameters.polygons <- function(
     subcatchment_typologies = NULL, 
     conduit_material = NULL, 
     junction_parameters = NULL
-) {
-  
+)
+{
   y <- sf::st_coordinates(x$geometry) %>% 
     .[, c(1, 2, ncol(.))] %>% 
     tibble::as_tibble(.)
@@ -171,9 +171,8 @@ assign_parameters.polygons <- function(
   colnames(y) <- c("X", "Y", "index")
   
   x$index <- seq_along(x$Name)
-  z <- x[, c("index", "Name")]
-  
-  merge(z, y, by.x = "index", by.y = "index") %>% 
+
+  merge(x[, c("index", "Name")], y, by = "index") %>% 
     .[, c("Name", "X", "Y")]
 }
 
@@ -287,7 +286,7 @@ assign_parameters.junctions <- function(
     
     x <- if (! is.null(junction_parameters)) {
       
-      # Mrge with values defined in junction_parameters
+      # Merge with values defined in junction_parameters
       dplyr::full_join(x, junction_parameters, by = "Name")
       
     } else {
@@ -327,9 +326,7 @@ assign_parameters.coordinates <- function(
   x$index <- seq_along(x$Name)
   y$index <- seq_along(y$X)
   
-  z <- x[, c("index", "Name")]
-  
-  merge(z, y, by.x = "index", by.y = "index") %>% 
+  merge(x[, c("index", "Name")], y, by = "index") %>% 
     .[, c("Name", "X", "Y")]
 }
 
