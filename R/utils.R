@@ -175,6 +175,17 @@ stop_formatted <- function(fmt, ...)
   clean_stop(sprintf(fmt, ...))
 }
 
+# stop_if_out_of_range ---------------------------------------------------------
+stop_if_out_of_range <- function(x, a, b)
+{
+  if (x < a || x > b) {
+    stop_formatted(
+      "%s must be a value between %d and %d!",
+      deparse(substitute(x)), a, b
+    )
+  }
+}
+
 # system_file ------------------------------------------------------------------
 system_file <- function(...)
 {
