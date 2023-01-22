@@ -2,35 +2,38 @@
 #' @keywords internal
 section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL)
 {
-  # remove header lines 
+  # Remove header lines 
   x <- x[!startsWith(x, ";;")]
   
-  # remove comments
-  if (rm.comment) x <- x[!startsWith(x, ";")]
+  # Remove comments
+  if (rm.comment) {
+    x <- x[!startsWith(x, ";")]
+  }
   
-  # convert character vector to tibble
+  # Convert character vector to tibble
   # todo:
   #Calling `as_tibble()` on a vector is discouraged, 
   #because the behavior is likely to change in the future. 
   #Use `enframe(name = NULL)` instead.
   x <- tibble::as_tibble(x) %>% 
-    # remove empty lines
-    dplyr::filter(value != "")
-  
-  # add section as class to prepare generic parser
-  class(x) <- c(section_name, class(x))
+    # Remove empty lines
+    dplyr::filter(value != "") %>%
+    # Add section as class to prepare generic parser
+    add_class(section_name)
   
   # generic parser
-  if (section_name == "infiltration") {
-    x <- parse_section(x, inf_model = tolower(options$INFILTRATION))
+  x <- if (section_name == "infiltration") {
+    parse_section(x, inf_model = tolower(options$INFILTRATION))
   } else {
-    x <- parse_section(x)
+    parse_section(x)
   }
   
   # if a section is not parsed, we return NULL
-  if (is.null(x)) return(NULL)
-  
-  # remove dummy columns which names starts with *tab 
+  if (is.null(x)) {
+    return(NULL)
+  }
+
+  # remove dummy columns of which names start with *tab 
   x <- x[, !grepl("^tab", colnames(x))]
   
   # remove rows with NA's only
@@ -39,12 +42,8 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL)
   # make sure ID columns are of type character
   chr_cols <- c("Name", "Link", "Links", "Subcatchment", "Outlet",
                 "Node", "From Node", "To Node", "Gage", "Pump")
-  
-  for (chr_col in chr_cols) {
-    if (chr_col %in% colnames(x)) {
-      x <- dplyr::mutate_at(x, chr_col, as.character)
-    }
-  }
+
+  x[chr_cols] <- lapply(x[chr_cols], as.character)
   
   # trimws of character columns
   x <- dplyr::mutate_if(x, is.character, trimws)
@@ -93,13 +92,6 @@ separate_into <- function(
     fill = fill, 
     ...
   )
-}
-
-#' helper function skippting the first n rows of a data frame
-#' @keywords internal
-skip_head <- function(df, n)
-{
-  df[-seq_len(n), ]
 }
 
 # input sections ---------------------------------------------------------------

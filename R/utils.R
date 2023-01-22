@@ -1,3 +1,12 @@
+# add_class --------------------------------------------------------------------
+add_class <- function(x, cls)
+{
+  class(x) <- c(cls, class(x))
+  x
+}
+
+# add_columns_if_missing -------------------------------------------------------
+
 #' Add Columns With Default Values if Not in Data Frame
 #' @keywords internal
 add_columns_if_missing <- function(df, defaults, force = FALSE)
@@ -8,6 +17,8 @@ add_columns_if_missing <- function(df, defaults, force = FALSE)
   
   df
 }
+
+# add_column_if_missing --------------------------------------------------------
 
 #' Add Column With Default Value if Not in Data Frame
 #' @keywords internal
