@@ -40,8 +40,10 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL)
   x <- x[rowSums(is.na(x)) != ncol(x), ]
   
   # make sure ID columns are of type character
-  chr_cols <- c("Name", "Link", "Links", "Subcatchment", "Outlet",
-                "Node", "From Node", "To Node", "Gage", "Pump")
+  chr_cols <- intersect(names(x), c(
+    "Name", "Link", "Links", "Subcatchment", "Outlet", "Node", "From Node", 
+    "To Node", "Gage", "Pump"
+  ))
 
   x[chr_cols] <- lapply(x[chr_cols], as.character)
   
@@ -574,28 +576,28 @@ parse_section.element_count <- function(x, ...)
 #' @keywords internal
 parse_section.pollutant_summary <- function(x, ...)
 {
-  paste_general(x, "pollutant_summary", fill = "right")
+  parse_standard(x, "pollutant_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.landuse_summary <- function(x, ...)
 {
-  paste_general(x, "landuse_summary", fill = "right")
+  parse_standard(x, "landuse_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.raingage_summary <- function(x, ...)
 {
-  paste_general(x, "raingage_summary", fill = "right")
+  parse_standard(x, "raingage_summary", fill = "right")
 }
 
 #' import helper
 #' @keywords internal
 parse_section.subcatchment_summary <- function(x, ...)
 {
-  paste_general(x, "subcatchment_summary", fill = "right")
+  parse_standard(x, "subcatchment_summary", fill = "right")
 }
 
 #' import helper
@@ -872,7 +874,7 @@ parse_section.node_surcharge_summary <- function(x, ...)
 #' @keywords internal
 parse_section.flow_classification_summary <- function(x, ...)
 {
-  parse_standarad(x, "flow_classification_summary")
+  parse_standard(x, "flow_classification_summary")
 }
 
 #' import helper

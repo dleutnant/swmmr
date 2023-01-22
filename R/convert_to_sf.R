@@ -70,7 +70,7 @@ has_incomplete_features <- function(x, features, subject = features[1L])
   is_incomplete <- !all(is_there)
   
   if (is_incomplete) {
-    warning_formatted(
+    warn_formatted(
       "incomplete features: %s (missing: %s)", 
       subject, comma_space_collapsed(features[!is_there])
     )
@@ -179,9 +179,9 @@ subcatchments_to_sf <- function(x)
     )) %>% 
     # create polygon per subcatchment
     dplyr::mutate(geometry = purrr::map(
-      geometry, ~ data.matrix() %>% 
-        list() %>% 
-        sf::st_polygon()
+      geometry, ~ data.matrix(.) %>% 
+        list(.) %>% 
+        sf::st_polygon(.)
     )) %>% 
     # create geometry column
     dplyr::mutate(geometry = sf::st_sfc(geometry)) %>% 

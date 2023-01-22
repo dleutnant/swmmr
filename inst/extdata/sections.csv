@@ -26,7 +26,7 @@ input,loadings,loadings,0
 input,losses,losses,0
 input,map
 input,options,options,0
-input,orifices,pumps,0
+input,orifices,orifices,0
 input,outfalls
 input,outlets,outlets,0
 input,patterns,patterns,0
