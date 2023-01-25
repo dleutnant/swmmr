@@ -1,3 +1,43 @@
+#' Convert SWMM's .inp to .shp and txt files
+#'
+#' @param x An object of class inp.
+#' @param name Give a name for the current model, e.g. "Example1".
+#' @param path_out  Writeable directory name where to save the converted files.
+#' Folders: dat, shp and txt will be created if not existent. Default is the 
+#' current working directory of the R process.
+#' @param quiet if \code{TRUE} debug messages are suppressed, default: 
+#' \code{FALSE}
+#' @return .dat, .shp and/or .txt files.
+#' @rdname inp_to_files
+#' @export
+inp_to_files <- function(x, name, path_out = getwd(), quiet = FALSE)
+{
+  # Check class
+  stopifnot(inherits(x, "inp"))
+  
+  # Check name
+  if (is.null(name)) {
+    clean_stop("name is missing")
+  }
+  
+  # Check path_out
+  if (is.null(path_out)) {
+    clean_stop("path_out is missing")
+  }
+  
+  # Convert and save input sections to shape files
+  sections_to_shp(x, name, path_out, quiet = quiet)
+  
+  # Convert and save selection of input sections to txt files
+  options_to_txt(x, name, path_out, quiet = quiet)
+  
+  # Write curves to txt
+  curves_to_txt(x, name, path_out, quiet = quiet)
+  
+  # Convert timeseries to txt
+  timeseries_to_dat(x, name, path_out, quiet = quiet)
+}
+
 #' conversion helper
 #' @keywords internal
 sections_to_shp <- function(
@@ -316,44 +356,4 @@ timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
     
     msg(sprintf("timeseries.dat files were written to %s/dat", path_out))
   }
-}
-
-#' Convert SWMM's .inp to .shp and txt files
-#'
-#' @param x An object of class inp.
-#' @param name Give a name for the current model, e.g. "Example1".
-#' @param path_out  Writeable directory name where to save the converted files.
-#' Folders: dat, shp and txt will be created if not existent. Default is the 
-#' current working directory of the R process.
-#' @param quiet if \code{TRUE} debug messages are suppressed, default: 
-#' \code{FALSE}
-#' @return .dat, .shp and/or .txt files.
-#' @rdname inp_to_files
-#' @export
-inp_to_files <- function(x, name, path_out = getwd(), quiet = FALSE)
-{
-  # Check class
-  stopifnot(inherits(x, "inp"))
-  
-  # Check name
-  if (is.null(name)) {
-    clean_stop("name is missing")
-  }
-  
-  # Check path_out
-  if (is.null(path_out)) {
-    clean_stop("path_out is missing")
-  }
-  
-  # Convert and save input sections to shape files
-  sections_to_shp(x, name, path_out, quiet = quiet)
-  
-  # Convert and save selection of input sections to txt files
-  options_to_txt(x, name, path_out, quiet = quiet)
-  
-  # Write curves to txt
-  curves_to_txt(x, name, path_out, quiet = quiet)
-  
-  # Convert timeseries to txt
-  timeseries_to_dat(x, name, path_out, quiet = quiet)
 }
