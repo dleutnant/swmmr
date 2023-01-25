@@ -19,7 +19,7 @@ sections_to_shp <- function(
   msg <- function(...) if (!quiet) message(...)
   
   # Create new folder "shp" if it does not exist in path_out
-  shape_dir <- create_dir_if_required(file.path(path_out, "shp"))
+  path_shp <- create_dir_if_required(file.path(path_out, "shp"))
 
   # dleutnant: 
   # Maybe instead of writing each section individually, we might use something 
@@ -88,17 +88,16 @@ sections_to_shp <- function(
     # Convert section to sf if contained in x
     suppressMessages(sf::st_write(
       section_config$converter(x), 
-      dsn = file.path(
-        shape_dir, 
-        sprintf("%s_%s.shp", name, section_config$shape_name)
-      ), 
+      dsn = file.path(path_shp, sprintf(
+        "%s_%s.shp", name, section_config$shape_name
+      )), 
       delete_dsn = delete_dsn,
       quiet = quiet
     ))
   }
   
   msg(sprintf(
-    "%d *.shp files were written to %s", length(section_names), shape_dir
+    "%d *.shp files were written to %s", length(section_names), path_shp
   ))
 }
 
@@ -125,11 +124,10 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
     return()
   }
   
-  # ... check if txt folder exists in path_out otherwise create new directory
+  # Check if txt folder exists in path_out otherwise create new directory
   create_dir_if_required(file.path(path_out, "txt"))
   
-  # check sections and add sections in new format to list options_txt:
-  
+  # Check sections and add sections in new format to list options_txt
   options_txt <- list()
   
   if ("options" %in% names(x)) {
@@ -206,7 +204,7 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
       remove_na()
   }
   
-  # unlist and save txt file
+  # Save all options to a text file
   writeLines(
     unlist(options_txt), 
     con = file.path(path_out, "txt", paste0(name, "_options.txt"))
@@ -219,36 +217,39 @@ options_to_txt <- function(x, name, path_out, quiet = FALSE)
 #' @keywords internal
 curves_to_txt <- function(x, name, path_out, quiet = FALSE)
 {
-  # if implemented: convert curves to txt files
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
+  # If implemented: convert curves to txt files
   
-  # helper function
+  # Helper function
   msg <- function(...) if (!quiet) message(...)
   
+  # Check class
+  stopifnot(inherits(x, "inp"))
+  
+  # Check required elements
   if (!"curves" %in% names(x)) {
     msg("section curves is missing")
     return()
   }  
   
-  # ... check if txt folder exists in path_out otherwise create new directory
-  create_dir_if_required(file.path(path_out, "txt"))
+  # Check if txt folder exists in path_out otherwise create new directory
+  path_txt <- create_dir_if_required(file.path(path_out, "txt"))
   
-  # ...replace NA with the most recent non-NA prior it
+  # Replace NA with the most recent non-NA prior it
   x$curves <- zoo::na.locf(x$curves)
   
-  # ... split by curve name
+  # Split by curve name
   list_of_curves <- split(x$curves, x$curves$Name)
   
-  # write table for each curve
+  curve_names <- unlist(lapply(
+    lapply(list_of_curves, "[[", 1L), 
+    "[[", 1L
+  ))
+  
+  # Write table for each curve
   mapply(
     FUN = utils::write.table, 
     list_of_curves, 
-    file = file.path(path_out, "txt", sprintf(
-      "%s_%s.txt", 
-      name, 
-      unlist(lapply(lapply(list_of_curves, "[[", 1), "[[", 1))
-    )), 
+    file = file.path(path_txt, sprintf("%s_%s.txt", name, curve_names)), 
     sep = " ", 
     dec = ".", 
     col.names = FALSE, 
@@ -263,24 +264,26 @@ curves_to_txt <- function(x, name, path_out, quiet = FALSE)
 #' @keywords internal
 timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
 {
-  # if implemented: convert timeseries to dat files
+  # If implemented: convert timeseries to dat files
   
-  # check class and required elements
-  stopifnot(inherits(x, "inp"))
-  
-  # helper function
+  # Helper function
   msg <- function(...) if (!quiet) message(...)
   
+  # Check class
+  stopifnot(inherits(x, "inp"))
+
+  # Check required elements
   if (!"timeseries" %in% names(x)) {
     msg("section timeseries is missing")
     return()
   }
   
-  # ... check if txt folder exists in path_out otherwise create new directory
-  create_dir_if_required(file.path(path_out, "dat"))
+  # Check if txt folder exists in path_out, otherwise create new directory
+  path_dat <- create_dir_if_required(file.path(path_out, "dat"))
   
-  # ... convert section timeseries to swmm timeseries *.dat format
-  # seperate timeseries
+  # Convert section timeseries to swmm timeseries *.dat format
+  
+  # Separate timeseries
   series_names <- x$timeseries$Name
   starts <- which(!duplicated(series_names))
   
@@ -290,7 +293,7 @@ timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
     name = series_names[starts]
   )
   
-  # one *.dat file per timeseries
+  # One *.dat file per timeseries
   none_has_date <- all(is.na(x$timeseries$Date))
   all_have_date <- !anyNA(x$timeseries$Date)
   
@@ -301,7 +304,7 @@ timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
     mapply(
       FUN = function(start, end, ts) utils::write.table(
         x$timeseries[start:end, columns], 
-        file.path(path_out, "dat", paste0(name, "_timeseries_", ts, ".dat")),
+        file.path(path_dat, sprintf("%s_timeseries_%s.dat", name, ts)),
         row.names = FALSE, 
         col.names = FALSE, 
         quote = FALSE
@@ -329,28 +332,28 @@ timeseries_to_dat <- function(x, name, path_out, quiet = FALSE)
 #' @export
 inp_to_files <- function(x, name, path_out = getwd(), quiet = FALSE)
 {
-  # check class
+  # Check class
   stopifnot(inherits(x, "inp"))
   
-  # check name
+  # Check name
   if (is.null(name)) {
     clean_stop("name is missing")
   }
   
-  # check path_out
+  # Check path_out
   if (is.null(path_out)) {
     clean_stop("path_out is missing")
   }
   
-  # convert and save input sections to shape files
+  # Convert and save input sections to shape files
   sections_to_shp(x, name, path_out, quiet = quiet)
   
-  # convert and save selection of input sections to txt files
+  # Convert and save selection of input sections to txt files
   options_to_txt(x, name, path_out, quiet = quiet)
   
-  # write curves to txt
+  # Write curves to txt
   curves_to_txt(x, name, path_out, quiet = quiet)
   
-  # timeseries to txt
+  # Convert timeseries to txt
   timeseries_to_dat(x, name, path_out, quiet = quiet)
 }
