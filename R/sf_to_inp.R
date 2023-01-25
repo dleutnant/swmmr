@@ -73,7 +73,8 @@ sf_to_inp <- function(
   given <- function(x) !is.null(x)
   
   as_normalised_tibble <- function(x) {
-    compare_to_dictionary(sf = tibble::as_tibble(x))
+    tibble::as_tibble(x) %>%
+      rename_columns_using_dict(from = "org_swmm")
   }
   
   # Read spatial data
