@@ -1,40 +1,34 @@
 #' conversion helper
 #' @keywords internal
-sections_to_shp <- function(x, name, path_out, quiet = FALSE)
+sections_to_shp <- function(
+    x, name, path_out, quiet = FALSE, delete_dsn = FALSE
+)
 {
-  # ... convert inp to shp and save shape files
-  # ... if implemented: convert weirs (links), orifices (links), pumps (links)
-  #     and storages (point) to shape files
+  # Convert inp to shp and save shape files
+  #
+  # If implemented: convert the following objects to shape files
+  # - weirs (links), 
+  # - orifices (links), 
+  # - pumps (links), and 
+  # - storages (point) 
   
-  # check class
+  # Check class
   stopifnot(inherits(x, "inp"))
   
-  # helper function
+  # Helper function
   msg <- function(...) if (!quiet) message(...)
   
-  # ... check if shp folder exists in path_out otherwise create new directory
-  create_dir_if_required(file.path(path_out, "shp"))
+  # Create new folder "shp" if it does not exist in path_out
+  shape_dir <- file.path(path_out, "shp")
+  create_dir_if_required(shape_dir)
 
   # dleutnant: 
-  # There is currently an issue in writing sf objects on OS X which
-  # causes R to crash if the file to be written already exists.
-  # s. https://github.com/r-spatial/sf/issues/649
-  # This hack per default overwrites an existent file only on OS X 
-  # it is assumend that SWMM users are less likely OS X users... ;-(
-  
-  # update: 180413 issue is fixed in sf 0.6-1
-  # if (.get_os() == "darwin") {
-  #   warning("Data source is deleted before attempting to write.")
-  #   delete_dsn <- TRUE 
-  # } else {
-  #   delete_dsn <- FALSE
-  # }
-  delete_dsn <- FALSE
-  
-  # dleutnant: 
-  # maybe instead of writing each section individually, we might use sth:
+  # Maybe instead of writing each section individually, we might use something 
+  # like:
   # inp_to_sf(x) %>% 
-  #   purrr::iwalk(., ~ sf::st_write(.x, file.path(path_out, paste0("shp/", .y, "_.shp"))))
+  #   purrr::iwalk(., ~ sf::st_write(.x, file.path(
+  #     path_out, paste0("shp/", .y, "_.shp"))
+  #   ))
   
   # Configuration with:
   # - element names = section names
@@ -51,30 +45,37 @@ sections_to_shp <- function(x, name, path_out, quiet = FALSE)
     pumps = list(pumps = pumps_to_sf),
     storage = list(storages = storages_to_sf)
   )
-  
-  shape_dir <- file.path(path_out, "shp")
-  
-  for (section in names(config)) {
-    
-    if (!section %in% names(x)) {
-      msg(sprintf("section %s is missing", section))
-      next
-    }
-    
-    section_config <- config[[section]]
 
-    # ... convert section to sf if contained in x
+  section_names <- names(config)
+  is_missing <- !(section_names %in% names(x))
+  
+  if (any(is_missing)) {
+    msg(sprintf(
+      "Section '%s' is missing in the given input.", 
+      section_names[is_missing]
+    ))
+    section_names <- section_names[!is_missing]
+  }
+  
+  # Loop through the sections for which to write shape files
+  for (section_name in section_names) {
+    
+    section_config <- config[[section_name]]
+    converter <- section_config[[1L]]
+    shape_name <- names(section_config)[1L]
+
+    # Convert section to sf if contained in x
     suppressMessages(sf::st_write(
-      section_config[[1L]](x), 
-      dsn = file.path(shape_dir, paste0(
-        name, "_", names(section_config)[1L], ".shp"
-      )), 
+      converter(x), 
+      dsn = file.path(shape_dir, sprintf("%s_%s.shp", name, shape_name)), 
       delete_dsn = delete_dsn,
       quiet = quiet
     ))
   }
   
-  msg(sprintf("*.shp files were written to %s", shape_dir))
+  msg(sprintf(
+    "%d *.shp files were written to %s", length(shape_names), shape_dir
+  ))
 }
 
 #' conversion helper
