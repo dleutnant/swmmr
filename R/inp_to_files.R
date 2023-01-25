@@ -19,8 +19,7 @@ sections_to_shp <- function(
   msg <- function(...) if (!quiet) message(...)
   
   # Create new folder "shp" if it does not exist in path_out
-  shape_dir <- file.path(path_out, "shp")
-  create_dir_if_required(shape_dir)
+  shape_dir <- create_dir_if_required(file.path(path_out, "shp"))
 
   # dleutnant: 
   # Maybe instead of writing each section individually, we might use something 
