@@ -30,22 +30,46 @@ sections_to_shp <- function(
   #     path_out, paste0("shp/", .y, "_.shp"))
   #   ))
   
-  # Configuration with:
-  # - element names = section names
-  # - each element is a list with one named element:
-  #   - name = name of the shape file
-  #   - value = function that converts from section to shape
+  # Configure the creation of shape files with a list:
+  # - element names = names of inp sections for which to create shape files
+  # - each element is a list with two elements:
+  #   - "shape_name": base name of the shape file (without extension .shp)
+  #   - "converter": function to be used to create the shape file
   config <- list(
-    subcatchments = list(polygon = subcatchments_to_sf),
-    conduits = list(link = links_to_sf),
-    junctions = list(point = junctions_to_sf),
-    outfalls = list(outfall = outfalls_to_sf),
-    weirs = list(weir = weirs_to_sf),
-    orifices = list(orifices = orifices_to_sf),
-    pumps = list(pumps = pumps_to_sf),
-    storage = list(storages = storages_to_sf)
+    subcatchments = list(
+      shape_name = "polygon",
+      converter = subcatchments_to_sf
+    ),
+    conduits = list(
+      shape_name = "link",
+      converter = links_to_sf
+    ),
+    junctions = list(
+      shape_name = "point", 
+      converter = junctions_to_sf
+    ),
+    outfalls = list(
+      shape_name = "outfall", 
+      converter = outfalls_to_sf
+    ),
+    weirs = list(
+      shape_name = "weir", 
+      converter = weirs_to_sf
+    ),
+    orifices = list(
+      shape_name = "orifices", 
+      converter = orifices_to_sf
+    ),
+    pumps = list(
+      shape_name = "pumps", 
+      converter = pumps_to_sf
+    ),
+    storage = list(
+      shape_name = "storages", 
+      converter = storages_to_sf
+    )
   )
-
+  
   section_names <- names(config)
   is_missing <- !(section_names %in% names(x))
   
@@ -61,13 +85,14 @@ sections_to_shp <- function(
   for (section_name in section_names) {
     
     section_config <- config[[section_name]]
-    converter <- section_config[[1L]]
-    shape_name <- names(section_config)[1L]
 
     # Convert section to sf if contained in x
     suppressMessages(sf::st_write(
-      converter(x), 
-      dsn = file.path(shape_dir, sprintf("%s_%s.shp", name, shape_name)), 
+      section_config$converter(x), 
+      dsn = file.path(
+        shape_dir, 
+        sprintf("%s_%s.shp", name, section_config$shape_name)
+      ), 
       delete_dsn = delete_dsn,
       quiet = quiet
     ))
