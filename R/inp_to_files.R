@@ -99,7 +99,7 @@ sections_to_shp <- function(
   }
   
   msg(sprintf(
-    "%d *.shp files were written to %s", length(shape_names), shape_dir
+    "%d *.shp files were written to %s", length(section_names), shape_dir
   ))
 }
 
