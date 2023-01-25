@@ -364,7 +364,7 @@ stop_if_shape_does_not_include <- function(
 # warn_if_not_defined ----------------------------------------------------------
 warn_if_not_defined <- function(required, data, ...)
 {
-  if (!all(required %in% colnames(subcatchment))) {
+  if (!all(required %in% colnames(data))) {
     clean_warning(...)
   }
 }
