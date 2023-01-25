@@ -64,6 +64,9 @@ create_dir_if_required <- function(path, silent = TRUE)
     }
     dir.create(path)
   }
+  
+  # Return the path
+  path
 }
 
 # get_column_dictionary --------------------------------------------------------
