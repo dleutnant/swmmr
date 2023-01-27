@@ -1,16 +1,25 @@
 # create_temp_directories ------------------------------------------------------
-create_temp_directories <- function(n)
+create_temp_directories <- function(
+    names = sprintf("dir_%d_", seq_len(n)), 
+    n = 1L
+)
 {
-  paths <- create_temp_paths(n)
-  purrr::walk(paths, ~ dir.create(path = .))
+  paths <- get_temp_paths(names, n)
+  
+  for (path in paths) {
+    dir.create(path)
+  }
+  
   paths
 }
 
-# create_temp_paths ------------------------------------------------------------
+# get_temp_paths ---------------------------------------------------------------
 #' @importFrom purrr walk
-create_temp_paths <- function(n)
+get_temp_paths <- function(names = sprintf("file_%d_", seq_len(n)), n = 1L)
 {
-  purrr::map(seq_len(n), ~ tempfile())
+  if (length(names) > 0L) {
+    sapply(names, tempfile)
+  }
 }
 
 # example_input_files ----------------------------------------------------------
