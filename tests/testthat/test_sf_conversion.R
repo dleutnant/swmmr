@@ -36,7 +36,7 @@ testthat::test_that("testing sf to inp conversion", {
   ))
   
   # helper function
-  path_or_null <- function(...) swmmr:::existing_path_or_null(file.path(...))
+  path_or_null <- swmmr:::existing_path_or_null
   
   # write all inputs into one list
   all_inputs <- list(

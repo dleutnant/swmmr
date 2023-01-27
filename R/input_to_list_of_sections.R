@@ -1,4 +1,4 @@
-#' Reads input data and checks data for completeness, returns a list_of_sections
+#' Reads input data and checks data for completeness, returns a list of sections
 #' which can be processed further.
 #'
 #' @keywords internal 
@@ -24,7 +24,7 @@ input_to_list_of_sections <- function(
   silently_read <- function(file, col_names) {
     suppressMessages(readr::read_table2(file = file, col_names = col_names))
   }
-  
+
   # Check for missing arguments, add default or generate error messages. 
   # In some cases default values are added later.
   
@@ -32,17 +32,17 @@ input_to_list_of_sections <- function(
   default_sections <- c("options", "report", "evaporation")
   
   # If options are not available, add default values for sections 
-  list_of_sections <- if (is.null(path_options)) {
+  result <- if (given(path_options)) {
     
-    clean_warning("Options are missing, default values are taken.")
-    lapply(get_column_defaults()[default_sections], tibble::as_tibble)
+    read_list_of_sections(path_options)
     
   } else {
     
-    read_list_of_sections(path_options)
+    clean_warning("Options are missing, default values are taken.")
+    lapply(get_column_defaults()[default_sections], tibble::as_tibble)
   }
   
-  if (!is.null(subcatchment)) {
+  if (given(subcatchment)) {
     
     # Check subcatchment for completeness and read supplementary information for
     # subcatchments (subcatchment_typologies and infiltration)
@@ -50,8 +50,8 @@ input_to_list_of_sections <- function(
     # Special case which should only occur if an inp has been exported using
     # swmmr. In this case Area_subcatchment is Ar_sbct and Area_LID_usage is
     # Ar_ld_s. Function was required to allow automatic tests with Example4.inp.
-    colnames(subcatchment) <- replace_values(
-      x = colnames(subcatchment), 
+    names(subcatchment) <- replace_values(
+      x = names(subcatchment), 
       from = c("Ar_sbct", "Area.subcatchment"),
       to = c("Area", "Area")
     )
@@ -63,20 +63,20 @@ input_to_list_of_sections <- function(
       shape = "polygon",
       "For optional column names check the documentation."
     )
-    
-    list_of_sections[['subcatchments']]  <- subcatchment
-    list_of_sections[['subareas']] <- subcatchment
-    list_of_sections[['polygons']] <- subcatchment
+
+    result[['subcatchments']]  <- subcatchment
+    result[['subareas']] <- subcatchment
+    result[['polygons']] <- subcatchment
     
     # Check infiltration model
-    infiltration_model <- list_of_sections$options$INFILTRATION
+    infiltration_model <- result$options$INFILTRATION
     
     is_horton <- infiltration_model %in% c("Horton", "HORTON")
     is_green_ampt <- infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")
     
     if (is_horton || is_green_ampt) {
       
-      list_of_sections[['infiltration']] <- list(
+      result[['infiltration']] <- list(
         ifelse(is_horton, "Horton", "Green_Ampt"), 
         subcatchment
       )
@@ -89,7 +89,15 @@ input_to_list_of_sections <- function(
     }
     
     # Check for infiltration parameters
-    if (is.null(infiltration)) {
+    if (given(infiltration)) {
+      
+      stop_if_column_not_in_shape(
+        column = "Soil", 
+        data = subcatchment, 
+        shape = "polygon"
+      )
+      
+    } else {
       
       if (is_horton || is_green_ampt) {
         
@@ -105,14 +113,19 @@ input_to_list_of_sections <- function(
           "are not defined, infiltration default values are taken."
         )
       }
-      
-    } else {
-      
-      stop_if_column_not_in_shape("Soil", subcatchment, "polygon")
     }
     
     # Check for optional subcatchment_typologies
-    if (is.null(subcatchment_typologies)) {
+    if (given(subcatchment_typologies)) {
+      
+      stop_if_column_not_in_shape(
+        column = "Type", 
+        data = subcatchment, 
+        shape = "polygon"
+      )
+      
+    } else {
+      
       warn_if_not_defined_check(
         required = c(
           "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero", "RouteTo", 
@@ -125,17 +138,9 @@ input_to_list_of_sections <- function(
         sections = "subcatchment and subareas"
       )
     }
-    
-    if (!(is.null(subcatchment_typologies))) {
-      stop_if_column_not_in_shape(
-        column = "Type", 
-        data = subcatchment, 
-        shape = "polygon"
-      )
-    }
   }
   
-  if (!is.null(junctions)) {
+  if (given(junctions)) {
     
     # Check column names for the junction point shape
     stop_if_shape_does_not_include(
@@ -146,11 +151,11 @@ input_to_list_of_sections <- function(
     )
     
     if (any(c("Top", "Ymax") %in% colnames(junctions))) {
-      list_of_sections[["junctions"]] <- junctions
-      list_of_sections[["coordinates"]] <- junctions[, c("Name", "geometry")]
+      result[["junctions"]] <- junctions
+      result <- set_or_add_coords(result, junctions)
     }
     
-    if (is.null(junction_parameters)) {
+    if (!given(junction_parameters)) {
       
       warn_if_not_defined_check(
         required = c("Y", "Ysur", "Apond"),
@@ -162,7 +167,7 @@ input_to_list_of_sections <- function(
     }
   }
   
-  if (!is.null(outfalls)) {
+  if (given(outfalls)) {
     
     # Check the outfall point shape for completeness
     stop_if_shape_does_not_include(
@@ -171,98 +176,76 @@ input_to_list_of_sections <- function(
       shape = "outfall point"
     )
     
-    list_of_sections[["outfalls"]] <- outfalls
-    
-    list_of_sections[["coordinates"]] <- rbind(
-      list_of_sections[["coordinates"]], 
-      outfalls[, c("Name", "geometry")]
-    )
+    result[["outfalls"]] <- outfalls
+    result <- set_or_add_coords(x = result, data = outfalls)
   }
   
   # Checking, reading or adding default values for optional function arguments
   
   # Timeseries
-  if (is.null(path_timeseries)) {
+  result[["timeseries"]] <- if (given(path_timeseries)) {
+
+    # Add path to timeseries file
+    name_RG <- gsub("TIMESERIES ", "", result[["raingages"]]$Source)
+    paste0(name_RG, " ", "FILE ", path_timeseries)
+    
+  } else {
     
     clean_warning(
       "Define path to timeseries file including filename and ending, ", 
       "otherwise default values are taken."
     )
     
-    list_of_sections[["timeseries"]] <- tibble::tibble(
+    tibble::tibble(
       Name = "default_rain",
       date = " ",
       time_min = 1,
       rain_mm = 1
     )
-    
-  } else {
-    
-    # Add path to timeseries file
-    name_RG <- gsub("TIMESERIES ", "", list_of_sections[["raingages"]]$Source)
-    
-    list_of_sections[["timeseries"]] <- paste0(
-      name_RG, " ", "FILE ", path_timeseries
-    )
   }
   
-  # Add pumps section to list_of_sections if path_pump or pumps_sf exists
-  if (!is.null(pumps)) {
-    list_of_sections[["pumps"]] <- pumps
+  # Add pumps section to result if path_pump or pumps_sf exists
+  if (given(pumps)) {
+    result[["pumps"]] <- pumps
   }
   
   # Add table of pump curves
-  if (!is.null(path_pump_curve)) {
-    list_of_sections[["curves"]] <- silently_read(
+  if (given(path_pump_curve)) {
+    
+    result[["curves"]] <- silently_read(
       file = path_pump_curve, 
       col_names = c("Name", "Type", "X", "Y")
     )
   }
   
-  # Add weirs section to list_of_sections if path_weirs or weirs_sf exists
-  if (!is.null(weirs)) {
-    list_of_sections[["weirs"]] <- weirs
+  # Add weirs section to result if path_weirs or weirs_sf exists
+  if (given(weirs)) {
+    result[["weirs"]] <- weirs
   }
   
-  # Add storages and coordinates section to list_of_sections if path_storage
+  # Add storages and coordinates section to result if path_storage
   # or storage_sf exists
-  if (!is.null(storage)) {
+  if (given(storage)) {
     
-    list_of_sections[["storage"]] <- storage
-    
-    list_of_sections[["coordinates"]] <- rbind(
-      list_of_sections[["coordinates"]], 
-      storage[, c("Name", "geometry")]
-    )
+    result[["storage"]] <- storage
+    result <- set_or_add_coords(x = result, data = storage)
   }
   
   # Add storage curve
-  if (!is.null(path_storage_curve)) {
+  if (given(path_storage_curve)) {
     
-    if ("curves" %in% names(list_of_sections)) {
-      
-      # Add table of storage curves to existing curve table
-      storage_curves <- silently_read(
+    # Add table of storage curves to existing curve table or as a new list entry
+    result <- set_or_add_to_section(
+      x = result, 
+      section = "curves", 
+      data = silently_read(
         file = path_storage_curve, 
         col_names = c("Name", "Type", "X", "Y")
       )
-      
-      list_of_sections[["curves"]] <- rbind(
-        list_of_sections[["curves"]], 
-        storage_curves
-      )
-      
-    } else {
-      
-      # Add table of storage curves to a new list entry
-      list_of_sections[["curves"]] <- silently_read(
-        file = path_storage_curve, 
-        col_names = c("Name", "Type", "X", "Y")
-      )
-    }
+    )
   }
   
-  if (!is.null(conduits)) {
+  if (given(conduits)) {
     
     # Check column names for the conduit line shape
     stop_if_shape_does_not_include(
@@ -273,11 +256,15 @@ input_to_list_of_sections <- function(
       shape = "line"
     )
     
-    list_of_sections[["conduits"]] <- conduits
-    list_of_sections[["xsections"]] <- conduits
+    result[["conduits"]] <- conduits
+    result[["xsections"]] <- conduits
     
     # Check for material properties
-    if (is.null(conduit_material)) {
+    if (given(conduit_material)) {
+      
+      stop_if_column_not_in_shape("Material", conduits, "line")
+      
+    } else {
       
       warn_if_not_defined_check(
         required = "Roughness",
@@ -286,14 +273,10 @@ input_to_list_of_sections <- function(
         shape = "line",
         sections = "conduits"
       )
-      
-    } else {
-      
-      stop_if_column_not_in_shape("Material", conduits, "line")
     }
   }
   
-  list_of_sections
+  result
 }
 
 # read_list_of_sections --------------------------------------------------------
@@ -335,6 +318,28 @@ read_list_of_sections <- function(path_options)
     
     result
   })
+}
+
+# set_or_add_coords ------------------------------------------------------------
+set_or_add_coords <- function(x, data)
+{
+  set_or_add_to_section(
+    x = x, 
+    section = "coordinates", 
+    data = data[, c("Name", "geometry")]
+  )
+}
+
+# set_or_add_to_section --------------------------------------------------------
+set_or_add_to_section <- function(x, section, data)
+{
+  x[[section]] <- if (section %in% names(x)) {
+    rbind(x[[section]], data)
+  } else {
+    data
+  }
+  
+  x
 }
 
 # stop_if_shape_does_not_include -----------------------------------------------

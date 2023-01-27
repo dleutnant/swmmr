@@ -5,11 +5,11 @@ get_column_defaults <- function()
   # Read default data from csv file
   defaults_data <- read.csv(system_file("extdata/defaults.csv"))
 
+  # Vector of section names, as a factor
+  f <- factor(defaults_data$section, levels = unique(defaults_data$section))
+  
   # Split data into subsets each of which refers to a section
-  defaults_list <- split(
-    x = defaults_data, 
-    f = factor(defaults_data$section, levels = unique(defaults_data$section))
-  )
+  defaults_list <- split(defaults_data, f = f)
   
   # Convert default values to given types
   lapply(defaults_list, function(defaults) {

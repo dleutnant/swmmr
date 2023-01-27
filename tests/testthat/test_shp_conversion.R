@@ -1,4 +1,4 @@
-#source("./tests/testthat.R")
+#library(testthat)
 #source("./tests/testthat/helpers.R")
 #source("./R/test-helpers.R")
 
@@ -9,13 +9,13 @@ testthat::test_that("testing shp to inp conversion", {
   testthat::skip_on_travis()
   
   # read models from example input files
-  inp_obj <- swmmr:::read_example_input_files()
+  inp_objects <- swmmr:::read_example_input_files()
   
   # provide the corresponding (base) file names
-  inp_names <- names(inp_obj)
+  inp_names <- names(inp_objects)
   
   # get name and nelements per inp
-  summaries_orig <- inp_obj %>% 
+  summaries_orig <- inp_objects %>% 
     purrr::map( ~ data.frame(
       section = names(.x), 
       elements = purrr::map_int(.x, nrow), 
@@ -24,19 +24,21 @@ testthat::test_that("testing shp to inp conversion", {
     ))
   
   # export models to temp dir
-  #lapply(temp_files, unlink, recursive = TRUE) # Remove exsiting folders!
-  temp_files <- create_temp_directories(n = length(inp_obj))
+  #lapply(temp_files, unlink, recursive = TRUE) # Remove existing folders!
+  temp_files <- create_temp_directories(inp_names)
   
   # inp to files
   suppressWarnings(purrr::pwalk(
-    list(x = inp_obj, name = inp_names, path_out = temp_files),
+    list(x = inp_objects, name = inp_names, path_out = temp_files),
     function(x, name, path_out) {
       swmmr::inp_to_files(x, name, path_out, quiet = TRUE)
     }
   ))
   
+  #kwb.utils::hsOpenWindowsExplorer(tempdir())
+
   # helper function
-  path_or_null <- function(...) swmmr:::existing_path_or_null(file.path(...))
+  path_or_null <- swmmr:::existing_path_or_null
   
   # shp_to_inp
   suppressWarnings(inp_converted <- purrr::map2(
