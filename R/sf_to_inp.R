@@ -70,8 +70,6 @@ sf_to_inp <- function(
 )
 {
   # Helper functions
-  given <- function(x) !is.null(x)
-  
   as_normalised_tibble <- function(x) {
     tibble::as_tibble(x) %>%
       rename_columns_using_dict(from = "org_swmm")
