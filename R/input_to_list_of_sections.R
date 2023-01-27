@@ -69,7 +69,7 @@ input_to_list_of_sections <- function(
     result[['polygons']] <- subcatchment
     
     # Check infiltration model
-    infiltration_model <- list_of_sections$options$INFILTRATION
+    infiltration_model <- result$options$INFILTRATION
     
     is_horton <- infiltration_model %in% c("Horton", "HORTON")
     is_green_ampt <- infiltration_model %in% c("Green_Ampt", "GREEN_AMPT")
