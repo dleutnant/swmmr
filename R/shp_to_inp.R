@@ -77,9 +77,9 @@ shp_to_inp <- function(
     path %>%
       sf::st_read(stringsAsFactors = FALSE, quiet = quiet) %>% 
       tibble::as_tibble() %>% 
-      compare_to_dictionary(shp = .)
+      rename_columns_using_dict(df = ., from = "shp_abb")
   }
-
+  
   # Read spatial data
 
   # Check if polygon shape is available, return error message or read shape:

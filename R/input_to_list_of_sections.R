@@ -21,24 +21,21 @@ input_to_list_of_sections <- function(
 )
 {
   # Define helper functions
-  silently_read_table <- function(file, col_names) {
+  silently_read <- function(file, col_names) {
     suppressMessages(readr::read_table2(file = file, col_names = col_names))
   }
   
-  # check missing arguments, add default or generate error messages, in some
-  # cases default values are added later...
+  # Check for missing arguments, add default or generate error messages. 
+  # In some cases default values are added later.
   
-  # if options are not available, add default values for sections "options",
-  # "report", "evaporation"
+  # Define sections for which to use defaults if options are not available
+  default_sections <- c("options", "report", "evaporation")
   
+  # If options are not available, add default values for sections 
   list_of_sections <- if (is.null(path_options)) {
     
     clean_warning("Options are missing, default values are taken.")
-
-    lapply(
-      X = get_column_defaults()[c("options", "report", "evaporation")],
-      FUN = tibble::as_tibble
-    )
+    lapply(get_column_defaults()[default_sections], tibble::as_tibble)
     
   } else {
     
@@ -47,35 +44,31 @@ input_to_list_of_sections <- function(
   
   if (!is.null(subcatchment)) {
     
-    # check subcatchment for completeness and read supplementary information for
-    # subcatchments (subcatchment_typologies and infiltration):
+    # Check subcatchment for completeness and read supplementary information for
+    # subcatchments (subcatchment_typologies and infiltration)
     
-    # special case which should only occur if an inp has been exported using
-    # swmmr. in this case Area_subcatchment is Ar_sbct and Area_LID_usage is
+    # Special case which should only occur if an inp has been exported using
+    # swmmr. In this case Area_subcatchment is Ar_sbct and Area_LID_usage is
     # Ar_ld_s. Function was required to allow automatic tests with Example4.inp.
-    #subcatchment <- data.frame(Ar_sbct = 1, b = 2, Area.subcatchment = 3)
     colnames(subcatchment) <- replace_values(
       x = colnames(subcatchment), 
       from = c("Ar_sbct", "Area.subcatchment"),
       to = c("Area", "Area")
     )
     
-    # check the structure of polygon file:
-    required <- c("Name", "Outlet", "Area", "RouteTo")
-    
-    if (!all(required %in% colnames(subcatchment))) {
-      stop_formatted(
-        "The polygon shape has to include at least these columns: %s. %s", 
-        comma_space_collapsed(required), 
-        "For optional column names check the documentation."
-      )
-    }
+    # Check the structure of polygon file
+    stop_if_shape_does_not_include(
+      required = c("Name", "Outlet", "Area", "RouteTo"),
+      data = subcatchment,
+      shape = "polygon",
+      "For optional column names check the documentation."
+    )
     
     list_of_sections[['subcatchments']]  <- subcatchment
     list_of_sections[['subareas']] <- subcatchment
     list_of_sections[['polygons']] <- subcatchment
     
-    # check infiltration model
+    # Check infiltration model
     infiltration_model <- list_of_sections$options$INFILTRATION
     
     is_horton <- infiltration_model %in% c("Horton", "HORTON")
@@ -95,72 +88,62 @@ input_to_list_of_sections <- function(
       )
     }
     
-    # ... infiltration parameter
+    # Check for infiltration parameters
     if (is.null(infiltration)) {
       
       if (is_horton || is_green_ampt) {
         
-        required <- if (is_horton) {
-          c("MaxRate", "MinRate", "Decay", "DryTime", "MaxInfl")
-        } else {
-          c("Suction", "HydCon", "IMDmax")
-        }
-        
-        if (!all(required %in% colnames(subcatchment))) {
-          clean_warning(
-            "All or some ", ifelse(is_horton, "Horton", "Green_Ampt"), 
-            " infiltration parameters are not defined, ", 
-            "infiltration default values are taken."
-          )
-        }
+        warn_if_not_defined(
+          required = if (is_horton) {
+            c("MaxRate", "MinRate", "Decay", "DryTime", "MaxInfl")
+          } else {
+            c("Suction", "HydCon", "IMDmax")
+          }, 
+          subcatchment, 
+          "All or some ", ifelse(is_horton, "Horton", "Green_Ampt"), 
+          " infiltration parameters ", 
+          "are not defined, infiltration default values are taken."
+        )
       }
       
     } else {
       
-      if (!("Soil" %in% colnames(subcatchment))) {
-        clean_stop("column Soil is missing in polygon shape")
-      }
+      stop_if_column_not_in_shape("Soil", subcatchment, "polygon")
     }
     
-    # ... check for optional subcatchment_typologies:
+    # Check for optional subcatchment_typologies
     if (is.null(subcatchment_typologies)) {
-      
-      required <- c(
-        "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero", "RouteTo", 
-        "PctRouted", "Rain_Gage", "CurbLen", "Snowpack", "PercImperv", "Slope", 
-        "Width"
+      warn_if_not_defined_check(
+        required = c(
+          "N_Imperv", "N_Perv", "S_Imperv", "S_Perv", "Pct_Zero", "RouteTo", 
+          "PctRouted", "Rain_Gage", "CurbLen", "Snowpack", "PercImperv", 
+          "Slope", "Width"
+        ),
+        data = subcatchment,
+        where = "polygon.shp or Subcatchment_typologies",
+        shape = "polygon", 
+        sections = "subcatchment and subareas"
       )
-      
-      if (!all(required %in% colnames(subcatchment))) {
-        
-        clean_warning(
-          comma_space_collapsed(required), 
-          "are not all defined in polygon.shp or Subcatchment_typologies. ", 
-          "Check polygon shape for completeness, otherwise missing parameters ", 
-          "in the sections subcatchment and subareas will be filled with ", 
-          "default values."
-        )
-      }
     }
     
     if (!(is.null(subcatchment_typologies))) {
-      
-      if (!("Type" %in% colnames(subcatchment))) {
-        clean_stop("column Type is missing in polygon shape")
-      }
+      stop_if_column_not_in_shape(
+        column = "Type", 
+        data = subcatchment, 
+        shape = "polygon"
+      )
     }
   }
   
   if (!is.null(junctions)) {
     
-    # ... and for the junction point shape:
-    # check column names:
-    if (!all(c("Name", "Bottom") %in% colnames(junctions))) {
-      clean_stop(
-        "The point shape has to include at least these columns: ", 
-        "Name, Bottom and Top or Ymax."
-      )
-    }
+    # Check column names for the junction point shape
+    stop_if_shape_does_not_include(
+      required = c("Name", "Bottom"), 
+      data = junctions, 
+      shape = "point", 
+      extra = " and Top or Ymax"
+    )
     
     if (any(c("Top", "Ymax") %in% colnames(junctions))) {
       list_of_sections[["junctions"]] <- junctions
@@ -169,31 +152,24 @@ input_to_list_of_sections <- function(
     
     if (is.null(junction_parameters)) {
       
-      required <- c("Y", "Ysur", "Apond")
-      
-      if (!all(required %in% colnames(junctions))) {
-        clean_warning(
-          "Not all of ", comma_space_collapsed(required), 
-          "are defined in point.shp (or point_sf) or junction_parameters. ", 
-          "Check point shape for completeness otherwise ", 
-          "missing parameters in the section junctions will be filled with ", 
-          "default values."
-        )
-      }
+      warn_if_not_defined_check(
+        required = c("Y", "Ysur", "Apond"),
+        data = junctions,
+        where = "point.shp (or point_sf) or junction_parameters", 
+        shape = "point", 
+        sections = "junctions"
+      )
     }
   }
   
   if (!is.null(outfalls)) {
     
-    # ... also do it for the outfall point shape: check for completeness
-    required <- c("Name", "Bottom", "Type")
-    
-    if (!all(required %in% colnames(outfalls))) {
-      stop_formatted(
-        "The outfall point shape has to include at least these columns: %s.", 
-        comma_space_collapsed(required)
-      )
-    }
+    # Check the outfall point shape for completeness
+    stop_if_shape_does_not_include(
+      required = c("Name", "Bottom", "Type"), 
+      data =  outfalls, 
+      shape = "outfall point"
+    )
     
     list_of_sections[["outfalls"]] <- outfalls
     
@@ -203,9 +179,9 @@ input_to_list_of_sections <- function(
     )
   }
   
-  # checking, reading or adding default values for optional function arguments:
+  # Checking, reading or adding default values for optional function arguments
   
-  # ... timeseries
+  # Timeseries
   if (is.null(path_timeseries)) {
     
     clean_warning(
@@ -222,7 +198,7 @@ input_to_list_of_sections <- function(
     
   } else {
     
-    # add path to timeseries file
+    # Add path to timeseries file
     name_RG <- gsub("TIMESERIES ", "", list_of_sections[["raingages"]]$Source)
     
     list_of_sections[["timeseries"]] <- paste0(
@@ -230,31 +206,28 @@ input_to_list_of_sections <- function(
     )
   }
   
-  # ...add Pumps section if path_pump or pumps_sf exists
+  # Add pumps section to list_of_sections if path_pump or pumps_sf exists
   if (!is.null(pumps)) {
-    # add a section to list_of_sections
     list_of_sections[["pumps"]] <- pumps
   }
   
-  # ... add pump curve
+  # Add table of pump curves
   if (!is.null(path_pump_curve)) {
-    # add table of pump curves
-    list_of_sections[["curves"]] <- silently_read_table(
+    list_of_sections[["curves"]] <- silently_read(
       file = path_pump_curve, 
       col_names = c("Name", "Type", "X", "Y")
     )
   }
   
-  # ...add weirs if path_weirs or weirs_sf exists
+  # Add weirs section to list_of_sections if path_weirs or weirs_sf exists
   if (!is.null(weirs)) {
-    # add section to list_of_sections
     list_of_sections[["weirs"]] <- weirs
   }
   
-  # ...add storages if path_storage or storage_sf exists
-  if (!is.null(storage)){
+  # Add storages and coordinates section to list_of_sections if path_storage
+  # or storage_sf exists
+  if (!is.null(storage)) {
     
-    # add section
     list_of_sections[["storage"]] <- storage
     
     list_of_sections[["coordinates"]] <- rbind(
@@ -263,13 +236,13 @@ input_to_list_of_sections <- function(
     )
   }
   
-  # ... add storage curve
+  # Add storage curve
   if (!is.null(path_storage_curve)) {
     
     if ("curves" %in% names(list_of_sections)) {
       
-      # add table of storage curves to existing curve table
-      storage_curves <- silently_read_table(
+      # Add table of storage curves to existing curve table
+      storage_curves <- silently_read(
         file = path_storage_curve, 
         col_names = c("Name", "Type", "X", "Y")
       )
@@ -281,8 +254,8 @@ input_to_list_of_sections <- function(
       
     } else {
       
-      # add table of storage curves to a new list entry
-      list_of_sections[["curves"]] <- silently_read_table(
+      # Add table of storage curves to a new list entry
+      list_of_sections[["curves"]] <- silently_read(
         file = path_storage_curve, 
         col_names = c("Name", "Type", "X", "Y")
       )
@@ -291,37 +264,32 @@ input_to_list_of_sections <- function(
   
   if (!is.null(conduits)) {
     
-    # ... do the same for the conduit line shape: check column names
-    required <- c(
-      "Name", "Length", "Shape", "FromNode", "ToNode", "OutOffset", "Geom1"
+    # Check column names for the conduit line shape
+    stop_if_shape_does_not_include(
+      required = c(
+        "Name", "Length", "Shape", "FromNode", "ToNode", "OutOffset", "Geom1"
+      ), 
+      data =  conduits,
+      shape = "line"
     )
-    
-    if (!all(required %in% colnames(conduits))) {
-      stop_formatted(
-        "The line shape has to include at least these columns: %s.",
-        comma_space_collapsed(required)
-      )
-    }
     
     list_of_sections[["conduits"]] <- conduits
     list_of_sections[["xsections"]] <- conduits
     
-    # ...check for material properties:
+    # Check for material properties
     if (is.null(conduit_material)) {
       
-      if (!("Roughness" %in% colnames(conduits))) {
-        clean_warning(
-          "Roughness is not defined in line shape or Conduit_material. ", 
-          "Check line shape for completeness otherwise missing parameters in ", 
-          "the sections conduits will be filled with default values."
-        )
-      }
+      warn_if_not_defined_check(
+        required = "Roughness",
+        data = conduits,
+        where = "line shape or Conduit_material", 
+        shape = "line",
+        sections = "conduits"
+      )
       
     } else {
       
-      if (!("Material" %in% colnames(conduits))) {
-        clean_stop("column Material is missing in line shape")
-      }
+      stop_if_column_not_in_shape("Material", conduits, "line")
     }
   }
   
@@ -342,7 +310,7 @@ read_list_of_sections <- function(path_options)
   
   # Process each section: make a tibble and transpose it
   lapply(text_blocks, function(text_block) {
-
+    
     #text_block <- text_blocks[[1L]]
     
     # Create tibble    
@@ -358,7 +326,7 @@ read_list_of_sections <- function(path_options)
       tidyr::gather(Variable, Value) %>%
       tidyr::spread(names(.)[1], "Value") %>%
       .[, cols]
-
+    
     # Separate rows with multiple entries (e.g. in pollution section)
     if (any(grepl("\t", result))) {
       result <- result %>%
@@ -367,4 +335,74 @@ read_list_of_sections <- function(path_options)
     
     result
   })
+}
+
+# stop_if_shape_does_not_include -----------------------------------------------
+stop_if_shape_does_not_include <- function(
+    required, data, shape, ..., extra = NULL
+)
+{
+  is_available <- required %in% colnames(data)
+  
+  if (!all(is_available)) {
+    
+    main_message <- sprintf(
+      paste0(
+        "The %s shape has to include at least these columns:\n  %s%s.\n",
+        "Missing column(s):\n  %s."
+      ),
+      shape,
+      comma_space_collapsed(required), 
+      if (is.null(extra)) "" else extra,
+      comma_space_collapsed(required[!is_available])
+    )
+    
+    clean_stop(main_message, ...)
+  }
+}
+
+# warn_if_not_defined ----------------------------------------------------------
+warn_if_not_defined <- function(required, data, ...)
+{
+  if (!all(required %in% colnames(data))) {
+    clean_warning(...)
+  }
+}
+
+# stop_if_column_not_in_shape --------------------------------------------------
+stop_if_column_not_in_shape <- function(column, data, shape)
+{
+  if (!(column %in% colnames(data))) {
+    stop_formatted("column %s is missing in %s shape", column, shape)
+  }
+}
+
+# warn_if_not_defined_check ----------------------------------------------------
+warn_if_not_defined_check <- function(required, data, where, shape, sections)
+{
+  text_not_all_defined <- sprintf(
+    if (length(required) == 1L) {
+      "%s is not defined in %s. "
+    } else {
+      "Not all of %s are defined in %s. "
+    },
+    comma_space_collapsed(required), 
+    where
+  )
+  
+  text_check_shape <- sprintf(
+    paste0(
+      "Check %s shape for completeness, otherwise missing parameters in the ",
+      "sections %s will be filled with default values."
+    ),
+    shape, 
+    sections
+  )
+  
+  warn_if_not_defined(
+    required, 
+    data, 
+    text_not_all_defined, 
+    text_check_shape
+  )
 }
