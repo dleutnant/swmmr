@@ -183,11 +183,11 @@ input_to_list_of_sections <- function(
   # Checking, reading or adding default values for optional function arguments
   
   # Timeseries
-  if (given(path_timeseries)) {
+  result[["timeseries"]] <- if (given(path_timeseries)) {
 
     # Add path to timeseries file
     name_RG <- gsub("TIMESERIES ", "", result[["raingages"]]$Source)
-    result[["timeseries"]] <- paste0(name_RG, " ", "FILE ", path_timeseries)
+    paste0(name_RG, " ", "FILE ", path_timeseries)
     
   } else {
     
@@ -196,7 +196,7 @@ input_to_list_of_sections <- function(
       "otherwise default values are taken."
     )
     
-    result[["timeseries"]] <- tibble::tibble(
+    tibble::tibble(
       Name = "default_rain",
       date = " ",
       time_min = 1,
