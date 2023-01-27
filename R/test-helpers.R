@@ -24,10 +24,12 @@ example_input_files <- function(ids = 1:6)
 }
 
 # existing_path_or_null --------------------------------------------------------
-existing_path_or_null <- function(x)
+existing_path_or_null <- function(...)
 {
-  if (length(x[1L]) > 0L && file.exists(x[1L])) {
-    x
+  path <- file.path(...)
+  
+  if (length(path[1L]) > 0L && file.exists(path[1L])) {
+    path
   } # else NULL implicitly
 }
 

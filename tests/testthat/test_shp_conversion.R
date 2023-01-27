@@ -1,4 +1,4 @@
-#source("./tests/testthat.R")
+#library(testthat)
 #source("./tests/testthat/helpers.R")
 #source("./R/test-helpers.R")
 
@@ -24,7 +24,7 @@ testthat::test_that("testing shp to inp conversion", {
     ))
   
   # export models to temp dir
-  #lapply(temp_files, unlink, recursive = TRUE) # Remove exsiting folders!
+  #lapply(temp_files, unlink, recursive = TRUE) # Remove existing folders!
   temp_files <- create_temp_directories(n = length(inp_obj))
   
   # inp to files
@@ -36,7 +36,7 @@ testthat::test_that("testing shp to inp conversion", {
   ))
   
   # helper function
-  path_or_null <- function(...) swmmr:::existing_path_or_null(file.path(...))
+  path_or_null <- swmmr:::existing_path_or_null
   
   # shp_to_inp
   suppressWarnings(inp_converted <- purrr::map2(
