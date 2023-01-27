@@ -177,7 +177,7 @@ input_to_list_of_sections <- function(
     )
     
     result[["outfalls"]] <- outfalls
-    result <- set_or_add_coords(result, outfalls)
+    result <- set_or_add_coords(x = result, data = outfalls)
   }
   
   # Checking, reading or adding default values for optional function arguments
@@ -228,7 +228,7 @@ input_to_list_of_sections <- function(
   if (given(storage)) {
     
     result[["storage"]] <- storage
-    result <- set_or_add_coords(result, storage)
+    result <- set_or_add_coords(x = result, data = storage)
   }
   
   # Add storage curve
@@ -334,9 +334,9 @@ set_or_add_coords <- function(x, data)
 set_or_add_to_section <- function(x, section, data)
 {
   x[[section]] <- if (section %in% names(x)) {
-    data
-  } else {
     rbind(x[[section]], data)
+  } else {
+    data
   }
   
   x
