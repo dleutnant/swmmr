@@ -10,17 +10,9 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL)
     x <- x[!startsWith(x, ";")]
   }
   
-  # Convert character vector to tibble
-  # todo:
-  #Calling `as_tibble()` on a vector is discouraged, 
-  #because the behavior is likely to change in the future. 
-  #Use `enframe(name = NULL)` instead.
-  x <- tibble::as_tibble(x) %>% 
-    # Remove empty lines
-    dplyr::filter(value != "") %>%
-    # Add section as class to prepare generic parser
-    add_class(section_name)
-  
+  # Convert character vector to tibble with class set to section_name
+  x <- convert_to_section(x, section_name)
+
   # generic parser
   x <- if (section_name == "infiltration") {
     parse_section(x, inf_model = tolower(options$INFILTRATION))
@@ -55,6 +47,21 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL)
   
   # always return a tibble
   x
+}
+
+# convert_to_section -----------------------------------------------------------
+convert_to_section <- function(x, section_name)
+{
+  # todo:
+  #Calling `as_tibble()` on a vector is discouraged, 
+  #because the behavior is likely to change in the future. 
+  #Use `enframe(name = NULL)` instead.
+  
+  tibble::as_tibble(x) %>% 
+    # Remove empty lines
+    dplyr::filter(value != "") %>%
+    # Add section as class to prepare generic parser
+    add_class(section_name)
 }
 
 # generic parser ---------------------------------------------------------------
