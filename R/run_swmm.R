@@ -40,7 +40,7 @@ run_swmm <- function(
   dirn <- base::dirname(inp)
   
   # get the name of the inp file
-  filename <- sub("^([^.]*).*", "\\1", base::basename(inp)) 
+  filename <- remove_extension(base::basename(inp))
   
   # if rpt file is not provided, create one next to the inp file.
   if (is.null(rpt)) {

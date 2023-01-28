@@ -127,6 +127,12 @@ remove_at_indices <- function(x, indices)
   if (length(indices) > 0L) x[-indices] else x
 }
 
+# remove_extension -------------------------------------------------------------
+remove_extension <- function(x)
+{
+  sub("^([^.]*).*", "\\1", x)
+}
+
 # replace_values ---------------------------------------------------------------
 replace_values <- function(x, from, to)
 {
