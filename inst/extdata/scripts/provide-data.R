@@ -14,7 +14,7 @@ defaults <- column_defaults %>%
   kwb.utils::rbindAll(nameColumn = "section", namesAsFactor = FALSE) %>%
   kwb.utils::moveColumnsToFront("section")
 
-file <- "inst/extdata/defaults.csv"
+file <- "inst/extdata/config/defaults.csv"
 
 write.csv(defaults, file, row.names = FALSE, quote = FALSE)
 
@@ -34,7 +34,7 @@ column_defaults2 <- lapply(tables, function(x) {
 
 identical(column_defaults, column_defaults2)
 
-writeLines(con = "inst/extdata/sections.csv", c(
+writeLines(con = "inst/extdata/config/sections.csv", c(
   paste0("input,", swmmr:::input_sections),
   paste0("report,", swmmr:::report_sections)
 ))

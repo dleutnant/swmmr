@@ -3,7 +3,7 @@
 get_column_defaults <- function()
 {
   # Read default data from csv file
-  defaults_data <- read.csv(system_file("extdata/defaults.csv"))
+  defaults_data <- read.csv(system_file("extdata/config/defaults.csv"))
 
   # Vector of section names, as a factor
   f <- factor(defaults_data$section, levels = unique(defaults_data$section))

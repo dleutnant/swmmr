@@ -75,7 +75,7 @@ create_dir_if_required <- function(path, silent = TRUE)
 #' @importFrom utils read.csv
 get_column_dictionary <- function()
 {
-  file <- system_file("extdata/dictionary.csv")
+  file <- system_file("extdata/config/dictionary.csv")
   tibble::as_tibble(read.csv(file))
 }
 
@@ -151,10 +151,10 @@ replace_values <- function(x, from, to)
 # section_info -----------------------------------------------------------------
 section_info <- function(key = NULL)
 {
-  file <- system_file("extdata/sections.csv")
+  file <- system_file("extdata/config/sections.csv")
   
   info <- read.csv(file)
-  #info  <- read.csv(file = "inst/extdata/sections.csv")
+  #info  <- read.csv(file = "inst/extdata/config/sections.csv")
   
   if (is.null(key)) {
     return(info)
