@@ -51,6 +51,11 @@ run_swmm <- function(
   # check if inp and exec exists
   stopifnot(file.exists(inp), file.exists(exec))
   
+  # Now that we know that the exectuable exists, get the absolute path (by e.g.
+  # replacing "." or "..") so that we can use it without problems on the command
+  # line
+  exec <- normalizePath(exec)
+  
   # get the name of the directory which is used to create rpt and out files if
   # not provided.
   dir_path <- base::dirname(inp)
