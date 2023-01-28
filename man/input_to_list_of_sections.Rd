@@ -2,7 +2,7 @@
 % Please edit documentation in R/input_to_list_of_sections.R
 \name{input_to_list_of_sections}
 \alias{input_to_list_of_sections}
-\title{Reads input data and checks data for completeness, returns a list_of_sections
+\title{Reads input data and checks data for completeness, returns a list of sections
 which can be processed further.}
 \usage{
 input_to_list_of_sections(
@@ -24,7 +24,7 @@ input_to_list_of_sections(
 )
 }
 \description{
-Reads input data and checks data for completeness, returns a list_of_sections
+Reads input data and checks data for completeness, returns a list of sections
 which can be processed further.
 }
 \keyword{internal}

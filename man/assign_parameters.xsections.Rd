@@ -4,14 +4,7 @@
 \alias{assign_parameters.xsections}
 \title{conversion helper}
 \usage{
-\method{assign_parameters}{xsections}(
-  x,
-  infiltration = NULL,
-  subcatchment = NULL,
-  subcatchment_typologies = NULL,
-  conduit_material = NULL,
-  junction_parameters = NULL
-)
+\method{assign_parameters}{xsections}(x, ...)
 }
 \description{
 conversion helper
