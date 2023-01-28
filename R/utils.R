@@ -121,6 +121,12 @@ is_empty <- function(x)
   is.na(x) | x == "" | grepl("^\\s+$", x)
 }
 
+# paste_lines ------------------------------------------------------------------
+paste_lines <- function(...)
+{
+  paste0(c(...), collapse = "\n")
+}
+
 # remove_at_indices ------------------------------------------------------------
 remove_at_indices <- function(x, indices)
 {

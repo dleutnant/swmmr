@@ -114,12 +114,15 @@ testthat::test_that("swmm error", {
   write_inp(inp, tmp_inp)
   
   # run swmm and expect error
-  testthat::expect_warning(swmmr::run_swmm(
+  testthat::expect_warning(result <- swmmr::run_swmm(
     inp = tmp_inp, 
     rpt = paste0(tmp_inp, ".rpt"),
     out = paste0(tmp_inp, ".out"), 
     stdout = FALSE
   ))
+  
+  expect_true(is.na(result$out))
+  expect_true(all(sapply(result[1:2], file.exists)))
   
   testthat::expect_message(regexp = "There are errors", {
     rpt <- swmmr::read_rpt(paste0(tmp_inp, ".rpt"))
