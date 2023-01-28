@@ -28,8 +28,24 @@ run_swmm <- function(
 )
 {
   # get the path of the executable on the precoded paths...
+  option_name <- "swmmr.exec"
+  
   if (is.null(exec)) {
-    exec <- getOption("swmmr.exec")
+    exec <- getOption(option_name)
+  }
+ 
+  if (is.null(exec)) {
+    stop_formatted(
+      paste0(
+        "Could not determine the path to the SWMM executable. ",
+        "Please set the path to the executable ",
+        "(typically 'swmm5.exe' on Windows or 'swmm5' on Linux or macOS) ",
+        "either in option '%s': options(%s = <path-to-executable>) ",
+        "or call run_swmm() with its 'exec' argument being set accordingly."
+      ), 
+      option_name,
+      option_name
+    )
   }
   
   # check if inp and exec exists
