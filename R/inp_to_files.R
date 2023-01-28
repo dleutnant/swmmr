@@ -68,6 +68,14 @@ sections_to_shp <- function(
   #   purrr::iwalk(., ~ sf::st_write(.x, file.path(
   #     path_out, paste0("shp/", .y, "_.shp"))
   #   ))
+
+  # Helper function to create the parts of the following configuration  
+  configure <- function(shape_name, converter) {
+    list(
+      shape_name = shape_name, 
+      converter = converter
+    )
+  }
   
   # Configure the creation of shape files with a list:
   # - element names = names of inp sections for which to create shape files
@@ -75,38 +83,14 @@ sections_to_shp <- function(
   #   - "shape_name": base name of the shape file (without extension .shp)
   #   - "converter": function to be used to create the shape file
   config <- list(
-    subcatchments = list(
-      shape_name = "polygon",
-      converter = subcatchments_to_sf
-    ),
-    conduits = list(
-      shape_name = "link",
-      converter = links_to_sf
-    ),
-    junctions = list(
-      shape_name = "point", 
-      converter = junctions_to_sf
-    ),
-    outfalls = list(
-      shape_name = "outfall", 
-      converter = outfalls_to_sf
-    ),
-    weirs = list(
-      shape_name = "weir", 
-      converter = weirs_to_sf
-    ),
-    orifices = list(
-      shape_name = "orifices", 
-      converter = orifices_to_sf
-    ),
-    pumps = list(
-      shape_name = "pumps", 
-      converter = pumps_to_sf
-    ),
-    storage = list(
-      shape_name = "storages", 
-      converter = storages_to_sf
-    )
+    subcatchments = configure("polygon", subcatchments_to_sf),
+    conduits = configure("link", links_to_sf),
+    junctions = configure("point", junctions_to_sf),
+    outfalls = configure("outfall", outfalls_to_sf),
+    weirs = configure("weir", weirs_to_sf),
+    orifices = configure("orifices", orifices_to_sf),
+    pumps = configure("pumps", pumps_to_sf),
+    storage = configure("storages", storages_to_sf)
   )
   
   section_names <- names(config)
