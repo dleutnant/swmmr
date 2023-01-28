@@ -172,28 +172,28 @@ shipped with the SWMM executable:</p>
 <pre><code><span><span class="co">## Warning in abbreviate_shapefile_names(obj): Field names abbreviated for ESRI</span></span>
 <span><span class="co">## Shapefile driver</span></span></code></pre>
 <pre><code><span><span class="co">## Writing layer `Example1_polygon' to data source </span></span>
-<span><span class="co">##   `/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpgSAQPx/shp/Example1_polygon.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">##   `/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpprBzCZ/shp/Example1_polygon.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">## Writing 8 features with 22 fields and geometry type Polygon.</span></span>
 <span><span class="co">## Writing layer `Example1_link' to data source </span></span>
-<span><span class="co">##   `/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpgSAQPx/shp/Example1_link.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">##   `/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpprBzCZ/shp/Example1_link.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">## Writing 13 features with 16 fields and geometry type Line String.</span></span>
 <span><span class="co">## Writing layer `Example1_point' to data source </span></span>
-<span><span class="co">##   `/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpgSAQPx/shp/Example1_point.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">##   `/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpprBzCZ/shp/Example1_point.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">## Writing 13 features with 6 fields and geometry type Point.</span></span>
 <span><span class="co">## Writing layer `Example1_outfall' to data source </span></span>
-<span><span class="co">##   `/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpgSAQPx/shp/Example1_outfall.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">##   `/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpprBzCZ/shp/Example1_outfall.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">## Writing 1 features with 6 fields and geometry type Point.</span></span></code></pre>
-<pre><code><span><span class="co">## 4 *.shp files were written to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpgSAQPx/shp</span></span></code></pre>
-<pre><code><span><span class="co">## *.txt file was written to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpgSAQPx/txt</span></span></code></pre>
+<pre><code><span><span class="co">## 4 *.shp files were written to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpprBzCZ/shp</span></span></code></pre>
+<pre><code><span><span class="co">## *.txt file was written to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpprBzCZ/txt</span></span></code></pre>
 <pre><code><span><span class="co">## section curves is missing</span></span></code></pre>
-<pre><code><span><span class="co">## timeseries.dat files were written to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpgSAQPx/dat</span></span></code></pre>
+<pre><code><span><span class="co">## timeseries.dat files were written to /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpprBzCZ/dat</span></span></code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># check folders in your output directory:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">out_dir</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "dat"                            "file1fc91d849c46"              </span></span>
-<span><span class="co">## [3] "file1fc923667cb2"               "file1fc92abf4ffe"              </span></span>
-<span><span class="co">## [5] "file1fc95ba4f4bb"               "file1fc96d2fc6cd"              </span></span>
-<span><span class="co">## [7] "rmarkdown-str1fc977bfaa5c.html" "shp"                           </span></span>
+<pre><code><span><span class="co">## [1] "dat"                           "file18db22f6a8b6"             </span></span>
+<span><span class="co">## [3] "file18db392b68e8"              "file18db50f474aa"             </span></span>
+<span><span class="co">## [5] "file18db61176e6b"              "file18db6fbe56a8"             </span></span>
+<span><span class="co">## [7] "rmarkdown-str18dbc1a3442.html" "shp"                          </span></span>
 <span><span class="co">## [9] "txt"</span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># check existence of shape, text and dat files:</span></span>
@@ -235,9 +235,10 @@ function shp_to_inp is explained:</p>
 <span>  path_line <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>,<span class="st">"shp/Example1_link.shp"</span><span class="op">)</span>,</span>
 <span>  path_point <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>,<span class="st">"shp/Example1_point.shp"</span><span class="op">)</span>,</span>
 <span>  path_outfall <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>,<span class="st">"shp/Example1_outfall.shp"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># glance the structure of the converted Example1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: Cannot use 'subcatchment' data. Missing column: 'Type'</span></span></code></pre>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># glance the structure of the converted Example1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">Example1_con</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## ** summary of swmm model structure ** </span></span>
@@ -265,7 +266,7 @@ function shp_to_inp is explained:</p>
 <span><span class="co">## LID_controls   :          0 </span></span>
 <span><span class="co">## treatment      :          0 </span></span>
 <span><span class="co">## *************************************</span></span></code></pre>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># save the input file to a new folder in the output directory:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>, <span class="st">"inp_new"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/write_inp.html">write_inp</a></span><span class="op">(</span><span class="va">Example1_con</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>, <span class="st">"inp_new"</span>, <span class="st">"Example1_con.inp"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -294,7 +295,7 @@ values</li>
 </h3>
 <p>Here examples for the structure of supplementary R objects are
 given:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ... assuming infiltration parameters are not given in the .shp file, an R object (tibble or data.frame) called infiltration can be added. Additionally a column 'Soil' must be added to polygon shp file.</span></span>
 <span></span>
 <span><span class="va">infiltration</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
