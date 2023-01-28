@@ -52,22 +52,10 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL)
 # convert_to_section -----------------------------------------------------------
 convert_to_section <- function(x, section_name)
 {
-  # todo:
-  #Calling `as_tibble()` on a vector is discouraged, 
-  #because the behavior is likely to change in the future. 
-  #Use `enframe(name = NULL)` instead.
-  
-  r1 <- tibble::as_tibble(x) %>%
-    # Remove empty lines
-    dplyr::filter(value != "")
-    
-  r2 <- data.frame(value = x[x != ""]) %>%
-    tibble::as_tibble()
-
-  stopifnot(identical(r1, r2))  
-  
-  r2 %>% 
-    # Add section as class to prepare generic parser
+  # Remove empty lines, convert to one-column tibble and add section as class 
+  # to prepare generic parser
+  data.frame(value = x[x != ""]) %>%
+    tibble::as_tibble() %>%
     add_class(section_name)
 }
 
