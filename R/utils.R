@@ -133,6 +133,12 @@ remove_extension <- function(x)
   sub("^([^.]*).*", "\\1", x)
 }
 
+# replace_extension ------------------------------------------------------------
+replace_extension <- function(x, extension)
+{
+  paste0(remove_extension(x), extension)
+}
+
 # replace_values ---------------------------------------------------------------
 replace_values <- function(x, from, to)
 {
