@@ -193,18 +193,20 @@ assign_parameters.coverages <- function(x, ...)
 {
   subcatchment <- get_from_args("subcatchment", ...)
   
-  if (!given(subcatchment)) {
+  if (given(subcatchment)) {
     
     if ("Type" %in% colnames(subcatchment)) {
       
       x <- dplyr::full_join(subcatchment, x, by = c("Type" = "SurfaceType"))
-      return(x[!is.na(x$LandUse), c("Name", "LandUse", "PercentCoverage")]) 
+      x <- x[!is.na(x$LandUse), c("Name", "LandUse", "PercentCoverage")]
+
+    } else {
+
+      clean_warning("Cannot use 'subcatchment' data. Missing column: 'Type'")
     }
-    
-  } else {
-    
-    x
-  }
+  } 
+  
+  x
 }
 
 #' conversion helper
