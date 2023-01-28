@@ -28,8 +28,24 @@ run_swmm <- function(
 )
 {
   # get the path of the executable on the precoded paths...
+  option_name <- "swmmr.exec"
+  
   if (is.null(exec)) {
-    exec <- getOption("swmmr.exec")
+    exec <- getOption(option_name)
+  }
+ 
+  if (is.null(exec)) {
+    stop_formatted(
+      paste0(
+        "Could not determine the path to the SWMM executable. ",
+        "Please set the path to the executable ",
+        "(typically 'swmm5.exe' on Windows or 'swmm5' on Linux or macOS) ",
+        "either in option '%s': options(%s = <path-to-executable>) ",
+        "or call run_swmm() with its 'exec' argument being set accordingly."
+      ), 
+      option_name,
+      option_name
+    )
   }
   
   # check if inp and exec exists
@@ -37,29 +53,28 @@ run_swmm <- function(
   
   # get the name of the directory which is used to create rpt and out files if
   # not provided.
-  dirn <- base::dirname(inp)
+  dir_path <- base::dirname(inp)
   
-  # get the name of the inp file
-  filename <- sub("^([^.]*).*", "\\1", base::basename(inp)) 
-  
-  # if rpt file is not provided, create one next to the inp file.
-  if (is.null(rpt)) {
-    rpt <-  file.path(dirn, paste0(filename, ".rpt"))
+  default_unless_given <- function(x, extension) {
+    if (given(x)) {
+      return(x)
+    }
+    # Replace the file name extension of the inp file
+    file.path(dir_path, replace_extension(base::basename(inp), extension))
   }
   
-  # if out file is not provided, create one next to the inp file.
-  if (is.null(out)) {
-    out <-  file.path(dirn, paste0(filename, ".out"))
-  }
-  
+  # if rpt or out file are not provided, set default paths next to inp file
+  rpt <- default_unless_given(rpt, extension = ".rpt")
+  out <- default_unless_given(out, extension = ".out")
+
   # Current working directory 
   cur <- getwd(); 
   
   # On exit, come back
-  on.exit(setwd(cur)); 
+  on.exit(setwd(cur))
   
   # Change directory
-  setwd(dirn);
+  setwd(dir_path)
 
   # execute command
   base::system2(

@@ -19,11 +19,11 @@ list_of_sections_to_inp <- function(
     # Assign section parameters individually
     purrr::map(., ~ assign_parameters(
       .x, 
-      infiltration, 
-      subcatchment, 
-      subcatchment_typologies, 
-      conduit_material, 
-      junction_parameters
+      infiltration = infiltration, 
+      subcatchment = subcatchment, 
+      subcatchment_typologies = subcatchment_typologies, 
+      conduit_material = conduit_material, 
+      junction_parameters = junction_parameters
     )) %>%
     # Reclass to tibbles for consistency
     purrr::map( ~ set_class(.x, c("tbl_df", "tbl", "data.frame")))

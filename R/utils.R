@@ -79,6 +79,22 @@ get_column_dictionary <- function()
   tibble::as_tibble(read.csv(file))
 }
 
+# get_from_args ----------------------------------------------------------------
+get_from_args <- function(name, ..., debug. = FALSE)
+{
+  arguments <- list(...)
+  
+  if (name %in% names(arguments)) {
+    return(arguments[[name]])
+  }
+ 
+  if (debug.) {
+    cat(sprintf("\nNo such argument: '%s'. Returning NULL.\n", name))
+  }
+  
+  NULL
+}
+
 # get_section_names ------------------------------------------------------------
 get_section_names <- function(type)
 {
@@ -109,6 +125,18 @@ is_empty <- function(x)
 remove_at_indices <- function(x, indices)
 {
   if (length(indices) > 0L) x[-indices] else x
+}
+
+# remove_extension -------------------------------------------------------------
+remove_extension <- function(x)
+{
+  sub("^([^.]*).*", "\\1", x)
+}
+
+# replace_extension ------------------------------------------------------------
+replace_extension <- function(x, extension)
+{
+  paste0(remove_extension(x), extension)
 }
 
 # replace_values ---------------------------------------------------------------

@@ -1,4 +1,4 @@
-#source("./tests/testthat.R")
+#library(testthat)
 #source("./tests/testthat/helpers.R")
 #source("./R/test-helpers.R")
 

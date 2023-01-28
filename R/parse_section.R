@@ -13,39 +13,33 @@ section_to_tbl <- function(x, section_name, rm.comment = FALSE, options = NULL)
   # Convert character vector to tibble with class set to section_name
   x <- convert_to_section(x, section_name)
 
-  # generic parser
+  # Call the generic parser
   x <- if (section_name == "infiltration") {
     parse_section(x, inf_model = tolower(options$INFILTRATION))
   } else {
     parse_section(x)
   }
   
-  # if a section is not parsed, we return NULL
+  # Return NULL if the section was not parsed
   if (is.null(x)) {
     return(NULL)
   }
 
-  # remove dummy columns of which names start with *tab 
+  # Remove dummy columns of which names start with *tab 
   x <- x[, !grepl("^tab", colnames(x))]
   
-  # remove rows with NA's only
+  # Remove rows with NA's only
   x <- x[rowSums(is.na(x)) != ncol(x), ]
   
-  # make sure ID columns are of type character
+  # Define names of ID columns (that are assumed to be of type character)
   chr_cols <- intersect(names(x), c(
     "Name", "Link", "Links", "Subcatchment", "Outlet", "Node", "From Node", 
     "To Node", "Gage", "Pump"
   ))
 
-  x[chr_cols] <- lapply(x[chr_cols], as.character)
-  
-  # trimws of character columns
-  x <- dplyr::mutate_if(x, is.character, trimws)
-  
-  # section class got lost while formatting to tibble, so add it again
-  #class(x) <- c(section_name, class(x))
-  
-  # always return a tibble
+  # Make sure ID columns are of type character and trim whitespace characters
+  x[chr_cols] <- lapply(x[chr_cols], function(x) trimws(as.character(x)))
+
   x
 }
 

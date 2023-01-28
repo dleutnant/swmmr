@@ -4,14 +4,7 @@
 \alias{assign_parameters.polygons}
 \title{conversion helper}
 \usage{
-\method{assign_parameters}{polygons}(
-  x,
-  infiltration = NULL,
-  subcatchment = NULL,
-  subcatchment_typologies = NULL,
-  conduit_material = NULL,
-  junction_parameters = NULL
-)
+\method{assign_parameters}{polygons}(x, ...)
 }
 \description{
 conversion helper
