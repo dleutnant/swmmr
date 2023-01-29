@@ -553,7 +553,8 @@ section_columns <- function(section_name = NULL)
     
   )
   
-  cps2 <- read.csv("inst/extdata/config/columns.csv") %>%
+  cps2 <- system_file("extdata/config/columns.csv") %>%
+    read.csv() %>%
     split(factor(.$section, unique(.$section))) %>%
     lapply("[[", "column")
 
