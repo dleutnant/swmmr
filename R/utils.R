@@ -69,16 +69,6 @@ create_dir_if_required <- function(path, silent = TRUE)
   path
 }
 
-# get_column_dictionary --------------------------------------------------------
-
-#' @importFrom tibble as_tibble
-#' @importFrom utils read.csv
-get_column_dictionary <- function()
-{
-  file <- system_file("extdata/dictionary.csv")
-  tibble::as_tibble(read.csv(file))
-}
-
 # get_from_args ----------------------------------------------------------------
 get_from_args <- function(name, ..., debug. = FALSE)
 {
@@ -121,6 +111,12 @@ is_empty <- function(x)
   is.na(x) | x == "" | grepl("^\\s+$", x)
 }
 
+# paste_lines ------------------------------------------------------------------
+paste_lines <- function(...)
+{
+  paste0(c(...), collapse = "\n")
+}
+
 # remove_at_indices ------------------------------------------------------------
 remove_at_indices <- function(x, indices)
 {
@@ -146,27 +142,6 @@ replace_values <- function(x, from, to)
   is_match <- !is.na(indices)
   x[is_match] <- to[indices[is_match]]
   x
-}
-
-# section_info -----------------------------------------------------------------
-section_info <- function(key = NULL)
-{
-  file <- system_file("extdata/sections.csv")
-  
-  info <- read.csv(file)
-  #info  <- read.csv(file = "inst/extdata/sections.csv")
-  
-  if (is.null(key)) {
-    return(info)
-  }
-  
-  index <- which(info$key == key)
-  
-  if (length(index) != 1L) {
-    stop_formatted("No such key '%s' or key is not unique in '%s'.", key, file)
-  }
-  
-  info[index, ]
 }
 
 # set_class --------------------------------------------------------------------
