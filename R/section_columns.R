@@ -553,6 +553,12 @@ section_columns <- function(section_name = NULL)
     
   )
   
+  cps2 <- read.csv("inst/extdata/config/columns.csv") %>%
+    split(factor(.$section, unique(.$section))) %>%
+    lapply("[[", "column")
+
+  stopifnot(identical(columns_per_section, cps2))
+  
   if (is.null(section_name)) {
     return(columns_per_section)
   }
