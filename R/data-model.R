@@ -28,10 +28,16 @@ get_column_defaults <- function()
 
 #' @importFrom tibble as_tibble
 #' @importFrom utils read.csv
-get_column_dictionary <- function()
+get_column_dictionary <- function(section = NULL)
 {
-  read_data_model("dictionary.csv") %>%
+  dictionary <- read_data_model("dictionary.csv") %>%
     tibble::as_tibble()
+  
+  if (is.null(section)) {
+    return(dictionary)
+  }
+  
+  dictionary[dictionary$section == section, , drop = FALSE]
 }
 
 # read_data_model --------------------------------------------------------------
