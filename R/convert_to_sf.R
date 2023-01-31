@@ -33,10 +33,7 @@ NULL
 #' @rdname convert_to_sf
 raingages_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("raingages", "symbols"))) {
+  if (!check_package_class_features(x, c("raingages", "symbols"))) {
     return(NULL)
   } 
   
@@ -44,6 +41,14 @@ raingages_to_sf <- function(x)
   x[["raingages"]] %>%
     dplyr::left_join(x[["symbols"]], by = c("Name" = "Gage")) %>% 
     create_sf_of_pt()
+}
+
+# check_package_class_features -------------------------------------------------
+check_package_class_features <- function(x, features, ...)
+{
+  check_package_and_class(x)
+  
+  !has_incomplete_features(x, features, ...)
 }
 
 #' Helper function
@@ -83,10 +88,7 @@ has_incomplete_features <- function(x, features, subject = features[1L])
 #' @rdname convert_to_sf
 junctions_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("junctions", "coordinates"))) {
+  if (!check_package_class_features(x, c("junctions", "coordinates"))) {
     return(NULL)
   } 
   
@@ -100,10 +102,7 @@ junctions_to_sf <- function(x)
 #' @rdname convert_to_sf
 outfalls_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("outfalls", "coordinates"))) {
+  if (!check_package_class_features(x, c("outfalls", "coordinates"))) {
     return(NULL)
   } 
   
@@ -117,10 +116,7 @@ outfalls_to_sf <- function(x)
 #' @rdname convert_to_sf
 storages_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("storage", "coordinates"))) {
+  if (!check_package_class_features(x, c("storage", "coordinates"))) {
     return(NULL)
   } 
   
@@ -134,12 +130,9 @@ storages_to_sf <- function(x)
 #' @rdname convert_to_sf
 subcatchments_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
   required <- c("subcatchments", "subareas", "infiltration", "polygons")
   
-  if (has_incomplete_features(x, required)) {
+  if (!check_package_class_features(x, required)) {
     return(NULL)
   } 
   
@@ -193,12 +186,9 @@ subcatchments_to_sf <- function(x)
 #' @rdname convert_to_sf
 links_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
   features <- c("conduits", "coordinates")
   
-  if (has_incomplete_features(x, features, subject = "links")) {
+  if (!check_package_class_features(x, features, subject = "links")) {
     return(NULL)
   } 
   
@@ -250,10 +240,7 @@ links_to_sf <- function(x)
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("weirs", "coordinates"))) {
+  if (!check_package_class_features(x, c("weirs", "coordinates"))) {
     return(NULL)
   } 
   
@@ -292,10 +279,7 @@ weirs_to_sf <- function(x)
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("orifices", "coordinates"))) {
+  if (!check_package_class_features(x, c("orifices", "coordinates"))) {
     return(NULL)
   } 
   
@@ -334,10 +318,7 @@ orifices_to_sf <- function(x)
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("pumps", "coordinates"))) {
+  if (!check_package_class_features(x, c("pumps", "coordinates"))) {
     return(NULL)
   } 
   
@@ -376,10 +357,7 @@ pumps_to_sf <- function(x)
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("weirs", "coordinates"))) {
+  if (!check_package_class_features(x, c("weirs", "coordinates"))) {
     return(NULL)
   } 
   
@@ -442,10 +420,7 @@ weirs_to_sf <- function(x)
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("orifices", "coordinates"))) {
+  if (!check_package_class_features(x, c("orifices", "coordinates"))) {
     return(NULL)
   } 
   
@@ -506,10 +481,7 @@ orifices_to_sf <- function(x)
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("pumps", "coordinates"))) {
+  if (!check_package_class_features(x, c("pumps", "coordinates"))) {
     return(NULL)
   } 
   
