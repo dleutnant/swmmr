@@ -192,19 +192,9 @@ links_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start_nodes
-  start_node <- x[["conduits"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["conduits"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  links_df <- dplyr::bind_rows(start_node, end_node)
-  
+  # extract start and end nodes
+  links_df <- extract_start_and_end_nodes(x[["conduits"]], x[["coordinates"]])
+
   # by argument for the following joins
   by <- c("Name" = "Link")
   
@@ -236,6 +226,21 @@ links_to_sf <- function(x)
   create_sf_of_linestring(links_df)
 }
 
+#' Helper function
+extract_start_and_end_nodes <- function(data, coordinates)
+{
+  extract_nodes <- function(by_x, pos) {
+    data %>%
+      dplyr::left_join(coordinates, by = stats::setNames("Node", by_x)) %>% 
+      dplyr::mutate(pos = pos, id = 1L)
+  }
+  
+  dplyr::bind_rows(
+    extract_nodes("From Node", 1L), 
+    extract_nodes("To Node", 3L)
+  )
+}
+
 #' @export
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x)
@@ -244,18 +249,8 @@ weirs_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start_nodes
-  start_node <- x[["weirs"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["weirs"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  weirs_df <- dplyr::bind_rows(start_node, end_node)
+  # extract start and end nodes
+  weirs_df <- extract_start_and_end_nodes(x[["weirs"]], x[["coordinates"]])
   
   # extract vertices if available
   if ("vertices" %in% names(x)) {
@@ -283,18 +278,8 @@ orifices_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start_nodes
-  start_node <- x[["orifices"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["orifices"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  orifices_df <- dplyr::bind_rows(start_node, end_node)
+  # extract start and end nodes
+  orifices_df <- extract_start_and_end_nodes(x[["orifices"]], x[["coordinates"]])
   
   # extract vertices if available
   if ("vertices" %in% names(x)) {
@@ -322,18 +307,8 @@ pumps_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start_nodes
-  start_node <- x[["pumps"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["pumps"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  pumps_df <- dplyr::bind_rows(start_node, end_node)
+  # extract start and end nodes
+  pumps_df <- extract_start_and_end_nodes(x[["pumps"]], x[["coordinates"]])
   
   # extract vertices if available
   if ("vertices" %in% names(x)) {
@@ -361,18 +336,8 @@ weirs_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start_nodes
-  start_node <- x[["weirs"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["weirs"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  weirs_df <- dplyr::bind_rows(start_node, end_node)
+  # extract start and end nodes
+  weirs_df <- extract_start_and_end_nodes(x[["weirs"]], x[["coordinates"]])
   
   # extract vertices if available
   if ("vertices" %in% names(x)) {
@@ -424,18 +389,8 @@ orifices_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start_nodes
-  start_node <- x[["orifices"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["orifices"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  orifices_df <- dplyr::bind_rows(start_node, end_node)
+  # extract start and end nodes
+  orifices_df <- extract_start_and_end_nodes(x[["orifices"]], x[["coordinates"]])
   
   # extract vertices if available
   if ("vertices" %in% names(x)) {
@@ -485,18 +440,8 @@ pumps_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start_nodes
-  start_node <- x[["pumps"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["pumps"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  pumps_df <- dplyr::bind_rows(start_node, end_node)
+  # extract start and end nodes
+  pumps_df <- extract_start_and_end_nodes(x[["pumps"]], x[["coordinates"]])
   
   # extract vertices if available
   if ("vertices" %in% names(x)) {
