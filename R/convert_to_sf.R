@@ -136,12 +136,11 @@ links_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start and end nodes
-  links_df <- extract_start_and_end_nodes(x[["conduits"]], x[["coordinates"]])
-
-  # extract vertices if available
-  links_df <- extract_vertices_if_available(links_df, x, "conduits")
-
+  # extract start and end nodes, extract vertices if available
+  links_df <- x[["conduits"]] %>%
+    extract_start_and_end_nodes(x[["coordinates"]]) %>%
+    extract_vertices_if_available(x, "conduits")
+  
   # by argument for the following joins
   by <- c("Name" = "Link")
   
