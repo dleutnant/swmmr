@@ -33,100 +33,40 @@ NULL
 #' @rdname convert_to_sf
 raingages_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("raingages", "symbols"))) {
-    return(NULL)
-  } 
-  
-  # return simple feature objects of raingages
-  x[["raingages"]] %>%
-    dplyr::left_join(x[["symbols"]], by = c("Name" = "Gage")) %>% 
-    create_sf_of_pt()
-}
-
-#' Helper function
-#' @keywords internal
-check_package_and_class <- function(x, package = "sf", class = "inp")
-{
-  # checks if sf is available
-  check_pkg_avail(package)
-  
-  # check class and required elements
-  if (!inherits(x, class)) {
-    stop_formatted(
-      "%s does not inherit from class '%s' as expected.",
-      deparse(substitute(x, env = parent.frame(n = 1L))), class
-    )
-  }
-}
-
-#' Helper function
-#' @keywords internal
-has_incomplete_features <- function(x, features, subject = features[1L])
-{
-  is_there <- features %in% names(x)
-  is_incomplete <- !all(is_there)
-  
-  if (is_incomplete) {
-    warn_formatted(
-      "incomplete features: %s (missing: %s)", 
-      subject, comma_space_collapsed(features[!is_there])
-    )
-  } 
-  
-  is_incomplete
+  left_joined_to_sf_points_or_null(x, "raingages", "symbols", "Gage")
 }
 
 #' @export
 #' @rdname convert_to_sf
 junctions_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("junctions", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # return simple feature objects of junctions
-  x[["junctions"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("Name" = "Node")) %>% 
-    create_sf_of_pt()
+  left_joined_to_sf_points_or_null(x, "junctions", "coordinates", "Node")
 }
 
 #' @export
 #' @rdname convert_to_sf
 outfalls_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("outfalls", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # return simple feature objects of outfalls
-  x[["outfalls"]] %>% 
-    dplyr::left_join(x[["coordinates"]], by = c("Name" = "Node")) %>% 
-    create_sf_of_pt()
+  left_joined_to_sf_points_or_null(x, "outfalls", "coordinates", "Node")
 }
 
 #' @export
 #' @rdname convert_to_sf
 storages_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("storage", "coordinates"))) {
+  left_joined_to_sf_points_or_null(x, "storage", "coordinates", "Node")
+}
+
+#' Helper function
+#' @keywords internal
+left_joined_to_sf_points_or_null <- function(x, left, right, by_y)
+{
+  if (!check_package_class_features(x, c(left, right))) {
     return(NULL)
-  } 
-  
-  # return simple feature objects of storages
-  x[["storage"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("Name" = "Node"))  %>% 
+  }
+
+  x[[left]] %>%
+    dplyr::left_join(x[[right]], by = c(Name = by_y)) %>% 
     create_sf_of_pt()
 }
 
@@ -134,12 +74,9 @@ storages_to_sf <- function(x)
 #' @rdname convert_to_sf
 subcatchments_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
   required <- c("subcatchments", "subareas", "infiltration", "polygons")
   
-  if (has_incomplete_features(x, required)) {
+  if (!check_package_class_features(x, required)) {
     return(NULL)
   } 
   
@@ -193,44 +130,19 @@ subcatchments_to_sf <- function(x)
 #' @rdname convert_to_sf
 links_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
   features <- c("conduits", "coordinates")
   
-  if (has_incomplete_features(x, features, subject = "links")) {
+  if (!check_package_class_features(x, features, subject = "links")) {
     return(NULL)
   } 
   
-  # extract start_nodes
-  start_node <- x[["conduits"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["conduits"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  links_df <- dplyr::bind_rows(start_node, end_node)
+  # extract start and end nodes, extract vertices if available
+  links_df <- x[["conduits"]] %>%
+    extract_start_and_end_nodes(x[["coordinates"]]) %>%
+    extract_vertices_if_available(x, "conduits")
   
   # by argument for the following joins
   by <- c("Name" = "Link")
-  
-  # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["conduits"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = by) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    links_df <- dplyr::bind_rows(links_df, vertices)
-  }
   
   # extract xsections if available
   if ("xsections" %in% names(x)) {
@@ -246,324 +158,118 @@ links_to_sf <- function(x)
   create_sf_of_linestring(links_df)
 }
 
+#' Helper function
+#' @keywords internal
+extract_start_and_end_nodes <- function(data, coordinates)
+{
+  extract_nodes <- function(by_x, pos) {
+    data %>%
+      dplyr::left_join(coordinates, by = stats::setNames("Node", by_x)) %>% 
+      dplyr::mutate(pos = pos, id = 1L)
+  }
+  
+  dplyr::bind_rows(
+    extract_nodes("From Node", 1L), 
+    extract_nodes("To Node", 3L)
+  )
+}
+
+#' Helper function
+#' @keywords internal
+extract_vertices_if_available <- function(data, x, name)
+{
+  if (!("vertices" %in% names(x))) {
+    return(data)
+  }
+  
+  vertices <- x[[name]] %>%
+    dplyr::inner_join(x[["vertices"]], by = c(Name = "Link")) %>% 
+    dplyr::mutate(pos = 2L) %>% 
+    dplyr::group_by(Name) %>% 
+    dplyr::mutate(id = seq_along(Name)) %>% 
+    dplyr::ungroup()
+  
+  # add vertices
+  dplyr::bind_rows(data, vertices)
+}
+
 #' @export
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("weirs", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # extract start_nodes
-  start_node <- x[["weirs"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["weirs"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  weirs_df <- dplyr::bind_rows(start_node, end_node)
-  
-  # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["weirs"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    weirs_df <- dplyr::bind_rows(weirs_df, vertices)
-  }
-  
-  # return simple feature objects of links
-  create_sf_of_linestring(weirs_df)
+  line_type_data_to_sf(x, "weirs")
 }
 
 #' @export
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("orifices", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # extract start_nodes
-  start_node <- x[["orifices"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["orifices"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  orifices_df <- dplyr::bind_rows(start_node, end_node)
-  
-  # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["orifices"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    orifices_df <- dplyr::bind_rows(orifices_df, vertices)
-  }
-  
-  # return simple feature objects of orifices
-  create_sf_of_linestring(orifices_df)
+  line_type_data_to_sf(x, "orifices")
 }
 
 #' @export
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x)
 {
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("pumps", "coordinates"))) {
+  line_type_data_to_sf(x, "pumps")
+}
+
+#' Helper function
+#' @keywords internal
+line_type_data_to_sf <- function(x, section)
+{
+  if (!check_package_class_features(x, c(section, "coordinates"))) {
     return(NULL)
   } 
   
-  # extract start_nodes
-  start_node <- x[["pumps"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["pumps"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  pumps_df <- dplyr::bind_rows(start_node, end_node)
-  
-  # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["pumps"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    pumps_df <- dplyr::bind_rows(pumps_df, vertices)
-  }
-  
-  # return simple feature objects of pumps
-  create_sf_of_linestring(pumps_df)
+  # extract start and end nodes, extract vertices if available, return simple 
+  # feature objects of links
+  x[[section]] %>%
+    extract_start_and_end_nodes(x[["coordinates"]]) %>%
+    extract_vertices_if_available(x, section) %>%
+    create_sf_of_linestring()
 }
 
-#' @export
-#' @rdname convert_to_sf
-weirs_to_sf <- function(x)
+#' Helper function
+#' @keywords internal
+check_package_class_features <- function(x, features, ...)
 {
   check_package_and_class(x)
   
-  # check sections
-  if (has_incomplete_features(x, c("weirs", "coordinates"))) {
-    return(NULL)
-  } 
+  !has_incomplete_features(x, features, ...)
+}
+
+#' Helper function
+#' @keywords internal
+check_package_and_class <- function(x, package = "sf", class = "inp")
+{
+  # checks if sf is available
+  check_pkg_avail(package)
   
-  # extract start_nodes
-  start_node <- x[["weirs"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["weirs"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  weirs_df <- dplyr::bind_rows(start_node, end_node)
-  
-  # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["weirs"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    weirs_df <- dplyr::bind_rows(weirs_df, vertices)
-  }
-  
-  # sort by pos and id to maintain structure
-  weirs_df <- dplyr::arrange(weirs_df, pos, id)
-  
-  # create df with data only
-  data <- weirs_df %>% 
-    dplyr::select(-`X-Coord`, -`Y-Coord`, -pos, -id) %>%
-    dplyr::distinct(.keep_all = TRUE)
-  
-  # create df with sf column
-  sf <- weirs_df %>% 
-    dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
-    dplyr::mutate(geometry = purrr::map(
-      geometry,
-      ~ data.matrix(.) %>%
-        sf::st_linestring(.)
-    )) %>% 
-    # create geometry column
-    dplyr::mutate(
-      geometry = sf::st_sfc(geometry)
+  # check class and required elements
+  if (!inherits(x, class)) {
+    stop_formatted(
+      "%s does not inherit from class '%s' as expected.",
+      deparse(substitute(x, env = parent.frame(n = 1L))), class
     )
-  
-  # join data and sf column
-  dplyr::left_join(data, sf, by = "Name") %>% 
-    # create simple feature objects
-    sf::st_sf()
+  }
 }
 
-#' @export
-#' @rdname convert_to_sf
-orifices_to_sf <- function(x)
+#' Helper function
+#' @keywords internal
+has_incomplete_features <- function(x, features, subject = features[1L])
 {
-  check_package_and_class(x)
+  is_there <- features %in% names(x)
+  is_incomplete <- !all(is_there)
   
-  # check sections
-  if (has_incomplete_features(x, c("orifices", "coordinates"))) {
-    return(NULL)
+  if (is_incomplete) {
+    warn_formatted(
+      "incomplete features: %s (missing: %s)", 
+      subject, comma_space_collapsed(features[!is_there])
+    )
   } 
   
-  # extract start_nodes
-  start_node <- x[["orifices"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["orifices"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  orifices_df <- dplyr::bind_rows(start_node, end_node)
-  
-  # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["orifices"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    orifices_df <- dplyr::bind_rows(orifices_df, vertices)
-  }
-  
-  # sort by pos and id to maintain structure
-  orifices_df <- dplyr::arrange(orifices_df, pos, id)
-  
-  # create df with data only
-  data <- orifices_df %>% 
-    dplyr::select(-`X-Coord`, -`Y-Coord`, -pos, -id ) %>%
-    dplyr::distinct(.keep_all = TRUE)
-  
-  # create df with sf column
-  sf <- orifices_df %>% 
-    dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
-    dplyr::mutate(geometry = purrr::map(
-      geometry,
-      ~ data.matrix(.) %>%
-        sf::st_linestring(.)
-    )) %>% 
-    # create geometry column
-    dplyr::mutate(geometry = sf::st_sfc(geometry))
-  
-  # join data and sf column
-  dplyr::left_join(data, sf, by = "Name") %>% 
-    # create simple feature objects
-    sf::st_sf()
-}
-
-#' @export
-#' @rdname convert_to_sf
-pumps_to_sf <- function(x)
-{
-  check_package_and_class(x)
-  
-  # check sections
-  if (has_incomplete_features(x, c("pumps", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # extract start_nodes
-  start_node <- x[["pumps"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("From Node" = "Node")) %>% 
-    dplyr::mutate(pos = 1L, id = 1L)
-  
-  # extract end_nodes
-  end_node <- x[["pumps"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("To Node" = "Node")) %>% 
-    dplyr::mutate(pos = 3L, id = 1L)
-  
-  # bind dfs
-  pumps_df <- dplyr::bind_rows(start_node, end_node)
-  
-  # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["pumps"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    pumps_df <- dplyr::bind_rows(pumps_df, vertices)
-  }
-  
-  # sort by pos and id to maintain structure
-  pumps_df <- dplyr::arrange(pumps_df, pos, id)
-  
-  # create df with data only
-  data <- pumps_df %>% 
-    dplyr::select(-`X-Coord`, -`Y-Coord`, -pos, -id ) %>%
-    dplyr::distinct(.keep_all = TRUE)
-  
-  # create df with sf column
-  sf <- pumps_df %>% 
-    dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
-    dplyr::mutate(geometry = purrr::map(
-      geometry,
-      ~ data.matrix(.) %>%
-        sf::st_linestring(.)
-    )) %>% 
-    # create geometry column
-    dplyr::mutate(geometry = sf::st_sfc(geometry))
-  
-  # join data and sf column
-  dplyr::left_join(data, sf, by = "Name") %>% 
-    # create simple feature objects
-    sf::st_sf()
+  is_incomplete
 }
 
 #' @export

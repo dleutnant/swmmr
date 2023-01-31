@@ -85,14 +85,6 @@ get_from_args <- function(name, ..., debug. = FALSE)
   NULL
 }
 
-# get_section_names ------------------------------------------------------------
-get_section_names <- function(type)
-{
-  info <- section_info()
-  
-  info$section[info$type == type]
-}
-
 # given ------------------------------------------------------------------------
 given <- function(x)
 {

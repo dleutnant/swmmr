@@ -28,16 +28,50 @@ get_column_defaults <- function()
 
 #' @importFrom tibble as_tibble
 #' @importFrom utils read.csv
-get_column_dictionary <- function()
+get_column_dictionary <- function(section = NULL)
 {
-  read_data_model("dictionary.csv") %>%
+  dictionary <- read_data_model("dictionary.csv") %>%
     tibble::as_tibble()
+  
+  if (is.null(section)) {
+    return(dictionary)
+  }
+  
+  dictionary[dictionary$section == section, , drop = FALSE]
+}
+
+# get_column_names -------------------------------------------------------------
+get_column_names <- function(section, domain)
+{
+  dictionary <- get_column_dictionary(section)
+  
+  dictionary[[match.arg(domain, names(dictionary))]]
+}
+
+# get_section_names ------------------------------------------------------------
+get_section_names <- function(type)
+{
+  info <- section_info()
+  
+  info$section[info$type == type]
+}
+
+# get_section_names_for_input --------------------------------------------------
+get_section_names_for_input <- function()
+{
+  # Read section names from "sections.csv"  
+  info <- section_info()
+  info <- info[!is.na(info$input), ]
+  
+  # Order section names by number in column "input" first
+  # and by the section name second
+  info$section[order(info$input, info$section)]
 }
 
 # read_data_model --------------------------------------------------------------
 read_data_model <- function(file_name)
 {
-  file <- system_file("extdata/config", file_name)
+  file <- system_file("extdata/data-model", file_name)
   
   structure(read.csv(file), file = file)
 }
