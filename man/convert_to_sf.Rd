@@ -36,8 +36,6 @@ weirs_to_sf(x)
 
 orifices_to_sf(x)
 
-pumps_to_sf(x)
-
 inp_to_sf(x, remove_invalid = TRUE)
 }
 \arguments{

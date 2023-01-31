@@ -43,7 +43,8 @@ raingages_to_sf <- function(x)
     create_sf_of_pt()
 }
 
-# check_package_class_features -------------------------------------------------
+#' Helper function
+#' @keywords internal
 check_package_class_features <- function(x, features, ...)
 {
   check_package_and_class(x)
@@ -227,6 +228,7 @@ links_to_sf <- function(x)
 }
 
 #' Helper function
+#' @keywords internal
 extract_start_and_end_nodes <- function(data, coordinates)
 {
   extract_nodes <- function(by_x, pos) {
@@ -416,57 +418,6 @@ orifices_to_sf <- function(x)
   
   # create df with sf column
   sf <- orifices_df %>% 
-    dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
-    tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
-    dplyr::mutate(geometry = purrr::map(
-      geometry,
-      ~ data.matrix(.) %>%
-        sf::st_linestring(.)
-    )) %>% 
-    # create geometry column
-    dplyr::mutate(geometry = sf::st_sfc(geometry))
-  
-  # join data and sf column
-  dplyr::left_join(data, sf, by = "Name") %>% 
-    # create simple feature objects
-    sf::st_sf()
-}
-
-#' @export
-#' @rdname convert_to_sf
-pumps_to_sf <- function(x)
-{
-  if (!check_package_class_features(x, c("pumps", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # extract start and end nodes
-  pumps_df <- extract_start_and_end_nodes(x[["pumps"]], x[["coordinates"]])
-  
-  # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["pumps"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    pumps_df <- dplyr::bind_rows(pumps_df, vertices)
-  }
-  
-  # sort by pos and id to maintain structure
-  pumps_df <- dplyr::arrange(pumps_df, pos, id)
-  
-  # create df with data only
-  data <- pumps_df %>% 
-    dplyr::select(-`X-Coord`, -`Y-Coord`, -pos, -id ) %>%
-    dplyr::distinct(.keep_all = TRUE)
-  
-  # create df with sf column
-  sf <- pumps_df %>% 
     dplyr::select(Name, `X-Coord`, `Y-Coord`) %>% 
     tidyr::nest(geometry = c(`X-Coord`, `Y-Coord`)) %>%
     dplyr::mutate(geometry = purrr::map(
