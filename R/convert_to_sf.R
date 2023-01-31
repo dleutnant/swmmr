@@ -43,48 +43,6 @@ raingages_to_sf <- function(x)
     create_sf_of_pt()
 }
 
-#' Helper function
-#' @keywords internal
-check_package_class_features <- function(x, features, ...)
-{
-  check_package_and_class(x)
-  
-  !has_incomplete_features(x, features, ...)
-}
-
-#' Helper function
-#' @keywords internal
-check_package_and_class <- function(x, package = "sf", class = "inp")
-{
-  # checks if sf is available
-  check_pkg_avail(package)
-  
-  # check class and required elements
-  if (!inherits(x, class)) {
-    stop_formatted(
-      "%s does not inherit from class '%s' as expected.",
-      deparse(substitute(x, env = parent.frame(n = 1L))), class
-    )
-  }
-}
-
-#' Helper function
-#' @keywords internal
-has_incomplete_features <- function(x, features, subject = features[1L])
-{
-  is_there <- features %in% names(x)
-  is_incomplete <- !all(is_there)
-  
-  if (is_incomplete) {
-    warn_formatted(
-      "incomplete features: %s (missing: %s)", 
-      subject, comma_space_collapsed(features[!is_there])
-    )
-  } 
-  
-  is_incomplete
-}
-
 #' @export
 #' @rdname convert_to_sf
 junctions_to_sf <- function(x)
@@ -303,6 +261,48 @@ pumps_to_sf <- function(x)
     
   # return simple feature objects of pumps
   create_sf_of_linestring(pumps_df)
+}
+
+#' Helper function
+#' @keywords internal
+check_package_class_features <- function(x, features, ...)
+{
+  check_package_and_class(x)
+  
+  !has_incomplete_features(x, features, ...)
+}
+
+#' Helper function
+#' @keywords internal
+check_package_and_class <- function(x, package = "sf", class = "inp")
+{
+  # checks if sf is available
+  check_pkg_avail(package)
+  
+  # check class and required elements
+  if (!inherits(x, class)) {
+    stop_formatted(
+      "%s does not inherit from class '%s' as expected.",
+      deparse(substitute(x, env = parent.frame(n = 1L))), class
+    )
+  }
+}
+
+#' Helper function
+#' @keywords internal
+has_incomplete_features <- function(x, features, subject = features[1L])
+{
+  is_there <- features %in% names(x)
+  is_incomplete <- !all(is_there)
+  
+  if (is_incomplete) {
+    warn_formatted(
+      "incomplete features: %s (missing: %s)", 
+      subject, comma_space_collapsed(features[!is_there])
+    )
+  } 
+  
+  is_incomplete
 }
 
 #' @export
