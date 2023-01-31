@@ -196,22 +196,11 @@ links_to_sf <- function(x)
   # extract start and end nodes
   links_df <- extract_start_and_end_nodes(x[["conduits"]], x[["coordinates"]])
 
+  # extract vertices if available
+  links_df <- extract_vertices_if_available(links_df, x, "conduits")
+
   # by argument for the following joins
   by <- c("Name" = "Link")
-  
-  # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["conduits"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = by) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    links_df <- dplyr::bind_rows(links_df, vertices)
-  }
   
   # extract xsections if available
   if ("xsections" %in% names(x)) {
@@ -243,6 +232,25 @@ extract_start_and_end_nodes <- function(data, coordinates)
   )
 }
 
+#' Helper function
+#' @keywords internal
+extract_vertices_if_available <- function(data, x, name)
+{
+  if (!("vertices" %in% names(x))) {
+    return(data)
+  }
+  
+  vertices <- x[[name]] %>%
+    dplyr::inner_join(x[["vertices"]], by = c(Name = "Link")) %>% 
+    dplyr::mutate(pos = 2L) %>% 
+    dplyr::group_by(Name) %>% 
+    dplyr::mutate(id = seq_along(Name)) %>% 
+    dplyr::ungroup()
+  
+  # add vertices
+  dplyr::bind_rows(data, vertices)
+}
+
 #' @export
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x)
@@ -255,19 +263,8 @@ weirs_to_sf <- function(x)
   weirs_df <- extract_start_and_end_nodes(x[["weirs"]], x[["coordinates"]])
   
   # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["weirs"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    weirs_df <- dplyr::bind_rows(weirs_df, vertices)
-  }
-  
+  weirs_df <- extract_vertices_if_available(weirs_df, x, "weirs")
+
   # return simple feature objects of links
   create_sf_of_linestring(weirs_df)
 }
@@ -284,19 +281,8 @@ orifices_to_sf <- function(x)
   orifices_df <- extract_start_and_end_nodes(x[["orifices"]], x[["coordinates"]])
   
   # extract vertices if available
-  if ("vertices" %in% names(x)) {
-    
-    vertices <- x[["orifices"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    orifices_df <- dplyr::bind_rows(orifices_df, vertices)
-  }
-  
+  orifices_df <- extract_vertices_if_available(orifices_df, x, "orifices")
+
   # return simple feature objects of orifices
   create_sf_of_linestring(orifices_df)
 }
@@ -313,19 +299,8 @@ pumps_to_sf <- function(x)
   pumps_df <- extract_start_and_end_nodes(x[["pumps"]], x[["coordinates"]])
   
   # extract vertices if available
-  if ("vertices" %in% names(x)) {
+  pumps_df <- extract_vertices_if_available(pumps_df, x, "pumps")
     
-    vertices <- x[["pumps"]] %>%
-      dplyr::inner_join(x[["vertices"]], by = c("Name" = "Link")) %>% 
-      dplyr::mutate(pos = 2L) %>% 
-      dplyr::group_by(Name) %>% 
-      dplyr::mutate(id = seq_along(Name)) %>% 
-      dplyr::ungroup()
-    
-    # add vertices
-    pumps_df <- dplyr::bind_rows(pumps_df, vertices)
-  }
-  
   # return simple feature objects of pumps
   create_sf_of_linestring(pumps_df)
 }
