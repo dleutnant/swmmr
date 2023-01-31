@@ -197,47 +197,36 @@ extract_vertices_if_available <- function(data, x, name)
 #' @rdname convert_to_sf
 weirs_to_sf <- function(x)
 {
-  if (!check_package_class_features(x, c("weirs", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # extract start and end nodes, extract vertices if available, return simple 
-  # feature objects of links
-  x[["weirs"]] %>%
-    extract_start_and_end_nodes(x[["coordinates"]]) %>%
-    extract_vertices_if_available(x, "weirs") %>%
-    create_sf_of_linestring()
+  line_type_data_to_sf(x, "weirs")
 }
 
 #' @export
 #' @rdname convert_to_sf
 orifices_to_sf <- function(x)
 {
-  if (!check_package_class_features(x, c("orifices", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # extract start and end nodes, extract vertices if available, return simple 
-  # feature objects of orifices
-  x[["orifices"]] %>% 
-    extract_start_and_end_nodes(x[["coordinates"]]) %>%
-    extract_vertices_if_available(x, "orifices") %>%
-    create_sf_of_linestring()
+  line_type_data_to_sf(x, "orifices")
 }
 
 #' @export
 #' @rdname convert_to_sf
 pumps_to_sf <- function(x)
 {
-  if (!check_package_class_features(x, c("pumps", "coordinates"))) {
+  line_type_data_to_sf(x, "pumps")
+}
+
+#' Helper function
+#' @keywords internal
+line_type_data_to_sf <- function(x, section)
+{
+  if (!check_package_class_features(x, c(section, "coordinates"))) {
     return(NULL)
   } 
   
   # extract start and end nodes, extract vertices if available, return simple 
-  # feature objects of pumps
-  x[["pumps"]] %>%
+  # feature objects of links
+  x[[section]] %>%
     extract_start_and_end_nodes(x[["coordinates"]]) %>%
-    extract_vertices_if_available(x, "pumps") %>%
+    extract_vertices_if_available(x, section) %>%
     create_sf_of_linestring()
 }
 
