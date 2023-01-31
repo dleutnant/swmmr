@@ -202,14 +202,12 @@ weirs_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start and end nodes
-  weirs_df <- extract_start_and_end_nodes(x[["weirs"]], x[["coordinates"]])
-  
-  # extract vertices if available
-  weirs_df <- extract_vertices_if_available(weirs_df, x, "weirs")
-
-  # return simple feature objects of links
-  create_sf_of_linestring(weirs_df)
+  # extract start and end nodes, extract vertices if available, return simple 
+  # feature objects of links
+  x[["weirs"]] %>%
+    extract_start_and_end_nodes(x[["coordinates"]]) %>%
+    extract_vertices_if_available(x, "weirs") %>%
+    create_sf_of_linestring()
 }
 
 #' @export
@@ -220,14 +218,12 @@ orifices_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start and end nodes
-  orifices_df <- extract_start_and_end_nodes(x[["orifices"]], x[["coordinates"]])
-  
-  # extract vertices if available
-  orifices_df <- extract_vertices_if_available(orifices_df, x, "orifices")
-
-  # return simple feature objects of orifices
-  create_sf_of_linestring(orifices_df)
+  # extract start and end nodes, extract vertices if available, return simple 
+  # feature objects of orifices
+  x[["orifices"]] %>% 
+    extract_start_and_end_nodes(x[["coordinates"]]) %>%
+    extract_vertices_if_available(x, "orifices") %>%
+    create_sf_of_linestring()
 }
 
 #' @export
@@ -238,14 +234,12 @@ pumps_to_sf <- function(x)
     return(NULL)
   } 
   
-  # extract start and end nodes
-  pumps_df <- extract_start_and_end_nodes(x[["pumps"]], x[["coordinates"]])
-  
-  # extract vertices if available
-  pumps_df <- extract_vertices_if_available(pumps_df, x, "pumps")
-    
-  # return simple feature objects of pumps
-  create_sf_of_linestring(pumps_df)
+  # extract start and end nodes, extract vertices if available, return simple 
+  # feature objects of pumps
+  x[["pumps"]] %>%
+    extract_start_and_end_nodes(x[["coordinates"]]) %>%
+    extract_vertices_if_available(x, "pumps") %>%
+    create_sf_of_linestring()
 }
 
 #' Helper function
