@@ -33,55 +33,40 @@ NULL
 #' @rdname convert_to_sf
 raingages_to_sf <- function(x)
 {
-  if (!check_package_class_features(x, c("raingages", "symbols"))) {
-    return(NULL)
-  } 
-  
-  # return simple feature objects of raingages
-  x[["raingages"]] %>%
-    dplyr::left_join(x[["symbols"]], by = c("Name" = "Gage")) %>% 
-    create_sf_of_pt()
+  left_joined_to_sf_points_or_null(x, "raingages", "symbols", "Gage")
 }
 
 #' @export
 #' @rdname convert_to_sf
 junctions_to_sf <- function(x)
 {
-  if (!check_package_class_features(x, c("junctions", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # return simple feature objects of junctions
-  x[["junctions"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("Name" = "Node")) %>% 
-    create_sf_of_pt()
+  left_joined_to_sf_points_or_null(x, "junctions", "coordinates", "Node")
 }
 
 #' @export
 #' @rdname convert_to_sf
 outfalls_to_sf <- function(x)
 {
-  if (!check_package_class_features(x, c("outfalls", "coordinates"))) {
-    return(NULL)
-  } 
-  
-  # return simple feature objects of outfalls
-  x[["outfalls"]] %>% 
-    dplyr::left_join(x[["coordinates"]], by = c("Name" = "Node")) %>% 
-    create_sf_of_pt()
+  left_joined_to_sf_points_or_null(x, "outfalls", "coordinates", "Node")
 }
 
 #' @export
 #' @rdname convert_to_sf
 storages_to_sf <- function(x)
 {
-  if (!check_package_class_features(x, c("storage", "coordinates"))) {
+  left_joined_to_sf_points_or_null(x, "storage", "coordinates", "Node")
+}
+
+#' Helper function
+#' @keywords internal
+left_joined_to_sf_points_or_null <- function(x, left, right, by_y)
+{
+  if (!check_package_class_features(x, c(left, right))) {
     return(NULL)
-  } 
-  
-  # return simple feature objects of storages
-  x[["storage"]] %>%
-    dplyr::left_join(x[["coordinates"]], by = c("Name" = "Node"))  %>% 
+  }
+
+  x[[left]] %>%
+    dplyr::left_join(x[[right]], by = c(Name = by_y)) %>% 
     create_sf_of_pt()
 }
 
