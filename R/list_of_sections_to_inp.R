@@ -35,15 +35,3 @@ list_of_sections_to_inp <- function(
   # assign class attribute
   set_class(result, "inp")
 }
-
-# get_section_names_for_input --------------------------------------------------
-get_section_names_for_input <- function()
-{
-  # Read section names from "sections.csv"  
-  info <- section_info()
-  info <- info[!is.na(info$input), ]
-  
-  # Order section names by number in column "input" first
-  # and by the section name second
-  info$section[order(info$input, info$section)]
-}
