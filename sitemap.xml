@@ -97,6 +97,9 @@
     <loc>/reference/check_package_and_class.html</loc>
   </url>
   <url>
+    <loc>/reference/check_package_class_features.html</loc>
+  </url>
+  <url>
     <loc>/reference/check_pkg_avail.html</loc>
   </url>
   <url>
@@ -133,6 +136,12 @@
     <loc>/reference/dot-get_vIndex.html</loc>
   </url>
   <url>
+    <loc>/reference/extract_start_and_end_nodes.html</loc>
+  </url>
+  <url>
+    <loc>/reference/extract_vertices_if_available.html</loc>
+  </url>
+  <url>
     <loc>/reference/get_column_defaults.html</loc>
   </url>
   <url>
@@ -152,6 +161,9 @@
   </url>
   <url>
     <loc>/reference/input_to_list_of_sections.html</loc>
+  </url>
+  <url>
+    <loc>/reference/left_joined_to_sf_points_or_null.html</loc>
   </url>
   <url>
     <loc>/reference/list_of_sections_to_inp.html</loc>
