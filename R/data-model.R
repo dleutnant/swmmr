@@ -40,6 +40,14 @@ get_column_dictionary <- function(section = NULL)
   dictionary[dictionary$section == section, , drop = FALSE]
 }
 
+# get_column_names -------------------------------------------------------------
+get_column_names <- function(section, domain)
+{
+  dictionary <- get_column_dictionary(section)
+  
+  dictionary[[match.arg(domain, names(dictionary))]]
+}
+
 # read_data_model --------------------------------------------------------------
 read_data_model <- function(file_name)
 {
