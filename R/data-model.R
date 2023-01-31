@@ -71,7 +71,7 @@ get_section_names_for_input <- function()
 # read_data_model --------------------------------------------------------------
 read_data_model <- function(file_name)
 {
-  file <- system_file("extdata/config", file_name)
+  file <- system_file("extdata/data-model", file_name)
   
   structure(read.csv(file), file = file)
 }
