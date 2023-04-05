@@ -11,7 +11,8 @@ run_swmm(
   exec = NULL,
   stdout = "",
   stderr = "",
-  wait = TRUE
+  wait = TRUE,
+  debug = TRUE
 )
 }
 \arguments{
@@ -38,6 +39,9 @@ not windows: "/usr/local/bin/swmm5" , "/usr/bin/swmm5"}
     always wait) if \code{stdout = TRUE} or \code{stderr = TRUE}. When
     running the command asynchronously, no output will be displayed on
     the \code{Rgui} console in Windows (it will be dropped, instead).}
+
+\item{debug}{set to \code{TRUE} if debug messages are to be shown. Default:
+\code{FALSE}}
 }
 \description{
 This function runs a swmm inp file. If rpt and out files are not
