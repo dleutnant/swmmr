@@ -86,11 +86,9 @@ run_swmm <- function(
   args <- shQuote(normalizePath(c(inp, rpt, out), mustWork = FALSE))
   
   if (debug) {
-    cat("Original working directory:\n")
-    print(original_dir)
-    cat("Current working directory:\n")
-    print(getwd())
-    cat("Calling system2() with...\n")
+    writeLines(c("Original working directory:", original_dir))
+    writeLines(c("Current working directory:", getwd()))
+    writeLines("Calling system2() with...")
     writeLines(c("- exec:", exec))
     writeLines(c("- args:", args))
   }
