@@ -4,10 +4,10 @@
 \alias{autoplot.inp}
 \title{Plot a swmm model structure using ggplot2}
 \usage{
-\method{autoplot}{inp}(x, ...)
+\method{autoplot}{inp}(object, ...)
 }
 \arguments{
-\item{x}{An inp object}
+\item{object}{An inp object}
 
 \item{...}{currently ignored}
 }
