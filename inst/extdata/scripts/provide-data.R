@@ -88,6 +88,55 @@ if (FALSE)
   ))
 }
 
+# MAIN 5: Merge data-model related tables --------------------------------------
+if (FALSE)
+{
+  library(magrittr)
+  
+  files <- dir(swmmr:::system_file("extdata/config"))
+  
+  records <- lapply(files, function(origin) {
+    swmmr:::read_data_model(origin) %>%
+      cbind(stats::setNames(data.frame(x = "x"), swmmr:::remove_extension(origin)))
+  })
+  
+  names(records) <- files
+  
+  sapply(records, nrow)
+  sapply(records, names)
+  
+  records$dictionary.csv$section <- swmmr:::replace_values(
+    records$dictionary.csv$section, 
+    from = c("subcatchment", "subarea", "infiltration_Horton", "junction", 
+             "conduit", "xsection", "pump", "weir", "storage"),
+    to = c("subcatchments", "subareas", "infiltration_horton", "junctions", 
+           "conduits", "xsections", "pumps", "weirs", "storages") 
+  )
+  
+  records$sections.csv$section
+  
+  merged <- merge(
+    records$columns.csv, 
+    records$defaults.csv,
+    by = c("section", "column"),
+    all = TRUE
+  ) %>%
+    merge(
+      records$dictionary.csv, 
+      by.x = c("section", "column"),
+      by.y = c("section", "org_swmm"),
+      all = TRUE
+    ) %>%
+    kwb.utils::moveColumnsToFront(c(
+      "section", "column", "columns", "defaults", "dictionary"
+    ))
+  
+  nrow(merged)
+  # 511 -> 502 -> 495 -> 491 -> 485 -> 478 -> 471 -> 464
+  
+  View(merged)
+}
+
 # Define functions -------------------------------------------------------------
 `%>%` <- magrittr::`%>%`
 
