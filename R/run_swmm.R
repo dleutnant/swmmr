@@ -9,6 +9,8 @@
 #' the following paths are looked up when package gets loaded:
 #' windows: "C:/Program Files (x86)/EPA SWMM 5.X.XXX/swmm5.exe" 
 #' not windows: "/usr/local/bin/swmm5" , "/usr/bin/swmm5"
+#' @param debug set to \code{TRUE} if debug messages are to be shown. Default: 
+#'   \code{FALSE} 
 #' @inheritParams base::system2
 #' @details The path to a swmm5 executable is read by calling 'getOption("swmmr.exec")'.
 #' @examples
@@ -24,7 +26,8 @@ run_swmm <- function(
     exec = NULL,
     stdout = "", 
     stderr = "",
-    wait = TRUE
+    wait = TRUE,
+    debug = TRUE
 )
 {
   # get the path of the executable on the precoded paths...
@@ -60,31 +63,42 @@ run_swmm <- function(
   # not provided.
   dir_path <- base::dirname(inp)
   
+  # helper function to create a default path
   default_unless_given <- function(x, extension) {
     if (given(x)) {
-      return(x)
+      x
+    } else {
+      # Replace the file name extension of the inp file
+      file.path(dir_path, replace_extension(base::basename(inp), extension))
     }
-    # Replace the file name extension of the inp file
-    file.path(dir_path, replace_extension(base::basename(inp), extension))
   }
   
   # if rpt or out file are not provided, set default paths next to inp file
   rpt <- default_unless_given(rpt, extension = ".rpt")
   out <- default_unless_given(out, extension = ".out")
   
-  # Current working directory 
-  cur <- getwd(); 
+  # Change working directory, saving the current working directory
+  original_dir <- setwd(dir_path)
   
   # On exit, come back
-  on.exit(setwd(cur))
+  on.exit(setwd(original_dir))
+
+  args <- shQuote(normalizePath(c(inp, rpt, out), mustWork = FALSE))
   
-  # Change directory
-  setwd(dir_path)
+  if (debug) {
+    cat("Original working directory:\n")
+    print(original_dir)
+    cat("Current working directory:\n")
+    print(getwd())
+    cat("Calling system2() with...\n")
+    writeLines(c("- exec:", exec))
+    writeLines(c("- args:", args))
+  }
   
   # execute command
   base::system2(
     command = exec, 
-    args = shQuote(c(inp, rpt, out)), 
+    args = args, 
     stdout = stdout,
     stderr = stdout,
     wait = wait,
