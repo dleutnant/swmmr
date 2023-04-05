@@ -207,9 +207,20 @@ trim_vector <- function(x, trim = "both")
 }
 
 # unload_dll -------------------------------------------------------------------
-unload_dll <- function()
+unload_dll <- function(silent = FALSE)
 {
-  dyn.unload(system_file("libs/x64/swmmr.dll"))
+  file <- system_file("libs/x64/swmmr.dll")
+
+  # Return if the file does not exist
+  if (!nzchar(file)) {
+    return()
+  }
+
+  if (!silent) {
+    message("Unloading: ", file)
+  }
+  
+  dyn.unload(file)
 }
 
 # warn_formatted ---------------------------------------------------------------

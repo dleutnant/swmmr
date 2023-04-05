@@ -30,3 +30,8 @@ input_sections <- get_section_names("input")
 # report sections
 #' @keywords internal
 report_sections <- get_section_names("report")
+
+.onUnload <- function(libpath)
+{
+  unload_dll()
+}
