@@ -103,6 +103,12 @@ is_empty <- function(x)
   is.na(x) | x == "" | grepl("^\\s+$", x)
 }
 
+# message_swmm_not_found -------------------------------------------------------
+message_swmm_not_found <- function()
+{
+  packageStartupMessage("SWMM executable not found.")
+}
+
 # paste_lines ------------------------------------------------------------------
 paste_lines <- function(...)
 {
@@ -229,6 +235,8 @@ warn_formatted <- function(fmt, ...)
   clean_warning(sprintf(fmt, ...))
 }
 
+# .get_os ----------------------------------------------------------------------
+
 #' Determine the OS
 #' @keywords internal
 .get_os <- function()
@@ -243,6 +251,8 @@ warn_formatted <- function(fmt, ...)
   
   tolower(os)
 }
+
+# .get_exec --------------------------------------------------------------------
 
 #' Determine the path to the latest swmm5 executable
 .get_exec <- function()
@@ -260,6 +270,8 @@ warn_formatted <- function(fmt, ...)
     )
   }
 }
+
+# .get_exec_on_windows ---------------------------------------------------------
 
 #' Determine the latest swmm5.exe in the specified  program files folder
 #' @keywords internal
@@ -296,12 +308,14 @@ warn_formatted <- function(fmt, ...)
   
   # final check
   if (!file.exists(full_name)) {
-    message("SWMM executable not found.")
+    message_swmm_not_found()
     full_name <- NULL
   }
   
   full_name
 }
+
+# .get_exec_on_linux_or_mac ----------------------------------------------------
 
 #' Determine the latest swmm5.exe in the specified  program files folder
 #' @keywords internal
@@ -318,7 +332,7 @@ warn_formatted <- function(fmt, ...)
     full_name <- full_name[exec_found][1]
   } else {
     # otherwise raise warning
-    message("SWMM executable not found.")
+    message_swmm_not_found()
     full_name <- NULL
   }
   
