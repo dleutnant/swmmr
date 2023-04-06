@@ -80,7 +80,8 @@ the inp file.</p>
 <span>  exec <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stdout <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  stderr <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  wait <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  wait <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  debug <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -120,6 +121,11 @@ not windows: "/usr/local/bin/swmm5" , "/usr/bin/swmm5"</p></dd>
     always wait) if <code>stdout = TRUE</code> or <code>stderr = TRUE</code>. When
     running the command asynchronously, no output will be displayed on
     the <code>Rgui</code> console in Windows (it will be dropped, instead).</p></dd>
+
+
+<dt>debug</dt>
+<dd><p>set to <code>TRUE</code> if debug messages are to be shown. Default:
+<code>FALSE</code></p></dd>
 
 </dl></div>
     <div id="details">
