@@ -1,7 +1,7 @@
 #' Get the type of SWMM element
 #' @keywords internal
-.get_iType <- function(iType = NULL) {
-  
+.get_iType <- function(iType = NULL)
+{
   choices <- c("subcatchment", "node", "link", "system variable")
   
   # iType must be NULL or an integer vector of length one  
@@ -24,8 +24,8 @@
 
 #' Get the names of SWMM elements
 #' @keywords internal
-.get_iIndex <- function(list_of_elements, iType = NULL, object_name = NULL) {
-  
+.get_iIndex <- function(list_of_elements, iType = NULL, object_name = NULL)
+{
   # subcatchments
   if (iType == 0 || iType == 1 || iType == 2) {
     
@@ -41,7 +41,7 @@
       
       result <- list(iIndex = match(object_name, object_names) - 1,
                      names = object_name)
-      
+
     } else {
       
       warning("no ", element)
@@ -61,8 +61,8 @@
 
 #' Get the simulated values
 #' @keywords internal
-.get_vIndex <- function(iType, vIndex = NULL, PollNames = NULL) {
-  
+.get_vIndex <- function(iType, vIndex = NULL, PollNames = NULL)
+{
   type_choices <- list(
     
     subcatchments = c(
@@ -82,7 +82,10 @@
       "stored water volume (including ponded water, ft3 or m3)",
       "lateral inflow (runoff + all other external inflows, in flow units)",
       "total inflow (lateral inflow + upstream inflows, in flow units)",
-      "surface flooding (excess overflow when the node is at full depth, in flow units)"
+      paste(
+        "surface flooding (excess overflow when the node is at full depth, in", 
+        "flow units)"
+      )
     ),
     
     links = c(
@@ -90,7 +93,10 @@
       "average water depth (ft or m)",
       "flow velocity (ft/s or m/s)",
       "volume of water (ft3 or m3)",
-      "capacity (fraction of full area filled by flow for conduits; control setting for pumps and regulators)"
+      paste(
+        "capacity (fraction of full area filled by flow for conduits; control", 
+        "setting for pumps and regulators)"
+      )
     ),
     
     system = c(

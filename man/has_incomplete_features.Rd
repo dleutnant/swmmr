@@ -4,7 +4,7 @@
 \alias{has_incomplete_features}
 \title{Helper function}
 \usage{
-has_incomplete_features(x, subject, features)
+has_incomplete_features(x, features, subject = features[1L])
 }
 \description{
 Helper function

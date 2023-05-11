@@ -3,7 +3,7 @@
 #' converted to simple feature geometries via \code{\link[swmmr]{inp_to_sf}} and 
 #' finally passed to \code{\link[ggplot2]{geom_sf}}. It allows to quickly 
 #' visualize a model structure.
-#' @param x An inp object
+#' @param object An inp object
 #' @param ... currently ignored
 #' @note Lifecycle: experimental
 #' @importFrom ggplot2 autoplot
@@ -14,30 +14,30 @@
 #' }
 #' @rdname plot
 #' @export
-autoplot.inp <- function(x, ...) {
-
+autoplot.inp <- function(object, ...)
+{
   # checks if ggplot2 is available
   check_pkg_avail("ggplot2")
-
+  
   # create list with simple feature objects for
   # subcatchments, junctions, links and raingages
-  sff <- inp_to_sf(x)
-
+  simple_features <- inp_to_sf(object)
+  
   # init ggplot obj
   p <- ggplot2::ggplot()
-
+  
   # walk through the list
-  for (i in seq_along(sff)) {
+  for (name in names(simple_features)) {
+    
+    data <- simple_features[[name]]
+    
     # create extra shape for raingages
-    if ("raingages" != names(sff)[i]) {
-      p <- p + ggplot2::geom_sf(data = sff[[i]])
+    p <- p + if (name == "raingages") {
+      ggplot2::geom_sf(data = data, shape = 10, show.legend = FALSE)
     } else {
-      p <- p + ggplot2::geom_sf(
-        data = sff[[i]],
-        shape = 10,
-        show.legend = FALSE
-      )
+      ggplot2::geom_sf(data = data)
     }
   }
-  return(p)
+  
+  p
 }

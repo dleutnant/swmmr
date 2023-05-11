@@ -4,14 +4,7 @@
 \alias{assign_parameters.report}
 \title{conversion helper}
 \usage{
-\method{assign_parameters}{report}(
-  x,
-  infiltration = NULL,
-  subcatchment = NULL,
-  subcatchment_typologies = NULL,
-  conduit_material = NULL,
-  junction_parameters = NULL
-)
+\method{assign_parameters}{report}(x, ...)
 }
 \description{
 conversion helper

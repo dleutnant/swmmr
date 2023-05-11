@@ -32,12 +32,6 @@ orifices_to_sf(x)
 
 pumps_to_sf(x)
 
-weirs_to_sf(x)
-
-orifices_to_sf(x)
-
-pumps_to_sf(x)
-
 inp_to_sf(x, remove_invalid = TRUE)
 }
 \arguments{
@@ -50,24 +44,25 @@ A simple feature or a list of simple features
 }
 \description{
 \itemize{
-\item \code{junctions_to_sf()}: converts junctions to simple features (required
-sections: \code{junctions} and \code{coordinates})
-\item \code{outfalls_to_sf()}: converts junctions to simple features (required
-sections: \code{outfalls} and \code{coordinates})
-\item \code{links_to_sf()}: converts links to simple features (required sections:
-\code{conduits} and \code{coordinates})
-\item \code{subcatchments_to_sf()}: converts subcatchments to simple features (required
-sections: \code{subcatchments}, \code{subareas}, \code{infiltration} and \code{polygons})
-\item \code{raingages_to_sf() }: converts raingages to simple features (required
-sections: \code{raingages} and \code{symbols})
-\item \code{storages_to_sf()}: converts storages to simple features (required sections:
-\code{storage} and \code{coordinates})
-\item \code{weirs_to_sf()}: converts weirs to simple features (required sections:
-\code{weirs} and \code{coordinates})
-\item \code{orifices_to_sf()}: converts orifices to simple features (required sections:
-\code{orifices} and \code{coordinates})
-\item \code{pumps_to_sf()}: converts pumps to simple features (required sections:
-\code{pumps} and \code{coordinates})
+\item \code{junctions_to_sf()}: converts junctions to simple features
+(required sections: \code{junctions} and \code{coordinates})
+\item \code{outfalls_to_sf()}: converts junctions to simple features
+(required sections: \code{outfalls} and \code{coordinates})
+\item \code{links_to_sf()}: converts links to simple features
+(required sections: \code{conduits} and \code{coordinates})
+\item \code{subcatchments_to_sf()}: converts subcatchments to simple features
+(required sections: \code{subcatchments}, \code{subareas}, \code{infiltration} and
+\code{polygons})
+\item \code{raingages_to_sf() }: converts raingages to simple features
+(required sections: \code{raingages} and \code{symbols})
+\item \code{storages_to_sf()}: converts storages to simple features
+(required sections: \code{storage} and \code{coordinates})
+\item \code{weirs_to_sf()}: converts weirs to simple features
+(required sections: \code{weirs} and \code{coordinates})
+\item \code{orifices_to_sf()}: converts orifices to simple features
+(required sections: \code{orifices} and \code{coordinates})
+\item \code{pumps_to_sf()}: converts pumps to simple features
+(required sections: \code{pumps} and \code{coordinates})
 \item \code{inp_to_sf()}: converts junctions, outfalls, links, storages, weirs,
 orifices, pumps, subcatchments and raingages to a list of simple features
 }

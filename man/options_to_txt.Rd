@@ -4,7 +4,7 @@
 \alias{options_to_txt}
 \title{conversion helper}
 \usage{
-options_to_txt(x, name, path_out)
+options_to_txt(x, name, path_out, quiet = FALSE)
 }
 \description{
 conversion helper

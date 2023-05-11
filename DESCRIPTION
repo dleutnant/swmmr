@@ -30,9 +30,9 @@ Imports:
     ggplot2,
     purrr (>= 0.2.4),
     readr (>= 1.1.1),
-    Rcpp,
+    Rcpp (>= 1.0.5),
     tibble (>= 1.2.4),
-    tidyr (>= 1.0.0),
+    tidyr (>= 1.2.0),
     utils,
     xts (>= 0.10-1),
     zoo
@@ -43,8 +43,9 @@ Suggests:
     sf (>= 0.6-1),
     knitr,
     rmarkdown,
-    testthat
+    testthat (>= 3.0.0)
 SystemRequirements: SWMM (>=5.1.012)
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 VignetteBuilder: knitr
+Config/testthat/edition: 3

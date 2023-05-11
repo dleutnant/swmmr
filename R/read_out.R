@@ -13,7 +13,19 @@ NULL
 #' Leave empty for retrieving elements available.
 #' @param vIndex Sets the variables to be read (s. Details).
 #' Leave empty for retrieving elements available.
-#' @return A list of xts-objects.
+#' @param firstPeriod integer number of first period to be returned
+#' @param lastPeriod integer number of last period to be returned
+#' @param multiColumn if \code{TRUE} (the default is \code{FALSE}), the result
+#' is a list of xts objects with each object containing all variables instead of 
+#' a list of lists of xts objects.
+#' @param byObject if \code{TRUE}, each top level list element represents an
+#' object, otherwise a variable
+#' @param method Integer number determining the method of reading the binary
+#'   file. The default is method = 1. If multiColumn = TRUE and byObject = TRUE
+#'   you may try method = 2 and see if performance is enhanced (intended effect)
+#'   compared to method = 1. The results should be the same!
+#' @return A list of a list of xts-objects (if \code{multiColumn = TRUE}) or a
+#' list of xts-objects (if \code{multiColumn = FALSE}).
 #' 
 #' @examples  
 #' \dontrun{
@@ -80,17 +92,18 @@ NULL
 #' 
 #' @rdname read_out
 #' @export
-read_out <- function(file="",
-                     iType = NULL,
-                     object_name = NULL,
-                     vIndex = NULL) {
-  
+read_out <- function(
+  file = "", iType = NULL, object_name = NULL, vIndex = NULL, 
+  firstPeriod = NULL, lastPeriod = NULL, multiColumn = FALSE,
+  byObject = TRUE, method = 1L
+)
+{
   # open swmm out file
   list_of_results <- OpenSwmmOutFile(outFile = file)
   
   # close swmm out file
   on.exit(CloseSwmmOutFile())
-  
+
   if (exists("error", list_of_results)) {
     warning("error reading out file")
     return(list_of_results)
@@ -103,52 +116,136 @@ read_out <- function(file="",
   }
 
   # check if water pollutants are available
-  if (identical(character(0), list_of_results$pollutants$names)) {
-    PollNames <- NULL  
-  } else {
-    PollNames <- list_of_results$pollutants$names
-  } 
-                      
+  PollNames <- if (!identical(character(0), list_of_results$pollutants$names)) {
+    list_of_results$pollutants$names
+  } # else NULL implicitly  
+
   # make selection of results more convenient
   iType <- .get_iType(iType = iType)$iType
   
   # retrieve times --> will probably move to Rcpp in near future
-  time <- as.POSIXct(GetSwmmTimes(), tz = "GMT", origin = "1899-12-30")
+  times_seconds <- GetSwmmTimes()
   
-  # if iType is either subc, nodes or links ...
-  if (iType < 3) {
-    # get Index, i.e. the position of object
-    iIndex <- .get_iIndex(list_of_results, iType, object_name)
-  } else {
-    # case system variables
-    iIndex  <- list(iIndex = 777, names = "system_variable")
+  is_zero <- times_seconds == 0
+  
+  if (any(is_zero)) {
+    stop_formatted("GetSwmmTimes() returned %d-times zero", sum(is_zero))
+  }
+  
+  time <- as.POSIXct(times_seconds, tz = "GMT", origin = "1899-12-30")
+
+  maxPeriod <- length(time)
+  
+  if (is.null(firstPeriod)) {
+    firstPeriod <- 1L
+  }
+  
+  if (is.null(lastPeriod)) {
+    lastPeriod <- maxPeriod
   }
 
+  stop_if_out_of_range(firstPeriod, 1L, maxPeriod)
+  stop_if_out_of_range(lastPeriod, 1L, maxPeriod)
+    
+  if (lastPeriod < firstPeriod) {
+    stop_formatted(
+      "lastPeriod must be greater or equal to firstPeriod (%d)!", firstPeriod
+    )
+  }
+  
+  # if iType is either subc, nodes or links ...
+  iIndex <- if (iType < 3) {
+    # get Index, i.e. the position of object
+    .get_iIndex(list_of_results, iType, object_name)
+  } else {
+    # case system variables
+    list(iIndex = 777, names = "system_variable")
+  }
+
+  # get vIndex, i.e. the type of variables 
+  vIndex <- .get_vIndex(iType = iType, vIndex = vIndex, PollNames = PollNames)
+
+  # provide timestamps
+  order_by <- time[firstPeriod:lastPeriod]
+
+  if (method == 2L) {
+    
+    if (!multiColumn || !byObject) {
+      stop_formatted(
+        "method = 2 is only implemented for %s",
+        "multiColumn = TRUE and byObject = TRUE"
+      )
+    }
+    
+    result_list <- lapply(iIndex$iIndex, function(iIndex) {
+      
+      xts::xts(order.by = order_by, matrix(
+        data = GetSwmmResultPart2(
+          iType = iType, 
+          iIndex = iIndex, 
+          varIndices = vIndex$vIndex,
+          firstPeriod = firstPeriod, 
+          lastPeriod = lastPeriod
+        ),
+        ncol = length(vIndex$vIndex), 
+        byrow = TRUE,
+        dimnames = list(NULL, vIndex$names)
+      ))
+    })
+
+    return(stats::setNames(result_list, iIndex$names))
+  }
+  
+  # Continue with method = 1
+    
   # for each iIndex, i.e. for each subcatchment, nodes or links ...
-  list_of_xts <- lapply(seq_len(length(iIndex$iIndex)), FUN = function(x) {
-
-    # get vIndex, i.e. the type of variables 
-    vIndex <- .get_vIndex(iType = iType, vIndex = vIndex, PollNames = PollNames)
+  # give list elements name of subcathments|nodes|links|sysvar
+  arg_combis <- expand.grid(iIndex = iIndex$iIndex, vIndex = vIndex$vIndex)
+  
+  result_list <- lapply(seq_len(nrow(arg_combis)), function(i) {
     
-    # for each vIndex
-    data <- lapply(seq_len(length(vIndex$vIndex)),
-                   FUN = function(y) GetSwmmResult(iType = iType,
-                                                   iIndex = iIndex$iIndex[x],
-                                                   vIndex = vIndex$vIndex[y]))
+    cat(sprintf("Reading time series %d/%d ... ", i, nrow(arg_combis)))
+    
+    series <- GetSwmmResultPart(
+      iType = iType, 
+      iIndex = arg_combis$iIndex[i], 
+      vIndex = arg_combis$vIndex[i],
+      firstPeriod = firstPeriod, 
+      lastPeriod = lastPeriod
+    )
+    
+    cat("ok.\n")
+    
+    series
+  })
+  
+  indexObjects <- list(iIndex = iIndex, vIndex = vIndex)
+  
+  indexNames <- if (byObject) c("iIndex", "vIndex") else c("vIndex", "iIndex")
+
+  result <- lapply(indexObjects[[indexNames[1]]][[1]], FUN = function(i) {
+    
+    data <- result_list[which(arg_combis[[indexNames[1]]] == i)]
+    
     # create xts objects
-    res <- lapply(data, function(z) xts::xts(x = z, order.by = time))
+    if (multiColumn) {
     
-    names(res) <- vIndex$names
-
-    return(res)
+      xts::xts(order.by = order_by, matrix(
+        do.call(c, data), 
+        ncol = length(data), 
+        dimnames = list(NULL, indexObjects[[indexNames[2]]]$names)
+      ))
+      
+    } else {
+      
+      stats::setNames(nm = indexObjects[[indexNames[2]]]$names, lapply(
+        data, xts::xts, order.by = order_by
+      ))
+    }
     
   })
-
-  # give list elements name of subcathments|nodes|links|sysvar
-  names(list_of_xts) <- iIndex$names
   
-  return(list_of_xts)
-
+  stats::setNames(result, indexObjects[[indexNames[1]]]$names)
 }
 
 #' Get the swmm version the .out file was generated with
@@ -166,16 +263,13 @@ read_out <- function(file="",
 #' } 
 #' @rdname get_out_version
 #' @export
-get_out_version <- function(file = "") {
-  
+get_out_version <- function(file = "")
+{
   # get the content
-  list_of_results <- get_out_content(file)
+  result <- get_out_content(file)
   
-  # extract version information
-  version <- list_of_results$meta$version
-  
-  return(version)
-  
+  # return version information
+  result$meta$version
 }
 
 #' Get the content of an .out file.
@@ -194,18 +288,18 @@ get_out_version <- function(file = "") {
 #' } 
 #' @rdname get_out_content
 #' @export
-get_out_content <- function(file = "") {
-  
+get_out_content <- function(file = "")
+{
   # open swmm out file
-  list_of_results <- OpenSwmmOutFile(outFile = file)
+  result <- OpenSwmmOutFile(outFile = file)
   
   # close swmm out file
   on.exit(CloseSwmmOutFile())
   
   # check error
-  if (exists("error", list_of_results)) {
+  if (exists("error", result)) {
     warning("error reading out file")
   }
   
-  return(list_of_results)
+  result
 }

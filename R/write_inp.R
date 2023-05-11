@@ -10,33 +10,33 @@
 #' } 
 #' @rdname write_inp
 #' @export 
-write_inp <- function(x, file) {
-  
+write_inp <- function(x, file)
+{
   # check class and required elements
   stopifnot(inherits(x, "inp"))
   
   # use sink to write sections to
   sink(file = file)
   
+  # close sink if the function is left
+  on.exit(sink())
+  
   # for each setion ...
   for (section in names(x)) {
     
     # write section name
-    cat(paste0("[", toupper(section), "]"), sep = "\n")
+    cat(in_brackets(toupper(section)), sep = "\n")
     
     # write the data without names 
-    utils::write.table(x = x[section],
-                       quote = FALSE,
-                       na = "",
-                       row.names = FALSE, 
-                       col.names = FALSE)
+    utils::write.table(
+      x = x[section],
+      quote = FALSE,
+      na = "",
+      row.names = FALSE, 
+      col.names = FALSE
+    )
     
     # write newline to separate sections
     cat("\n")
-    
   }
-  
-  # close sink
-  sink()
-  
 }

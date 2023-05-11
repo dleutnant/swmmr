@@ -6,3 +6,4 @@
 ^README-.*\.png$
 ^\.travis\.yml$
 ^CONDUCT\.md$
+^\.github$

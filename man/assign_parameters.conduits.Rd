@@ -4,14 +4,7 @@
 \alias{assign_parameters.conduits}
 \title{conversion helper}
 \usage{
-\method{assign_parameters}{conduits}(
-  x,
-  infiltration = NULL,
-  subcatchment = NULL,
-  subcatchment_typologies = NULL,
-  conduit_material,
-  junction_parameters = NULL
-)
+\method{assign_parameters}{conduits}(x, ...)
 }
 \description{
 conversion helper
