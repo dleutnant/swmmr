@@ -9,7 +9,6 @@
 #' the following paths are looked up when package gets loaded:
 #' windows: "C:/Program Files (x86)/EPA SWMM 5.X.XXX/swmm5.exe" 
 #' not windows: "/usr/local/bin/swmm5" , "/usr/bin/swmm5"
-#' @param stdout See \code{\link[base]{system2}} for details.
 #' @param debug set to \code{TRUE} if debug messages are to be shown. Default: 
 #'   \code{FALSE} 
 #' @inheritParams base::system2
