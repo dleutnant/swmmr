@@ -18,11 +18,7 @@ the following paths are looked up when package gets loaded:
 windows: "C:/Program Files (x86)/EPA SWMM 5.X.XXX/swmm5.exe"
 not windows: "/usr/local/bin/swmm5" , "/usr/bin/swmm5"}
 
-\item{stdout}{where output to \file{stdout} or
-    \file{stderr} should be sent.  Possible values are \code{""}, to the \R
-    console (the default), \code{NULL} or \code{FALSE} (discard output),
-    \code{TRUE} (capture the output in a character vector) or a
-    character string naming a file.}
+\item{stdout}{See \code{\link[base]{system2}} for details.}
 
 \item{wait}{a logical (not \code{NA}) indicating whether the \R
     interpreter should wait for the command to finish, or run it
