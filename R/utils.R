@@ -75,7 +75,7 @@ stop_on_bad_index <- function(index, choices) {
   
   # final check
   if (!file.exists(full_name)) {
-    message("SWMM executable not found.")
+    swmm_not_found_message()
     full_name <- NULL
   }
   
@@ -98,9 +98,13 @@ stop_on_bad_index <- function(index, choices) {
     full_name <- full_name[exec_found][1]
   } else {
     # otherwise raise warning
-    message("SWMM executable not found.")
+    swmm_not_found_message()
     full_name <- NULL
   }
   return(full_name)
   
+}
+
+swmm_not_found_message <- function() {
+  packageStartupMessage("SWMM executable not found.")
 }
