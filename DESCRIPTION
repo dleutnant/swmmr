@@ -27,6 +27,7 @@ BugReports: https://github.com/dleutnant/swmmr/issues
 ByteCompile: TRUE
 Imports: 
     dplyr (>= 0.7.4),
+    ggplot2,
     purrr (>= 0.2.4),
     readr (>= 1.1.1),
     Rcpp,
@@ -39,12 +40,11 @@ LinkingTo:
     Rcpp
 Suggests: 
     DEoptim,
-    ggplot2,
     sf (>= 0.6-1),
     knitr,
     rmarkdown,
     testthat
 SystemRequirements: SWMM (>=5.1.012)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate"))
 VignetteBuilder: knitr
